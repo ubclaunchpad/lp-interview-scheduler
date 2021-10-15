@@ -10,7 +10,6 @@ interface AuthContextValue {
     login: () => Promise<any>,
     logout: () => Promise<any>,
     user: User | undefined,
-    loading: boolean
 }
 
 const AuthContext = React.createContext({} as AuthContextValue);
@@ -32,7 +31,6 @@ export function AuthProvider(props: AuthProviderProps) {
         const unsubscribe = onAuthStateChanged(auth, user => {
             if (user) {
                 setUser(user);
-                console.log(`user signed in: ${user.email}`)
             }
             setLoading(false);
         });
@@ -44,7 +42,6 @@ export function AuthProvider(props: AuthProviderProps) {
         login, 
         logout,
         user,
-        loading
     };
 
     return (
