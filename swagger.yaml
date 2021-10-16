@@ -18,8 +18,6 @@ tags:
     url: "http://swagger.io"
 - name: "schedule"
   description: "Everything about schedules"
-- name: "request"
-  description: "Everything about requests"
 
 schemes:
 - "https"
