@@ -1,0 +1,722 @@
+swagger: "2.0"
+info:
+  description: "A web-based interview scheduler for Launch Pad's recruitment process. Leads will input their personal schedules which will be used to create a calendar of potential interview times. A link will be created that can be sent to interviewees so they can select a preferred time out of a list of options. Once an interview is booked, a Hangouts invitation is generated and can be shared. "
+  version: "1.0.0"
+  title: "LP Interview Scheduler Swagger"
+host: "lp-interview-scheduler.swagger.io"
+basePath: "/home"
+tags:
+- name: "interviewer"
+  description: "Operations about interviewers"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+- name: "user"
+  description: "Operations about user"
+  externalDocs:
+    description: "Find out more about our store"
+    url: "http://swagger.io"
+- name: "schedule"
+  description: "Everything about schedules"
+- name: "request"
+  description: "Everything about requests"
+
+schemes:
+- "https"
+- "http"
+paths:
+  /interviewer:
+    post:
+      tags:
+      - "interviewer"
+      summary: "Add a new interviewer to the scheduling system"
+      description: "Creates a new interviewer, default no availabilities"
+      operationId: "addInterviewer"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Interviewer object that needs to be added to the scheduling system"
+        required: true
+        schema:
+          $ref: "#/definitions/Interviewer"
+      responses:
+        "405":
+          description: "Invalid input"
+      security:
+      - interviewerschedule_auth:
+        - "write:interviewers"
+        - "read:interviewers"
+    put:
+      tags:
+      - "interviewer"
+      summary: "Update an existing interviewer"
+      description: ""
+      operationId: "updateInterviewer"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Interviewer object that needs to be added to the schedule"
+        required: true
+        schema:
+          $ref: "#/definitions/Interviewer"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Interviewer not found"
+        "405":
+          description: "Validation exception"
+      security:
+      - interviewerschedule_auth:
+        - "write:interviewers"
+        - "read:interviewers"
+  /interviewer/findByStatus:
+    get:
+      tags:
+      - "interviewer"
+      summary: "Finds Interviewers by status"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "findInterviewersByStatus"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Interviewer"
+        "400":
+          description: "Invalid status value"
+      security:
+      - interviewerschedule_auth:
+        - "write:interviewers"
+        - "read:interviewers"
+  /interviewer/findByTags:
+    get:
+      tags:
+      - "interviewer"
+      summary: "Finds Interviewers by tags"
+      description: "Muliple tags can be provided with comma separated strings. Use         tag1, tag2, tag3 for testing."
+      operationId: "findInterviewersByTags"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "tags"
+        in: "query"
+        description: "Tags to filter by"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Interviewer"
+        "400":
+          description: "Invalid tag value"
+      security:
+      - interviewerschedule_auth:
+        - "write:interviewers"
+        - "read:interviewers"
+  /interviewer/{interviewerId}:
+    get:
+      tags:
+      - "interviewer"
+      summary: "Find interviewer by ID"
+      description: "Returns a single interviewer"
+      operationId: "getInterviewerById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "interviewerId"
+        in: "path"
+        description: "ID of interviewer to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Interviewer"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Interviewer not found"
+      security:
+      - api_key: []
+    post:
+      tags:
+      - "interviewer"
+      summary: "Updates a interviewer in the schedule with form data"
+      description: ""
+      operationId: "updateInterviewerWithForm"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "interviewerId"
+        in: "path"
+        description: "ID of interviewer that needs to be updated"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "name"
+        in: "formData"
+        description: "Updated name of the interviewer"
+        required: false
+        type: "string"
+      - name: "status"
+        in: "formData"
+        description: "Updated status of the interviewer"
+        required: false
+        type: "string"
+      responses:
+        "405":
+          description: "Invalid input"
+      security:
+      - interviewerschedule_auth:
+        - "write:interviewers"
+        - "read:interviewers"
+    delete:
+      tags:
+      - "interviewer"
+      summary: "Deletes an interviewer"
+      description: ""
+      operationId: "deleteInterviewer"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "api_key"
+        in: "header"
+        required: false
+        type: "string"
+      - name: "interviewerId"
+        in: "path"
+        description: "Interviewer id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Interviewer not found"
+      security:
+      - interviewerschedule_auth:
+        - "write:interviewers"
+        - "read:interviewers"
+  /interviewer/{interviewerId}/uploadImage:
+    post:
+      tags:
+      - "interviewer"
+      summary: "uploads an image"
+      description: ""
+      operationId: "uploadFile"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "interviewerId"
+        in: "path"
+        description: "ID of interviewer to update"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "additionalMetadata"
+        in: "formData"
+        description: "Additional data to pass to server"
+        required: false
+        type: "string"
+      - name: "file"
+        in: "formData"
+        description: "file to upload"
+        required: false
+        type: "file"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      security:
+      - interviewerschedule_auth:
+        - "write:interviewers"
+        - "read:interviewers"
+  /schedule/availabilities:
+    get:
+      tags:
+      - "schedule"
+      summary: "Returns interviewer availabilities by status"
+      description: "Returns a map of status codes to quantities"
+      operationId: "getAvailabilities"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "integer"
+              format: "int32"
+      security:
+      - api_key: []
+  /schedule/merge:
+    get:
+      tags:
+      - "schedule"
+      summary: "Returns merged interviewer availabilities up to n days from now"
+      description: "Returns all merged availabilities from interviewers A and B (i.e. time slots where both A and B are available) with date and time of 15 min blocks up to n days from now; excluding booked time slots"
+      operationId: "getMergedAvailabilities"
+      produces:
+      - "application/json"
+      parameters: 
+      - in: "body"
+        name: "body"
+        description: "interviewer A, interviewer B, and the number of days in advance to schedule"
+        required: true
+        schema:
+          $ref: "#/definitions/Interviewer"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            additionalProperties:
+              type: "integer"
+              format: "int32"
+      security:
+      - api_key: []
+  /schedule/book:
+    post:
+      tags:
+      - "schedule"
+      summary: "Book a time slot with an interviewer"
+      description: ""
+      operationId: "bookSlot"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "time slot booked with the interviewer"
+        required: true
+        schema:
+          $ref: "#/definitions/BookedSlot"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BookedSlot"
+        "400":
+          description: "Invalid Booking"
+  /schedule/bookedSlot/{bookedSlotId}:
+    get:
+      tags:
+      - "schedule"
+      summary: "Find bookedSlot by ID"
+      description: "For valid response try integer IDs with value >= 1 and <= 10.         Other values will generated exceptions"
+      operationId: "getBookedSlotById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "bookedSlotId"
+        in: "path"
+        description: "ID of interviewer that needs to be fetched"
+        required: true
+        type: "integer"
+        maximum: 10.0
+        minimum: 1.0
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/BookedSlot"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "BookedSlot not found"
+    delete:
+      tags:
+      - "schedule"
+      summary: "Delete bookedSlot by ID"
+      description: "For valid response try integer IDs with positive integer value.         Negative or non-integer values will generate API errors"
+      operationId: "deleteBookedSlot"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "bookedSlotId"
+        in: "path"
+        description: "ID of the bookedSlot that needs to be deleted"
+        required: true
+        type: "integer"
+        minimum: 1.0
+        format: "int64"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "BookedSlot not found"
+  /user:
+    post:
+      tags:
+      - "user"
+      summary: "Create user"
+      description: "This can only be done by the logged in user."
+      operationId: "createUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "successful operation"
+  /user/createWithArray:
+    post:
+      tags:
+      - "user"
+      summary: "Creates list of users with given input array"
+      description: ""
+      operationId: "createUsersWithArrayInput"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "List of user object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "successful operation"
+  /user/createWithList:
+    post:
+      tags:
+      - "user"
+      summary: "Creates list of users with given input array"
+      description: ""
+      operationId: "createUsersWithListInput"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "List of user object"
+        required: true
+        schema:
+          type: "array"
+          items:
+            $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "successful operation"
+  /user/login:
+    get:
+      tags:
+      - "user"
+      summary: "Logs user into the system"
+      description: ""
+      operationId: "loginUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "query"
+        description: "The user name for login"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "The password for login in clear text"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "string"
+          headers:
+            X-Rate-Limit:
+              type: "integer"
+              format: "int32"
+              description: "calls per hour allowed by the user"
+            X-Expires-After:
+              type: "string"
+              format: "date-time"
+              description: "date in UTC when token expires"
+        "400":
+          description: "Invalid username/password supplied"
+  /user/logout:
+    get:
+      tags:
+      - "user"
+      summary: "Logs out current logged in user session"
+      description: ""
+      operationId: "logoutUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        default:
+          description: "successful operation"
+  /user/{username}:
+    get:
+      tags:
+      - "user"
+      summary: "Get user by user name"
+      description: ""
+      operationId: "getUserByName"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "The name that needs to be fetched. Use user1 for testing. "
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+    put:
+      tags:
+      - "user"
+      summary: "Updated user"
+      description: "This can only be done by the logged in user."
+      operationId: "updateUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "name that need to be updated"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        "400":
+          description: "Invalid user supplied"
+        "404":
+          description: "User not found"
+    delete:
+      tags:
+      - "user"
+      summary: "Delete user"
+      description: "This can only be done by the logged in user."
+      operationId: "deleteUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "The name that needs to be deleted"
+        required: true
+        type: "string"
+      responses:
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+securityDefinitions:
+  interviewerschedule_auth:
+    type: "oauth2"
+    authorizationUrl: "http://interviewerschedule.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:interviewers: "modify interviewers in your account"
+      read:interviewers: "read your interviewers"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  BookedSlot:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      interviewerId:
+        type: "integer"
+        format: "int64"
+      duration:
+        type: "integer"
+        format: "int32"
+      date:
+        type: "string"
+        format: "date-time"
+      status:
+        type: "string"
+        description: "BookedSlot Status"
+        enum:
+        - "placed"
+        - "approved"
+        - "delivered"
+      complete:
+        type: "boolean"
+        default: false
+    xml:
+      name: "BookedSlot"
+  Category:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    xml:
+      name: "Category"
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      phone:
+        type: "string"
+      userStatus:
+        type: "integer"
+        format: "int32"
+        description: "User Status"
+    xml:
+      name: "User"
+  Tag:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    xml:
+      name: "Tag"
+  Interviewer:
+    type: "object"
+    required:
+    - "name"
+    - "photoUrls"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      category:
+        $ref: "#/definitions/Category"
+      name:
+        type: "string"
+        example: "Wren"
+      photoUrls:
+        type: "array"
+        xml:
+          name: "photoUrl"
+          wrapped: true
+        items:
+          type: "string"
+      tags:
+        type: "array"
+        xml:
+          name: "tag"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Tag"
+      status:
+        type: "string"
+        description: "interviewer status in the schedule"
+        enum:
+        - "available"
+        - "pending"
+        - "sold"
+    xml:
+      name: "Interviewer"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
