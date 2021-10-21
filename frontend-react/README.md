@@ -1,4 +1,4 @@
-# LP-interview-scheduler Frontend
+# lp-interview-scheduler frontend
 
 ## Setup
 
