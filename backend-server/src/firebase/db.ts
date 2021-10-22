@@ -27,9 +27,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const firebase = initializeApp(firebaseConfig);
-const firestore = getFirestore();
+const db = getFirestore();
 
-const testSpecial = doc(firestore, "hello/world");
+const testSpecial = doc(db, "hello/world");
 // Write document if it exists, replace document otherwise
 async function testSet() {
   console.log("Test Set");
@@ -74,7 +74,7 @@ async function testGet() {
   }
 }
 
-const testCollection = collection(firestore, "testingBackend");
+const testCollection = collection(db, "testingBackend");
 async function testNewDoc() {
   try {
     const newdoc = await addDoc(testCollection, {
@@ -86,8 +86,10 @@ async function testNewDoc() {
   }
 }
 
-testSet();
-testUpdate();
-testNewDoc();
-testGet();
-console.log("Testing");
+// testSet();
+// testUpdate();
+// testNewDoc();
+// testGet();
+// console.log("Testing");
+
+export { db };
