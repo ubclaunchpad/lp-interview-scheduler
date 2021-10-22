@@ -1,7 +1,5 @@
-import { getEnabledCategories } from "trace_events";
-
 // Import the functions you need from the SDKs you need
-const { initializeApp, applicationDefault, cert } = require("firebase/app");
+const { initializeApp } = require("firebase/app");
 const {
   getFirestore,
   doc,
@@ -10,8 +8,6 @@ const {
   addDoc,
   getDoc,
   updateDoc,
-  Timestamp,
-  FieldValue,
 } = require("firebase/firestore");
 
 // TODO: Add SDKs for Firebase products that you want to use
