@@ -3,7 +3,8 @@ import { setDoc } from "firebase/firestore";
 import { db } from "../../firebase/db";
 import { DB_COLLECTION } from "./config";
 
-const INTERVIEWR_COLLECTION = "interviewers";
+const INTERVIEWER_COLLECTION = "interviewers";
+
 
 export async function addInterviewerToOrganization(
   organization: string,
@@ -15,7 +16,7 @@ export async function addInterviewerToOrganization(
     db,
     DB_COLLECTION,
     organization,
-    INTERVIEWR_COLLECTION,
+    INTERVIEWER_COLLECTION,
     userUID
   );
 
@@ -30,7 +31,7 @@ export async function getInterviewerFromOrganizationByID(
     db,
     DB_COLLECTION,
     organization,
-    INTERVIEWR_COLLECTION,
+    INTERVIEWER_COLLECTION,
     userUID
   );
 
