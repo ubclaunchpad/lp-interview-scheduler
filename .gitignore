@@ -1,6 +1,6 @@
 # macOS
 .DS_Store
-
+.idea/*
 
 # Global
 node_modules/
