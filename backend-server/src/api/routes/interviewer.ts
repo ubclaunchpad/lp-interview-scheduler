@@ -12,12 +12,8 @@ interface addInterviewerBody {
   email: string;
   name: string;
 }
-interface getInterviewerBody {
-  organization: string;
-  userUID: string;
-}
 
-interviewerRouter.post("/add", async (req, res) => {
+interviewerRouter.post("/", async (req, res) => {
   const { organization, userUID, email, name }: addInterviewerBody = req.body;
   try {
     await addInterviewer(organization, userUID, email, name);
@@ -27,8 +23,9 @@ interviewerRouter.post("/add", async (req, res) => {
   }
 });
 
-interviewerRouter.get("/get", async (req, res) => {
-  const { organization, userUID }: getInterviewerBody = req.body;
+interviewerRouter.get("/", async (req, res) => {
+  const organization = req.query.organization as string;
+  const userUID = req.query.userUID as string;
   try {
     const interviewerData = await getInterviewer(organization, userUID);
     res.send(interviewerData);
