@@ -1,14 +1,15 @@
 // Import the functions you need from the SDKs you need
-const { initializeApp } = require("firebase/app");
-const {
-  getFirestore,
-  doc,
-  collection,
-  setDoc,
+
+import { initializeApp } from "firebase/app";
+import {
   addDoc,
+  collection,
+  doc,
   getDoc,
+  getFirestore,
+  setDoc,
   updateDoc,
-} = require("firebase/firestore");
+} from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -27,7 +28,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const firebase = initializeApp(firebaseConfig);
-const db = getFirestore();
+const db = getFirestore(firebase);
 
 const testSpecial = doc(db, "hello/world");
 // Write document if it exists, replace document otherwise
