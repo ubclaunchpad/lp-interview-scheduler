@@ -1,7 +1,7 @@
 import {
     addAvailabilityToInterviewer,
     getAvailabilityFromInterviewer,
-} from "../data/addAvailability";
+} from "../data/addEntity";
 import Timeslot from "../../models/Timeslot"
 
 export async function addAvailability(
