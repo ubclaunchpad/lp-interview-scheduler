@@ -5,11 +5,16 @@ import {
 import Timeslot from "../../models/Timeslot"
 
 export async function addAvailability(
-    timeslot: string,
+    organization: string,
+    interviewerUID: string,
+    startTimeString: string,
+    startTime: Date,
+    isBooked: boolean,
+    durationMins: number,
 ) {
-    await addAvailabilityToInterviewer(timeslot);
+    await addAvailabilityToInterviewer(organization, interviewerUID, startTimeString, startTime, isBooked, durationMins);
 }
 
-export async function getAvailability(interviewerUID: string) {
-    return await getAvailabilityFromInterviewer(interviewerUID);
+export async function getAvailability(organization: string, interviewerUID: string, startTimeString: string) {
+    return await getAvailabilityFromInterviewer(organization, interviewerUID, startTimeString);
 }

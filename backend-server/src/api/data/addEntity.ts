@@ -3,7 +3,7 @@ import { setDoc } from "firebase/firestore";
 import { db } from "../../firebase/db";
 import { DB_COLLECTION } from "./config";
 
-const INTERVIEWER_COLLECTION = "interviewers";
+export const INTERVIEWER_COLLECTION = "interviewers";
 
 
 export async function addInterviewerToOrganization(

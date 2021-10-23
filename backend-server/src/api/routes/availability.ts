@@ -1,36 +1,36 @@
 import express from "express";
-import {
-    addInterviewer,
-    getInterviewer,
-} from "../controllers/interviewerController";
+import {addAvailability, getAvailability} from "../controllers/availabilityController";
 
 export const interviewerRouter = express.Router();
 
-interface addInterviewerBody {
+interface addAvailabilityBody {
     organization: string;
-    userUID: string;
-    email: string;
-    name: string;
+    interviewerUID: string;
+    startTimeString: string;
+    startTime: Date;
+    isBooked: boolean;
+    durationMins: number;
 }
-interface getInterviewerBody {
+interface getAvailabilityBody {
     organization: string;
-    userUID: string;
+    interviewerUID: string;
+    startTimeString: string;
 }
 
-interviewerRouter.post("/add", async (req, res) => {
-    const { organization, userUID, email, name }: addInterviewerBody = req.body;
+interviewerRouter.post("/addAvailability", async (req, res) => {
+    const { organization, interviewerUID, startTimeString, startTime, isBooked, durationMins }: addAvailabilityBody = req.body;
     try {
-        await addInterviewer(organization, userUID, email, name);
-        res.send(`${userUID} has been added to ${organization}`);
+        await addAvailability(organization, interviewerUID, startTimeString, startTime, isBooked, durationMins);
+        res.send(`A timeslot at ${startTime} has been added to interviewer ${interviewerUID}'s availability`);
     } catch (err) {
         res.send(`error processing request: ${err}`);
     }
 });
 
-interviewerRouter.get("/get", async (req, res) => {
-    const { organization, userUID }: getInterviewerBody = req.body;
+interviewerRouter.get("/getAvailability", async (req, res) => {
+    const { organization, interviewerUID, startTimeString }: getAvailabilityBody = req.body;
     try {
-        const interviewerData = await getInterviewer(organization, userUID);
+        const interviewerData = await getAvailability(organization, interviewerUID,startTimeString);
         res.send(interviewerData);
     } catch (err) {
         res.send(`error processing request: ${err}`);
