@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import * as dotenv from "dotenv";
-import { interviewerRouter } from "./api/routes/interviewer";
+import { v1Router } from "./api/versions/v1";
 
 dotenv.config();
 export const app = express();
@@ -16,4 +16,4 @@ const handler = (request: Request, response: Response, next: NextFunction) => {
 };
 
 app.get("/", handler);
-app.use("/api/interviewer", interviewerRouter);
+app.use("/v1", v1Router);
