@@ -1,8 +1,8 @@
 {
-    "compilerOptions": {
-        "module": "CommonJS",
-        "target": "es6",
-        "rootDir": "./",
-        "esModuleInterop": true
-    }
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "es6",
+    "rootDir": "./",
+    "esModuleInterop": true
+  }
 }

@@ -8,8 +8,11 @@ export async function addInterviewer(
   name: string
 ) {
   const interviewer: Interviewer = {
-    organization, userUID, email, name
-  }
+    organization,
+    userUID,
+    email,
+    name,
+  };
 
   await dataAccess.setInterviewer(interviewer);
 }
