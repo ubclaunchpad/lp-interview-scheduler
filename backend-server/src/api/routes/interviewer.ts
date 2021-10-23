@@ -3,18 +3,12 @@ import {
   addInterviewer,
   getInterviewer,
 } from "../controllers/interviewerController";
+import { Interviewer } from "../data/models";
 
 export const interviewerRouter = express.Router();
 
-interface addInterviewerBody {
-  organization: string;
-  userUID: string;
-  email: string;
-  name: string;
-}
-
 interviewerRouter.post("/", async (req, res) => {
-  const { organization, userUID, email, name }: addInterviewerBody = req.body;
+  const { organization, userUID, email, name }: Interviewer = req.body;
   try {
     await addInterviewer(organization, userUID, email, name);
     res.send(`${userUID} has been added to ${organization}`);
