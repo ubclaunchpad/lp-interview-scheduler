@@ -1,7 +1,5 @@
-import {
-  addInterviewerToOrganization,
-  getInterviewerFromOrganizationByID,
-} from "../data/addEntity";
+import { dataAccess } from "../data/dataAccess";
+import { Interviewer } from "../data/models";
 
 export async function addInterviewer(
   organization: string,
@@ -9,9 +7,13 @@ export async function addInterviewer(
   email: string,
   name: string
 ) {
-  await addInterviewerToOrganization(organization, userUID, email, name);
+  const interviewer: Interviewer = {
+    organization, userUID, email, name
+  }
+
+  await dataAccess.setInterviewer(interviewer);
 }
 
 export async function getInterviewer(organization: string, userUID: string) {
-  return await getInterviewerFromOrganizationByID(organization, userUID);
+  return await dataAccess.getInterviewer(organization, userUID);
 }
