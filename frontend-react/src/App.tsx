@@ -1,10 +1,22 @@
-import AuthenticatedApp from "./components/AuthenticatedApp";
-import UnauthenticatedApp from "./components/UnauthenticatedApp";
-import { useAuth } from "./contexts/AuthContext";
+import AdminApp from "./components/AdminApp";
+import BookingPage from "./components/BookingPage";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import "./App.css";
+import LandingPage from "./components/LandingPage";
 
 function App() {
-  const { user } = useAuth();
-  return user ? <AuthenticatedApp /> : <UnauthenticatedApp />;
+  return (
+    <div className="App">
+      <h1>our main app</h1>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/" component={LandingPage} />
+          <Route path="/booking" component={BookingPage} />
+          <Route path="/app" component={AdminApp} />
+        </Switch>
+      </BrowserRouter>
+    </div>
+  );
 }
 
 export default App;
