@@ -67,6 +67,7 @@ class DataAccess {
         organization,
         this.interviewerCollectionName,
         interviewerUID,
+        this.availabilityCollectionName,
         startTimeString
     );
   }
