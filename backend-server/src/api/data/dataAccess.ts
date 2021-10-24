@@ -6,33 +6,40 @@ import {
   DocumentData,
   Firestore,
   getDoc,
+  Timestamp,
 } from "@firebase/firestore";
 import { setDoc } from "firebase/firestore";
 import { db } from "../../firebase/db";
 
-import { Availability, Interviewer } from "./models";
+
+import { Availability, Interviewer, Event } from "./models";
 
 const DB_COLLECTION = "aymendb-destroylater";
 const INTERVIEWER_COLLECTION = "interviewers";
 const AVAILABILITY_COLLECTION = "availabilities";
+const EVENT_COLLECTION = "events";
+
 
 class DataAccess {
   db: Firestore;
   rootCollectionName: string;
   interviewerCollectionName: string;
   availabilityCollectionName: string;
+  eventCollectionName: string;
   rootCollection: CollectionReference;
 
   constructor(
     db: Firestore,
     rootCollectionName: string,
     interviewerCollectionName: string,
-    availabilityCollectionName: string
+    availabilityCollectionName: string,
+    eventCollectionName: string
   ) {
     this.db = db;
     this.rootCollectionName = rootCollectionName;
     this.interviewerCollectionName = interviewerCollectionName;
     this.availabilityCollectionName = availabilityCollectionName;
+    this.eventCollectionName = eventCollectionName;
     this.rootCollection = collection(db, rootCollectionName);
   }
 
@@ -118,11 +125,33 @@ class DataAccess {
     );
     await setDoc(doc, availability);
   }
+
+  async EventDocRef( 
+    organization: string,
+    eventUID: string
+  ): Promise<DocumentReference<DocumentData>> {
+    return await doc(
+      this.rootCollection,
+      organization,
+      this.eventCollectionName,
+      eventUID
+    );
+  }
+
+  async setEvent(event: Event) {
+    const doc = await this.EventDocRef(
+      event.organization,
+      event.eventUID
+    );
+
+    await setDoc(doc, event);
+  }
 }
 
 export const dataAccess = new DataAccess(
   db,
   DB_COLLECTION,
   INTERVIEWER_COLLECTION,
-  AVAILABILITY_COLLECTION
+  AVAILABILITY_COLLECTION,
+  EVENT_COLLECTION
 );
