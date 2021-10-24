@@ -21,11 +21,23 @@ class DataAccess {
   interviewerCollectionName: string;
   rootCollection: CollectionReference;
 
-  constructor(db, rootCollectionName, interviewerCollectionName) {
+  constructor(
+    db: Firestore,
+    rootCollectionName: string,
+    interviewerCollectionName: string
+  ) {
     this.db = db;
     this.rootCollectionName = rootCollectionName;
     this.interviewerCollectionName = interviewerCollectionName;
     this.rootCollection = collection(db, rootCollectionName);
+  }
+
+  async checkOrganizationExists(organization: string): Promise<boolean> {
+    const orgRef = await doc(this.rootCollection, organization);
+    const org = await getDoc(orgRef);
+
+    if (org.exists()) return true;
+    else return false;
   }
 
   async interviewerDocRef(
@@ -50,6 +62,14 @@ class DataAccess {
   }
 
   async setInterviewer(interviewer: Interviewer) {
+    const orgExists = await this.checkOrganizationExists(
+      interviewer.organization
+    );
+    if (!orgExists)
+      throw new Error(
+        `Organization "${interviewer.organization}" does not exist in Firebase!`
+      );
+
     const doc = await this.interviewerDocRef(
       interviewer.organization,
       interviewer.userUID
