@@ -13,7 +13,7 @@ interviewerRouter.post("/", async (req, res) => {
     await addInterviewer(organization, userUID, email, name);
     res.send(`${userUID} has been added to ${organization}`);
   } catch (err) {
-    res.send(`error processing request: ${err}`);
+    res.status(500).send(`Internal Server Error: ${err}`);
   }
 });
 
@@ -24,6 +24,6 @@ interviewerRouter.get("/", async (req, res) => {
     const interviewerData = await getInterviewer(organization, userUID);
     res.send(interviewerData);
   } catch (err) {
-    res.send(`error processing request: ${err}`);
+    res.status(500).send(`Internal Server Error: ${err}`);
   }
 });
