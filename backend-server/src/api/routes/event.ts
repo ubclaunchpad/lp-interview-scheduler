@@ -1,7 +1,7 @@
 import { Timestamp } from "@firebase/firestore";
 import express from "express";
 import {
-  addEvent,
+  addEvent, bookEvent, getEvent,
 } from "../controllers/eventController";
 import { EventRequest } from "../data/models";
 
@@ -17,3 +17,23 @@ eventRouter.post("/", async (req, res) => {
     res.send(`error processing request: ${err}`);
   }
 });
+
+eventRouter.get("/", async (req, res) => {
+  const { organization, eventUID } = req.body;
+  try {
+    const eventData = await getEvent(organization, eventUID);
+    res.send(eventData);
+  } catch (err) {
+    res.send(`error processing request: ${err}`);
+  }
+});
+
+eventRouter.patch("/", async (req, res) => {
+  const { organization, eventUID, requestedTime } = req.body;
+  try {
+    await bookEvent(organization, eventUID, requestedTime);
+    res.send(`successfully booked for interview at ${requestedTime}`);
+  } catch (err) {
+    res.send(`error processing request: ${err}`);
+  }
+})
