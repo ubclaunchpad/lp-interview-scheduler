@@ -28,3 +28,16 @@ export async function addEvent(
 
     await dataAccess.setEvent(event);
 }
+
+export async function getEvent(organization:string, eventUID: string) {
+  const eventData = await dataAccess.getEvent(organization, eventUID);
+  eventData["expires"] = eventData["expires"].toDate().toString();
+  return eventData;
+}
+
+export async function bookEvent(
+  organization: string,
+  eventUID: string,
+  requestedTime: string) {
+    await dataAccess.bookEvent(organization, eventUID, requestedTime);
+  }

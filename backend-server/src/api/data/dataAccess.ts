@@ -9,7 +9,7 @@ import {
   Timestamp,
 } from "@firebase/firestore";
 import { setDoc } from "firebase/firestore";
-import { db } from "../../firebase/db";
+import { db, } from "../../firebase/db";
 
 import { Interviewer } from "./models";
 import { Event } from "./models"
@@ -62,7 +62,7 @@ class DataAccess {
     await setDoc(doc, interviewer);
   }
 
-  async EventDocRef( 
+  async eventDocRef( 
     organization: string,
     eventUID: string
   ): Promise<DocumentReference<DocumentData>> {
@@ -74,15 +74,37 @@ class DataAccess {
     );
   }
 
+  async getEvent(
+    organization: string,
+    eventUID: string
+    ): Promise<DocumentData> {
+      const doc = await this.eventDocRef(organization, eventUID);
+      const res = await getDoc(doc);
+      return res.data();
+    }
+
   async setEvent(event: Event) {
-    const doc = await this.EventDocRef(
+    const doc = await this.eventDocRef(
       event.organization,
       event.eventUID
     );
 
     await setDoc(doc, event);
   }
+  async bookEvent(
+    organization: string,
+    eventUID: string,
+    requestedTime: string
+  ) {
+    const doc = await this.eventDocRef(organization, eventUID);
+    const confirmedTimeStamp = Timestamp.fromDate(new Date(requestedTime));
+    await setDoc(doc, 
+      { confirmedTime: confirmedTimeStamp },
+      { merge: true });
+  }
 }
+
+
 
 export const dataAccess = new DataAccess(
   db,
