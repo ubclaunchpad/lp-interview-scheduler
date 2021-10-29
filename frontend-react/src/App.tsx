@@ -7,7 +7,7 @@ import InterviewerCalendar from "./InterviewerCalendar";
 function App() {
   return (
     <div className="App">
-      <h1>frontend start</h1>
+      <h1>Interviewer Availability</h1>
       <InterviewerCalendar localizer={momentLocalizer(moment)} />
     </div>
   );

@@ -59,7 +59,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
   };
 
   return (
-    <div style={{ minHeight: "100%" }}>
+    <div>
       <Calendar
         selectable
         localizer={localizer}
@@ -71,6 +71,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
         startAccessor="start"
         endAccessor="end"
         titleAccessor="title"
+        style={{ height: 700 }}
       />
     </div>
   );
