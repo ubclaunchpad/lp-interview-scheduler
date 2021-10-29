@@ -1,31 +1,76 @@
 import React from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, DateLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 // Setup the localizer by providing the moment (or globalize) Object
 // to the correct localizer.
-const localizer = momentLocalizer(moment); // or globalizeLocalizer
 
-const myEventsList = [
-  {
-    id: 0,
-    title: "Meeting",
-    start: new Date(2020, 10, 29, 20, 0, 0, 0),
-    end: new Date(2020, 10, 21, 0, 0, 0),
-  },
-];
+interface Props {
+  localizer: DateLocalizer;
+}
 
-export default function InterviewerCalendar() {
+class CalendarEvent {
+  title: string;
+  allDay: boolean;
+  start: Date;
+  end: Date;
+  desc: string;
+  resourceId?: string;
+  tooltip?: string;
+
+  constructor(
+    _title: string,
+    _start: Date,
+    _endDate: Date,
+    _allDay?: boolean,
+    _desc?: string,
+    _resourceId?: string
+  ) {
+    this.title = _title;
+    this.allDay = _allDay || false;
+    this.start = _start;
+    this.end = _endDate;
+    this.desc = _desc || "";
+    this.resourceId = _resourceId;
+  }
+}
+
+export default function InterviewerCalendar({ localizer }: Props) {
+  const [events, setEvents] = React.useState([] as CalendarEvent[]);
+
+  const handleSelect = ({
+    start,
+    end,
+  }: {
+    start: string | Date;
+    end: string | Date;
+  }): any => {
+    const title = window.prompt("New Event name");
+
+    if (title) {
+      let newEvent = {} as CalendarEvent;
+      newEvent.start = moment(start).toDate();
+      newEvent.end = moment(end).toDate();
+      newEvent.title = title;
+
+      setEvents([...events, newEvent]);
+    }
+  };
+
   return (
-    <div style={{ height: 700 }}>
+    <div style={{ minHeight: "100%" }}>
       <Calendar
         selectable
         localizer={localizer}
-        events={myEventsList}
+        events={events}
         defaultView="week"
         defaultDate={moment().toDate()}
-        // components={{ timeSlotWrapper: ColoredDateCellWrapper }}
+        onSelectEvent={(event) => alert(event.title)}
+        onSelectSlot={(slotInfo) => handleSelect(slotInfo)}
+        startAccessor="start"
+        endAccessor="end"
+        titleAccessor="title"
       />
     </div>
   );
