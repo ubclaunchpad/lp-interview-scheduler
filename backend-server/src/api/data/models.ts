@@ -6,10 +6,9 @@ export interface Interviewer {
 }
 
 export interface Availability {
-  organization: string,
   interviewerUID: string,
-  startTimeString: string,
-  startTime: Date,
+  startTime: string,
   isBooked: boolean,
+  bookedByEmail: string,
   durationMins: number,
 }

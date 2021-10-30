@@ -1,32 +1,20 @@
 import express from "express";
 import {
     addAvailability,
-    getAvailability
+    getAvailability,
+    addAvailabilityBody,
+    getAvailabilityBody
 } from "../controllers/availabilityController";
 import { Availability } from "../data/models";
 
 
 export const availabilityRouter = express.Router();
 
-interface addAvailabilityBody {
-    organization: string;
-    interviewerUID: string;
-    startTimeString: string;
-    startTime: Date;
-    isBooked: boolean;
-    durationMins: number;
-}
-interface getAvailabilityBody {
-    organization: string;
-    interviewerUID: string;
-    startTimeString: string;
-}
-
 availabilityRouter.post("/", async (req, res) => {
-    const { organization, interviewerUID, startTimeString, startTime, isBooked, durationMins }: Availability = req.body;
+    const addAvailabilityBody: addAvailabilityBody = req.body;
     try {
-        await addAvailability(organization, interviewerUID, startTimeString, startTime, isBooked, durationMins);
-        res.send(`A timeslot at ${startTime} has been added to interviewer ${interviewerUID}'s availability`);
+        await addAvailability(addAvailabilityBody);
+        res.send(`A timeslot at ${addAvailabilityBody.startTime} has been added to interviewer ${addAvailabilityBody.interviewerUID}'s availability`);
     } catch (err) {
         res.send(`error processing request: ${err}`);
     }
@@ -35,9 +23,9 @@ availabilityRouter.post("/", async (req, res) => {
 availabilityRouter.get("/", async (req, res) => {
     const organization = req.query.organization as string;
     const interviewerUID = req.query.interviewerUID as string;
-    const startTimeString = req.query.startTimeString as string;
+    const startTime = req.query.startTime as string;
     try {
-        const availabilityData = await getAvailability(organization, interviewerUID,startTimeString);
+        const availabilityData = await getAvailability(organization, interviewerUID, startTime);
         res.send(availabilityData);
     } catch (err) {
         res.send(`error processing request: ${err}`);

@@ -47,7 +47,7 @@ class DataAccess {
   async availabilityDocRef(
       organization: string,
       interviewerUID: string,
-      startTimeString: string,
+      startTime: string,
   ): Promise<DocumentReference<DocumentData>> {
     return await doc(
         this.rootCollection,
@@ -55,7 +55,7 @@ class DataAccess {
         this.interviewerCollectionName,
         interviewerUID,
         this.availabilityCollectionName,
-        startTimeString
+        startTime
     );
   }
 
@@ -86,11 +86,11 @@ class DataAccess {
     return res.data();
   }
 
-  async setAvailability(availability: Availability) {
+  async setAvailability(availability: Availability, organization: string) {
     const doc = await this.availabilityDocRef(
-        availability.organization,
+        organization,
         availability.interviewerUID,
-        availability.startTimeString,
+        availability.startTime
     );
     await setDoc(doc, availability);
   }
