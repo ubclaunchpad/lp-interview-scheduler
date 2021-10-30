@@ -22,7 +22,7 @@ availabilityRouter.post("/", async (req, res) => {
         await addAvailability(body);
         res.send(`A timeslot at ${body.startTime} has been added to interviewer ${body.interviewerUID}'s availability`);
     } catch (err) {
-        res.send(`error processing request: ${err}`);
+        res.status(500).send(`error processing request: ${err}`);
     }
 });
 
@@ -37,6 +37,6 @@ availabilityRouter.get("/", async (req, res) => {
         const availabilityData = await getAvailability(body.organization, body.interviewerUID, body.startTime);
         res.send(availabilityData);
     } catch (err) {
-        res.send(`error processing request: ${err}`);
+        res.status(500).send(`error processing request: ${err}`);
     }
 });
