@@ -12,7 +12,7 @@ export async function addEvent(
   expires: string
 ) {
     const expiresTimestamp: Timestamp = Timestamp.fromDate(new Date(expires));
-    const eventUID: string = createHash(lead1, lead2, intervieweeEmail);
+    const eventUID: string = createHash(intervieweeEmail, [lead1, lead2], expires);
     const confirmedTime = null;
 
     const event: Event = {
@@ -27,6 +27,8 @@ export async function addEvent(
     };
 
     await dataAccess.setEvent(event);
+
+    return event;
 }
 
 export async function getEvent(organization:string, eventUID: string) {
