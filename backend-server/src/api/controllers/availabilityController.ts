@@ -1,7 +1,7 @@
 import { dataAccess } from "../data/dataAccess";
 import { Availability } from "../data/models";
 
-export interface addAvailabilityBody {
+export interface AddAvailabilityBody {
     organization: string;
     interviewerUID: string;
     startTime: string;
@@ -9,14 +9,14 @@ export interface addAvailabilityBody {
     bookedByEmail: string;
     durationMins: number;
 }
-export interface getAvailabilityBody {
+export interface GetAvailabilityBody {
     organization: string;
     interviewerUID: string;
     startTime: string;
 }
 
 export async function addAvailability(
-    body: addAvailabilityBody
+    body: AddAvailabilityBody
 ) {
     const availability: Availability = {
         interviewerUID: body.interviewerUID,
