@@ -8,17 +8,11 @@ import { EventRequest } from "../data/models";
 
 export const eventRouter = express.Router();
 
-const get_uri: string = "localhost:8080/v1/event/";
-
 eventRouter.post("/", async (req, res) => {
   const { organization, lead1, lead2, intervieweeEmail, length, expires}: EventRequest = req.body;
   try {
-    const event = await addEvent(organization, lead1, lead2, intervieweeEmail, length, expires);
-    const ret: any = {
-      link: `${get_uri}?organization=${event.organization}&eventUID=${event.eventUID}`,
-      event: event
-    }
-    res.send(JSON.stringify(ret));
+    const ret = await addEvent(organization, lead1, lead2, intervieweeEmail, length, expires);
+    res.send(ret);
   } catch (err) {
     res.send(`error processing request: ${err}`);
   }
