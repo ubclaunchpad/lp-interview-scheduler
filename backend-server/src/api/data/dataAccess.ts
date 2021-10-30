@@ -10,12 +10,11 @@ import {
 import { setDoc } from "firebase/firestore";
 import { db } from "../../firebase/db";
 
-import {Availability, Interviewer } from "./models";
+import { Availability, Interviewer } from "./models";
 
 const DB_COLLECTION = "aymendb-destroylater";
 const INTERVIEWER_COLLECTION = "interviewers";
 const AVAILABILITY_COLLECTION = "availabilities";
-
 
 class DataAccess {
   db: Firestore;
@@ -58,17 +57,17 @@ class DataAccess {
   }
 
   async availabilityDocRef(
-      organization: string,
-      interviewerUID: string,
-      startTime: string,
+    organization: string,
+    interviewerUID: string,
+    startTime: string
   ): Promise<DocumentReference<DocumentData>> {
     return await doc(
-        this.rootCollection,
-        organization,
-        this.interviewerCollectionName,
-        interviewerUID,
-        this.availabilityCollectionName,
-        startTime
+      this.rootCollection,
+      organization,
+      this.interviewerCollectionName,
+      interviewerUID,
+      this.availabilityCollectionName,
+      startTime
     );
   }
 
@@ -98,28 +97,32 @@ class DataAccess {
   }
 
   async getAvailability(
-      organization: string,
-      interviewerUID: string,
-      startTimeString: string,
+    organization: string,
+    interviewerUID: string,
+    startTimeString: string
   ): Promise<DocumentData> {
-    const doc = await this.availabilityDocRef(organization, interviewerUID, startTimeString);
+    const doc = await this.availabilityDocRef(
+      organization,
+      interviewerUID,
+      startTimeString
+    );
     const res = await getDoc(doc);
     return res.data();
   }
 
   async setAvailability(availability: Availability, organization: string) {
     const doc = await this.availabilityDocRef(
-        organization,
-        availability.interviewerUID,
-        availability.startTime
+      organization,
+      availability.interviewerUID,
+      availability.startTime
     );
     await setDoc(doc, availability);
   }
 }
 
 export const dataAccess = new DataAccess(
-    db,
-    DB_COLLECTION,
-    INTERVIEWER_COLLECTION,
-    AVAILABILITY_COLLECTION
+  db,
+  DB_COLLECTION,
+  INTERVIEWER_COLLECTION,
+  AVAILABILITY_COLLECTION
 );
