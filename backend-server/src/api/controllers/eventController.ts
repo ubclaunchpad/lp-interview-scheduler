@@ -13,7 +13,6 @@ export async function addEvent(
   length: number,
   expires: string
 ) {
-  const expiresTimestamp: Timestamp = Timestamp.fromDate(new Date(expires));
   const eventUID: string = createHash(intervieweeEmail, [lead1, lead2], expires);
   const confirmedTime = null;
 
@@ -24,7 +23,7 @@ export async function addEvent(
     intervieweeEmail,
     confirmedTime,
     length,
-    expires: expiresTimestamp,
+    expires,
     eventUID
   };
 
@@ -46,5 +45,11 @@ export async function bookEvent(
   organization: string,
   eventUID: string,
   requestedTime: string) {
-  await dataAccess.bookEvent(organization, eventUID, requestedTime);
+  try{
+    // call Jin's function to update availability for both leads, if succesful then update event, otherwise throw error 
+    // const updateLeads = runtransaction();
+    await dataAccess.bookEvent(organization, eventUID, requestedTime);
+  } catch (err) {
+    
+  }
 }

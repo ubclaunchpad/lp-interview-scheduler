@@ -4,12 +4,11 @@ import { report } from "process";
 import {
   addEvent, bookEvent, getEvent,
 } from "../controllers/eventController";
-import { EventRequest } from "../data/models";
 
 export const eventRouter = express.Router();
 
 eventRouter.post("/", async (req, res) => {
-  const { organization, lead1, lead2, intervieweeEmail, length, expires}: EventRequest = req.body;
+  const { organization, lead1, lead2, intervieweeEmail, length, expires} = req.body;
   try {
     const ret = await addEvent(organization, lead1, lead2, intervieweeEmail, length, expires);
     res.send(ret);
