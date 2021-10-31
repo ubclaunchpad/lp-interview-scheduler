@@ -21,17 +21,8 @@ export interface Event {
   lead1: string;
   lead2: string;
   intervieweeEmail: string;
-  confirmedTime: Timestamp;
-  length: number;
-  expires: Timestamp;
-  eventUID: string; 
-}
-
-export interface EventRequest{
-  organization: string;
-  lead1: string;
-  lead2: string;
-  intervieweeEmail: string;
+  confirmedTime: string;
   length: number;
   expires: string;
+  eventUID: string; 
 }
