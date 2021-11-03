@@ -129,8 +129,10 @@ class DataAccess {
         await set(lead2["ref"], lead2["data"]);
       });
       console.log("Transaction success!");
+      return true;
     } catch (e) {
       console.log("Transaction failure:", e);
+      return false;
     }
   }
 }
