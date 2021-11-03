@@ -6,6 +6,7 @@ import {
   DocumentData,
   Firestore,
   getDoc,
+  runTransaction,
 } from "@firebase/firestore";
 import { setDoc } from "firebase/firestore";
 import { db } from "../../firebase/db";
@@ -61,6 +62,16 @@ class DataAccess {
     return res.data();
   }
 
+  async getInterviewerTimeRef(
+    organization: string,
+    userUID: string,
+    time: string
+  ): Promise<DocumentReference<DocumentData>> {
+    const interviewer_ref = await this.interviewerDocRef(organization, userUID);
+    const avail_collect = await collection(interviewer_ref, "availabilities");
+    return await doc(avail_collect, time);
+  }
+
   async setInterviewer(interviewer: Interviewer) {
     const orgExists = await this.checkOrganizationExists(
       interviewer.organization
@@ -76,6 +87,52 @@ class DataAccess {
     );
     await setDoc(doc, interviewer);
   }
+
+  // Book an interview with two leads using a transaction.
+  async bookInterview(
+    organization: string,
+    lead1_UID: string,
+    lead2_UID: string,
+    time: string
+  ) {
+    try {
+      await runTransaction(db, async (t) => {
+        async function verify(instance, lead_UID) {
+          const lead_ref = await instance.getInterviewerTimeRef(
+            organization,
+            lead_UID,
+            time
+          );
+          const lead_time = await t.get(lead_ref);
+          if (!lead_time.exists()) {
+            throw "Leads do not exist or do not have availability for set time.";
+          }
+          const lead_data = lead_time.data();
+          if (lead_data["isBooked"]) {
+            throw "Interviews already booked for one or both leads at that time.";
+          }
+
+          return {
+            ref: lead_ref,
+            data: lead_data,
+          };
+        }
+
+        async function set(lead_ref, lead_data) {
+          lead_data["isBooked"] = true;
+          await t.update(lead_ref, lead_data);
+        }
+
+        const lead1 = await verify(this, lead1_UID);
+        const lead2 = await verify(this, lead2_UID);
+        await set(lead1["ref"], lead1["data"]);
+        await set(lead2["ref"], lead2["data"]);
+      });
+      console.log("Transaction success!");
+    } catch (e) {
+      console.log("Transaction failure:", e);
+    }
+  }
 }
 
 export const dataAccess = new DataAccess(
@@ -83,3 +140,7 @@ export const dataAccess = new DataAccess(
   DB_COLLECTION,
   INTERVIEWER_COLLECTION
 );
+
+const test = new DataAccess(db, DB_COLLECTION, INTERVIEWER_COLLECTION);
+
+test.bookInterview("launchpad", "aymen123", "hello2", "Oct 24 11:30");
