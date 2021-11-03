@@ -11,7 +11,6 @@ interface Props {
 }
 
 class CalendarEvent {
-  title: string;
   allDay: boolean;
   start: Date;
   end: Date;
@@ -20,14 +19,12 @@ class CalendarEvent {
   tooltip?: string;
 
   constructor(
-    _title: string,
     _start: Date,
     _endDate: Date,
     _allDay?: boolean,
     _desc?: string,
     _resourceId?: string
   ) {
-    this.title = _title;
     this.allDay = _allDay || false;
     this.start = _start;
     this.end = _endDate;
@@ -46,16 +43,11 @@ export default function InterviewerCalendar({ localizer }: Props) {
     start: string | Date;
     end: string | Date;
   }): any => {
-    const title = window.prompt("New Event name");
+    let newEvent = {} as CalendarEvent;
+    newEvent.start = moment(start).toDate();
+    newEvent.end = moment(end).toDate();
 
-    if (title) {
-      let newEvent = {} as CalendarEvent;
-      newEvent.start = moment(start).toDate();
-      newEvent.end = moment(end).toDate();
-      newEvent.title = title;
-
-      setEvents([...events, newEvent]);
-    }
+    setEvents([...events, newEvent]);
   };
 
   return (
@@ -66,11 +58,10 @@ export default function InterviewerCalendar({ localizer }: Props) {
         events={events}
         defaultView="week"
         defaultDate={moment().toDate()}
-        onSelectEvent={(event) => alert(event.title)}
+        onSelectEvent={(event) => alert(event.start)}
         onSelectSlot={(slotInfo) => handleSelect(slotInfo)}
         startAccessor="start"
         endAccessor="end"
-        titleAccessor="title"
         style={{ height: 700 }}
       />
     </div>
