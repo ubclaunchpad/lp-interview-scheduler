@@ -142,7 +142,3 @@ export const dataAccess = new DataAccess(
   DB_COLLECTION,
   INTERVIEWER_COLLECTION
 );
-
-const test = new DataAccess(db, DB_COLLECTION, INTERVIEWER_COLLECTION);
-
-test.bookInterview("launchpad", "aymen123", "hello2", "Oct 24 11:30");
