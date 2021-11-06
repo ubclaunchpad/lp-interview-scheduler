@@ -12,3 +12,9 @@ export interface Availability {
   bookedByEmail: string;
   durationMins: number;
 }
+
+export interface EventAPI {
+  interviewerUID: string | undefined;
+  start: string;
+  end: string;
+}
