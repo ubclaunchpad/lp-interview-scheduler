@@ -13,7 +13,11 @@ export async function addEvent(
   length: number,
   expires: string
 ) {
-  const eventUID: string = createHash(intervieweeEmail, [lead1, lead2], expires);
+  const eventUID: string = createHash(
+    intervieweeEmail,
+    [lead1, lead2],
+    expires
+  );
   const confirmedTime = null;
 
   const event: Event = {
@@ -24,15 +28,14 @@ export async function addEvent(
     confirmedTime,
     length,
     expires,
-    eventUID
+    eventUID,
   };
 
   await dataAccess.setEvent(event);
 
- 
   return {
     link: `${get_uri}?organization=${event.organization}&eventUID=${event.eventUID}`,
-    event: event
+    event: event,
   };
 }
 
@@ -45,12 +48,11 @@ export async function getEvent(organization: string, eventUID: string) {
 export async function bookEvent(
   organization: string,
   eventUID: string,
-  requestedTime: string) {
-  try{
-    // call Jin's function to update availability for both leads, if succesful then update event, otherwise throw error 
+  requestedTime: string
+) {
+  try {
+    // call Jin's function to update availability for both leads, if succesful then update event, otherwise throw error
     // const updateLeads = runtransaction();
     await dataAccess.bookEvent(organization, eventUID, requestedTime);
-  } catch (err) {
-    
-  }
+  } catch (err) {}
 }

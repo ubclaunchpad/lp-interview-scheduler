@@ -24,5 +24,5 @@ export interface Event {
   confirmedTime: string;
   length: number;
   expires: string;
-  eventUID: string; 
+  eventUID: string;
 }
