@@ -20,8 +20,8 @@ eventRouter.post("/", async (req, res) => {
 
 eventRouter.get('/', async (req, res) => {
   // const { organization, eventUID } = req.body;
-  let organization:any= req.query.organization;
-  let eventUID:any = req.query.eventUID;
+  let organization:string = String(req.query.organization);
+  let eventUID:string = String(req.query.eventUID);
 
   try {
     const eventData = await getEvent(organization, eventUID);
