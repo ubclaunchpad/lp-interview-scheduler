@@ -1,4 +1,4 @@
-import {
+import { 
   collection,
   CollectionReference,
   doc,
@@ -6,11 +6,12 @@ import {
   DocumentData,
   Firestore,
   getDoc,
-} from "@firebase/firestore";
-import { setDoc } from "firebase/firestore";
+  getDocs,
+  setDoc 
+} from "firebase/firestore";
 import { db } from "../../firebase/db";
 
-import { Availability, Interviewer } from "./models";
+import {Availability, Interviewer } from "./models";
 
 const DB_COLLECTION = "aymendb-destroylater";
 const INTERVIEWER_COLLECTION = "interviewers";
@@ -57,19 +58,32 @@ class DataAccess {
   }
 
   async availabilityDocRef(
-    organization: string,
-    interviewerUID: string,
-    startTime: string
+      organization: string,
+      interviewerUID: string,
+      startTime: string,
   ): Promise<DocumentReference<DocumentData>> {
     return await doc(
+        this.rootCollection,
+        organization,
+        this.interviewerCollectionName,
+        interviewerUID,
+        this.availabilityCollectionName,
+        startTime
+    );
+  }
+
+  async allAvailabilitiesDocRef(
+    organization: string,
+    interviewerUID: string
+): Promise<DocumentReference<DocumentData>> {
+  return await doc(
       this.rootCollection,
       organization,
       this.interviewerCollectionName,
       interviewerUID,
-      this.availabilityCollectionName,
-      startTime
-    );
-  }
+      this.availabilityCollectionName
+  );
+}
 
   async getInterviewer(
     organization: string,
@@ -97,32 +111,43 @@ class DataAccess {
   }
 
   async getAvailability(
-    organization: string,
-    interviewerUID: string,
-    startTimeString: string
+      organization: string,
+      interviewerUID: string,
+      startTimeString: string,
   ): Promise<DocumentData> {
-    const doc = await this.availabilityDocRef(
-      organization,
-      interviewerUID,
-      startTimeString
-    );
+    const doc = await this.availabilityDocRef(organization, interviewerUID, startTimeString);
     const res = await getDoc(doc);
     return res.data();
   }
 
+
+  async getAllAvailabilities(
+    organization: string,
+    interviewerUID: string
+): Promise<DocumentData> {
+  const docCollection = await getDocs(collection(
+    this.rootCollection,
+    organization,
+    this.interviewerCollectionName,
+    interviewerUID,
+    this.availabilityCollectionName
+));
+  return docCollection.docs.map(doc => doc.data());
+}
+
   async setAvailability(availability: Availability, organization: string) {
     const doc = await this.availabilityDocRef(
-      organization,
-      availability.interviewerUID,
-      availability.startTime
+        organization,
+        availability.interviewerUID,
+        availability.startTime
     );
     await setDoc(doc, availability);
   }
 }
 
 export const dataAccess = new DataAccess(
-  db,
-  DB_COLLECTION,
-  INTERVIEWER_COLLECTION,
-  AVAILABILITY_COLLECTION
+    db,
+    DB_COLLECTION,
+    INTERVIEWER_COLLECTION,
+    AVAILABILITY_COLLECTION
 );
