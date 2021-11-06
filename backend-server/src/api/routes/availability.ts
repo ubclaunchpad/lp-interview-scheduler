@@ -4,13 +4,15 @@ import {
   getAvailability,
   AddAvailabilityBody,
   GetAvailabilityBody,
-  getAllAvailabilities
+  getAllAvailabilities,
+  AddMultipleAvailablitiesBody,
+  addAvailabilities,
 } from "../controllers/availabilityController";
 import { Availability } from "../data/models";
 
 export const availabilityRouter = express.Router();
 
-availabilityRouter.post("/", async (req, res) => {
+availabilityRouter.post("/single", async (req, res) => {
   try {
     const body: AddAvailabilityBody = {
       organization: req.body.organization,
@@ -25,6 +27,24 @@ availabilityRouter.post("/", async (req, res) => {
     await addAvailability(body);
     res.send(
       `A timeslot at ${body.startTime} has been added to interviewer ${body.interviewerUID}'s availability`
+    );
+  } catch (err) {
+    res.status(500).send(`error processing request: ${err}`);
+  }
+});
+
+availabilityRouter.post("/multiple", async (req, res) => {
+  try {
+    const body: AddMultipleAvailablitiesBody = {
+      eventsAPI: req.body.eventsAPI,
+      interviewerUID: req.body.interviewerUID,
+      organization: req.body.organization,
+    };
+    if (!Object.values(body).every((field) => field != null))
+      throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
+    await addAvailabilities(body);
+    res.send(
+      `${body.eventsAPI.length} timeslots have been added to ${body.interviewerUID}'s availabilities`
     );
   } catch (err) {
     res.status(500).send(`error processing request: ${err}`);
@@ -52,12 +72,15 @@ availabilityRouter.get("/", async (req, res) => {
 });
 
 availabilityRouter.get("/allAvailabilities", async (req, res) => {
-    const organization = req.query.organization as string;
-    const interviewerUID = req.query.interviewerUID as string;
-    try {
-        const availabilityData = await getAllAvailabilities(organization, interviewerUID);
-        res.send(availabilityData);
-    } catch (err) {
-        res.send(`error processing request: ${err}`);
-    }
+  const organization = req.query.organization as string;
+  const interviewerUID = req.query.interviewerUID as string;
+  try {
+    const availabilityData = await getAllAvailabilities(
+      organization,
+      interviewerUID
+    );
+    res.send(availabilityData);
+  } catch (err) {
+    res.send(`error processing request: ${err}`);
+  }
 });
