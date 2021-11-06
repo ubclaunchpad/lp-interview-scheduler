@@ -1,4 +1,4 @@
-# lp-interview-schedular backend
+# lp-interview-scheduler backend
 
 ### Installing Dependencies
 

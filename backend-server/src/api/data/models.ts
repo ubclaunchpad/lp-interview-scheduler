@@ -4,3 +4,11 @@ export interface Interviewer {
   email: string;
   name: string;
 }
+
+export interface Availability {
+  interviewerUID: string;
+  startTime: string;
+  isBooked: boolean;
+  bookedByEmail: string;
+  durationMins: number;
+}
