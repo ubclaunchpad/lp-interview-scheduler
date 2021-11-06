@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase/db";
 
-import {Availability, Interviewer } from "./models";
+import { Availability, Interviewer } from "./models";
 
 const DB_COLLECTION = "aymendb-destroylater";
 const INTERVIEWER_COLLECTION = "interviewers";
@@ -111,11 +111,15 @@ class DataAccess {
   }
 
   async getAvailability(
-      organization: string,
-      interviewerUID: string,
-      startTimeString: string,
+    organization: string,
+    interviewerUID: string,
+    startTimeString: string
   ): Promise<DocumentData> {
-    const doc = await this.availabilityDocRef(organization, interviewerUID, startTimeString);
+    const doc = await this.availabilityDocRef(
+      organization,
+      interviewerUID,
+      startTimeString
+    );
     const res = await getDoc(doc);
     return res.data();
   }
@@ -146,8 +150,8 @@ class DataAccess {
 }
 
 export const dataAccess = new DataAccess(
-    db,
-    DB_COLLECTION,
-    INTERVIEWER_COLLECTION,
-    AVAILABILITY_COLLECTION
+  db,
+  DB_COLLECTION,
+  INTERVIEWER_COLLECTION,
+  AVAILABILITY_COLLECTION
 );
