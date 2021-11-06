@@ -30,6 +30,7 @@ export async function addEvent(
 
   await dataAccess.setEvent(event);
 
+ 
   return {
     link: `${get_uri}?organization=${event.organization}&eventUID=${event.eventUID}`,
     event: event
