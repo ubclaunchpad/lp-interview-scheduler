@@ -50,17 +50,17 @@ async function beforeEach() {
   // transactionTest1 (doc) -> availabilities (collection) -> Time1 (doc) -> isBooked : False
   //                                                       -> Time2 (doc) -> isBooked : False
   // Interviewer 2:
-  // transactionTest1 (doc) -> availabilities (collection) -> Time1 (doc) -> isBooked : False
+  // transactionTest2 (doc) -> availabilities (collection) -> Time1 (doc) -> isBooked : False
   //                                                       -> Time2 (doc) -> isBooked : True
   // Interviewer 3:
-  // transactionTest1 (doc) -> availabilities (collection) -> Time1 (doc) -> isBooked : False
-  //                                                       -> Time2 (doc) -> isBooked : True
+  // transactionTest3 (doc) -> availabilities (collection) -> Time1 (doc) -> isBooked : False
+  //                                                       -> Time2 (doc) -> isBooked : False
   await setTime(Interviewer1.userUID, "Time1", false);
   await setTime(Interviewer1.userUID, "Time2", false);
   await setTime(Interviewer2.userUID, "Time1", false);
   await setTime(Interviewer2.userUID, "Time2", true);
   await setTime(Interviewer3.userUID, "Time1", false);
-  await setTime(Interviewer3.userUID, "Time2", true);
+  await setTime(Interviewer3.userUID, "Time2", false);
 }
 
 // Attempt a single transaction and await it
@@ -69,7 +69,7 @@ async function testTransactionSuccessTwo() {
   const res = await dataAccess.bookInterview(
     "launchpad",
     ["transactionTest1", "transactionTest2"],
-    "Time1"
+    ["Time1"]
   );
   console.log("Done Success Test!");
   console.log(res);
@@ -82,7 +82,7 @@ async function testTransactionFailure() {
   const res = await dataAccess.bookInterview(
     "launchpad",
     ["transactionTest1", "transactionTest2"],
-    "Time2"
+    ["Time2"]
   );
   console.log("Done Failure Test!");
   console.log(res);
@@ -101,17 +101,17 @@ async function testMultipleTransactions() {
   const res1 = dataAccess.bookInterview(
     "launchpad",
     ["transactionTest1", "transactionTest2"],
-    "Time1"
+    ["Time1"]
   );
   const res2 = dataAccess.bookInterview(
     "launchpad",
     ["transactionTest1", "transactionTest3"],
-    "Time1"
+    ["Time1"]
   );
   const res3 = dataAccess.bookInterview(
     "launchpad",
     ["transactionTest2", "transactionTest3"],
-    "Time1"
+    ["Time1"]
   );
   console.log("Called multiple transactions w/o await..");
   console.log(
@@ -119,6 +119,18 @@ async function testMultipleTransactions() {
   );
   // Result: Time1 should be booked for exactly 2 out of 3 interviewers. Should output 2 failures
   // and one success.
+}
+
+async function testMultipleTimes() {
+  await beforeEach();
+  const res = await dataAccess.bookInterview(
+    "launchpad",
+    ["transactionTest1", "transactionTest3"],
+    ["Time1", "Time2"]
+  );
+  console.log("Called multiple time test...");
+  console.log(res);
+  // Result: Both time1 and time2 should be booked for interviewers 1 and 3.
 }
 
 async function runAllTests() {
@@ -129,6 +141,8 @@ async function runAllTests() {
     await testTransactionFailure();
     console.log("Running multiple transaction test...");
     await testMultipleTransactions();
+    console.log("Running multiple time test...");
+    await testMultipleTimes();
   } catch (e) {
     console.log("Exception thrown! Test failed.");
   }

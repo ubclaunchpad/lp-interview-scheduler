@@ -91,14 +91,12 @@ class DataAccess {
   // Book an interview with two leads using a transaction.
   async bookInterview(
     organization: string,
-    // lead1_UID: string,
-    // lead2_UID: string,
     lead_ids: Array<string>,
-    time: string
+    times: Array<string>
   ) {
     try {
       await runTransaction(db, async (t) => {
-        async function verify(instance, lead_UID) {
+        async function verify(instance, lead_UID, time) {
           const lead_ref = await instance.getInterviewerTimeRef(
             organization,
             lead_UID,
@@ -106,11 +104,11 @@ class DataAccess {
           );
           const lead_time = await t.get(lead_ref);
           if (!lead_time.exists()) {
-            throw "Leads do not exist or do not have availability for set time.";
+            throw "Leads do not exist or do not have specified availability for one of requested times.";
           }
           const lead_data = lead_time.data();
           if (lead_data["isBooked"]) {
-            throw "Interviews already booked for one or both leads at that time.";
+            throw "Interviews already booked for one or both leads at one of requested times.";
           }
 
           return {
@@ -126,18 +124,15 @@ class DataAccess {
 
         let lead_data_array = [];
         for (var id of lead_ids) {
-          const lead_obj = await verify(this, id);
-          lead_data_array.push(lead_obj);
+          for (var time of times) {
+            const lead_obj = await verify(this, id, time);
+            lead_data_array.push(lead_obj);
+          }
         }
 
         for (var lead of lead_data_array) {
           await set(lead["ref"], lead["data"]);
         }
-
-        // const lead1 = await verify(this, lead1_UID);
-        // const lead2 = await verify(this, lead2_UID);
-        // await set(lead1["ref"], lead1["data"]);
-        // await set(lead2["ref"], lead2["data"]);
       });
       console.log("Transaction success!");
       return true;
