@@ -64,12 +64,11 @@ async function beforeEach() {
 }
 
 // Attempt a single transaction and await it
-async function testTransactionSuccess() {
+async function testTransactionSuccessTwo() {
   await beforeEach();
   const res = await dataAccess.bookInterview(
     "launchpad",
-    "transactionTest1",
-    "transactionTest2",
+    ["transactionTest1", "transactionTest2"],
     "Time1"
   );
   console.log("Done Success Test!");
@@ -82,8 +81,7 @@ async function testTransactionFailure() {
   await beforeEach();
   const res = await dataAccess.bookInterview(
     "launchpad",
-    "transactionTest1",
-    "transactionTest2",
+    ["transactionTest1", "transactionTest2"],
     "Time2"
   );
   console.log("Done Failure Test!");
@@ -102,20 +100,17 @@ async function testMultipleTransactions() {
   // Call 3: Interviewer1, Interviewer3, Time2
   const res1 = dataAccess.bookInterview(
     "launchpad",
-    "transactionTest1",
-    "transactionTest2",
+    ["transactionTest1", "transactionTest2"],
     "Time1"
   );
   const res2 = dataAccess.bookInterview(
     "launchpad",
-    "transactionTest1",
-    "transactionTest3",
+    ["transactionTest1", "transactionTest3"],
     "Time1"
   );
   const res3 = dataAccess.bookInterview(
     "launchpad",
-    "transactionTest2",
-    "transactionTest3",
+    ["transactionTest2", "transactionTest3"],
     "Time1"
   );
   console.log("Called multiple transactions w/o await..");
@@ -127,9 +122,16 @@ async function testMultipleTransactions() {
 }
 
 async function runAllTests() {
-  await testTransactionSuccess();
-  await testTransactionFailure();
-  await testMultipleTransactions();
+  try {
+    console.log("Running two success test...");
+    await testTransactionSuccessTwo();
+    console.log("Running failure test...");
+    await testTransactionFailure();
+    console.log("Running multiple transaction test...");
+    await testMultipleTransactions();
+  } catch (e) {
+    console.log("Exception thrown! Test failed.");
+  }
 }
 
 runAllTests();

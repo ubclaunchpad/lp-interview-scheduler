@@ -91,8 +91,9 @@ class DataAccess {
   // Book an interview with two leads using a transaction.
   async bookInterview(
     organization: string,
-    lead1_UID: string,
-    lead2_UID: string,
+    // lead1_UID: string,
+    // lead2_UID: string,
+    lead_ids: Array<string>,
     time: string
   ) {
     try {
@@ -123,10 +124,20 @@ class DataAccess {
           await t.update(lead_ref, lead_data);
         }
 
-        const lead1 = await verify(this, lead1_UID);
-        const lead2 = await verify(this, lead2_UID);
-        await set(lead1["ref"], lead1["data"]);
-        await set(lead2["ref"], lead2["data"]);
+        let lead_data_array = [];
+        for (var id of lead_ids) {
+          const lead_obj = await verify(this, id);
+          lead_data_array.push(lead_obj);
+        }
+
+        for (var lead of lead_data_array) {
+          await set(lead["ref"], lead["data"]);
+        }
+
+        // const lead1 = await verify(this, lead1_UID);
+        // const lead2 = await verify(this, lead2_UID);
+        // await set(lead1["ref"], lead1["data"]);
+        // await set(lead2["ref"], lead2["data"]);
       });
       console.log("Transaction success!");
       return true;
