@@ -4,6 +4,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
+import { formatISO } from "date-fns";
 
 // Setup the localizer by providing the moment (or globalize) Object
 // to the correct localizer.
@@ -14,27 +15,43 @@ interface Props {
 
 interface CalendarEvent {
   interviewerUID: string | undefined;
-  start: string | Date;
-  end: string | Date;
+  start: Date; // Date.toISOString()
+  end: Date;
+}
+
+interface EventAPI {
+  interviewerUID: string | undefined;
+  start: string;
+  end: string;
 }
 
 export default function InterviewerCalendar({ localizer }: Props) {
   const [events, setEvents] = React.useState([] as CalendarEvent[]);
+  const [eventsAPI, setEventsAPI] = React.useState([] as EventAPI[]);
   const { user } = useAuth();
+  const interviewerUID = user?.uid;
 
   const handleSelect = ({
     start,
     end,
   }: {
+    // component passes in Dates
     start: string | Date;
     end: string | Date;
   }): any => {
     let newEvent = {} as CalendarEvent;
-    newEvent.interviewerUID = user?.uid;
+    newEvent.interviewerUID = interviewerUID;
     newEvent.start = moment(start).toDate();
     newEvent.end = moment(end).toDate();
 
     setEvents([...events, newEvent]);
+
+    let newEventAPI = {} as EventAPI;
+    newEventAPI.interviewerUID = newEvent.interviewerUID;
+    newEventAPI.start = formatISO(newEvent.start);
+    newEventAPI.end = formatISO(newEvent.end);
+
+    setEventsAPI([...eventsAPI, newEventAPI]);
   };
 
   const handleClick = async (
@@ -43,18 +60,19 @@ export default function InterviewerCalendar({ localizer }: Props) {
   ): Promise<void> => {
     e.preventDefault();
 
-    // const submitCalendarEvents = {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ events, user.uid }),
-    // };
+    console.log(JSON.stringify({ eventsAPI, interviewerUID }));
 
-    // const response = await fetch("/", submitCalendarEvents);
-    // const data = await response.json();
-    // console.log(data);
+    const submitCalendarEvents = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventsAPI, interviewerUID }),
+    };
+
+    const response = await fetch("/", submitCalendarEvents);
+    const data = await response.json();
+    console.log(data);
 
     alert("events saved yay!");
-    console.log(JSON.stringify(events));
   };
 
   return (
