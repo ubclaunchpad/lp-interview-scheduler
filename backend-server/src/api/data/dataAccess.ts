@@ -9,18 +9,13 @@ import {
   Timestamp,
 } from "@firebase/firestore";
 import { setDoc } from "firebase/firestore";
-
 import { db } from "../../firebase/db";
-
 import { Availability, Interviewer, Event } from "./models";
-
 
 const DB_COLLECTION = "aymendb-destroylater";
 const INTERVIEWER_COLLECTION = "interviewers";
 const AVAILABILITY_COLLECTION = "availabilities";
 const EVENT_COLLECTION = "events";
-
-
 
 class DataAccess {
   db: Firestore;
@@ -127,7 +122,6 @@ class DataAccess {
     );
     await setDoc(doc, availability);
   }
-
 
   async eventDocRef( 
     organization: string,

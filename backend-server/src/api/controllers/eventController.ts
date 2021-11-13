@@ -1,18 +1,15 @@
-import { Timestamp } from "@firebase/firestore";
 import { createHash } from "../../util/createHash";
 import { dataAccess } from "../data/dataAccess";
 import { Event } from "../data/models";
 
-const get_uri: string = "localhost:8080/v1/event/";
-
 export async function addEvent(body: AddEventBody) {
-  const leadNames = body.leads.map((lead) => {
-    return lead.name;
+  const leadUIDs = body.leads.map((lead) => {
+    return lead.leadUID;
   });
 
   const eventUID: string = createHash(
     body.intervieweeEmail,
-    leadNames,
+    leadUIDs,
     body.expires
   );
 

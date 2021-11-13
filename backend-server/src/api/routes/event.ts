@@ -1,6 +1,4 @@
-import { Timestamp } from "@firebase/firestore";
 import express from "express";
-import { report } from "process";
 import {
   addEvent,
   AddEventBody,
@@ -11,7 +9,6 @@ import {
 export const eventRouter = express.Router();
 
 eventRouter.post("/", async (req, res) => {
-  const event: Event = req.body;
   try {
     const body: AddEventBody = {
       organization: req.body.organization,
@@ -30,9 +27,6 @@ eventRouter.post("/", async (req, res) => {
 });
 
 eventRouter.get("/", async (req, res) => {
-  let organization: string = String(req.query.organization);
-  let eventUID: string = String(req.query.eventUID);
-
   try {
     const body: GetEventBody = {
       organization: req.query.organization as string,
