@@ -123,7 +123,7 @@ class DataAccess {
     await setDoc(doc, availability);
   }
 
-  async eventDocRef( 
+  async eventDocRef(
     organization: string,
     eventUID: string
   ): Promise<DocumentReference<DocumentData>> {

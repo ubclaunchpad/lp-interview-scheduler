@@ -7,7 +7,6 @@ export interface Interviewer {
   name: string;
 }
 
-
 export interface Availability {
   interviewerUID: string;
   startTime: string;
