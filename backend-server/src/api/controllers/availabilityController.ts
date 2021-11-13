@@ -1,4 +1,4 @@
-import { differenceInMinutes, formatISO } from "date-fns";
+import { add, differenceInMinutes, formatISO } from "date-fns";
 import { dataAccess } from "../data/dataAccess";
 import { Availability, EventAPI } from "../data/models";
 
@@ -65,6 +65,17 @@ export async function getAllAvailabilities(
   return await dataAccess.getAllAvailabilities(organization, interviewerUID);
 }
 
+export async function getAllEvents(
+  organization: string,
+  interviewerUID: string
+): Promise<EventAPI[]> {
+  const allAvailabilities = (await dataAccess.getAllAvailabilities(
+    organization,
+    interviewerUID
+  )) as Availability[];
+  return transformCalendarEvents(allAvailabilities);
+}
+
 export function transformCalendarAvaialabilities(
   calEvents: EventAPI[]
 ): Availability[] {
@@ -74,6 +85,17 @@ export function transformCalendarAvaialabilities(
   }
 
   return availabilities;
+}
+
+export function transformCalendarEvents(
+  availabilities: Availability[]
+): EventAPI[] {
+  const events: EventAPI[] = [];
+  for (const availability of availabilities) {
+    events.push(transformSingleCalendarEvent(availability));
+  }
+
+  return events;
 }
 
 function transformSingleCalendarAvailability(calEvent: EventAPI): Availability {
@@ -94,4 +116,20 @@ function transformSingleCalendarAvailability(calEvent: EventAPI): Availability {
   };
 
   return availability;
+}
+
+function transformSingleCalendarEvent(availability: Availability): EventAPI {
+  const startDate: Date = new Date(availability.startTime);
+  const endDate: Date = add(startDate, { minutes: availability.durationMins });
+  const start = formatISO(startDate);
+  const end = formatISO(endDate);
+  const interviewerUID = availability.interviewerUID;
+
+  const event: EventAPI = {
+    interviewerUID,
+    start,
+    end,
+  };
+
+  return event;
 }

@@ -7,6 +7,7 @@ import {
   getAllAvailabilities,
   AddMultipleAvailablitiesBody,
   addAvailabilities,
+  getAllEvents,
 } from "../controllers/availabilityController";
 import { Availability } from "../data/models";
 
@@ -80,6 +81,17 @@ availabilityRouter.get("/allAvailabilities", async (req, res) => {
       interviewerUID
     );
     res.send(availabilityData);
+  } catch (err) {
+    res.send(`error processing request: ${err}`);
+  }
+});
+
+availabilityRouter.get("/allEvents", async (req, res) => {
+  const organization = req.query.organization as string;
+  const interviewerUID = req.query.interviewerUID as string;
+  try {
+    const eventsData = await getAllEvents(organization, interviewerUID);
+    res.send(eventsData);
   } catch (err) {
     res.send(`error processing request: ${err}`);
   }

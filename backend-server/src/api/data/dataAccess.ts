@@ -1,4 +1,4 @@
-import { 
+import {
   collection,
   CollectionReference,
   doc,
@@ -7,7 +7,7 @@ import {
   Firestore,
   getDoc,
   getDocs,
-  setDoc 
+  setDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase/db";
 
@@ -58,32 +58,32 @@ class DataAccess {
   }
 
   async availabilityDocRef(
-      organization: string,
-      interviewerUID: string,
-      startTime: string,
+    organization: string,
+    interviewerUID: string,
+    startTime: string
   ): Promise<DocumentReference<DocumentData>> {
     return await doc(
-        this.rootCollection,
-        organization,
-        this.interviewerCollectionName,
-        interviewerUID,
-        this.availabilityCollectionName,
-        startTime
+      this.rootCollection,
+      organization,
+      this.interviewerCollectionName,
+      interviewerUID,
+      this.availabilityCollectionName,
+      startTime
     );
   }
 
   async allAvailabilitiesDocRef(
     organization: string,
     interviewerUID: string
-): Promise<DocumentReference<DocumentData>> {
-  return await doc(
+  ): Promise<DocumentReference<DocumentData>> {
+    return await doc(
       this.rootCollection,
       organization,
       this.interviewerCollectionName,
       interviewerUID,
       this.availabilityCollectionName
-  );
-}
+    );
+  }
 
   async getInterviewer(
     organization: string,
@@ -124,26 +124,27 @@ class DataAccess {
     return res.data();
   }
 
-
   async getAllAvailabilities(
     organization: string,
     interviewerUID: string
-): Promise<DocumentData> {
-  const docCollection = await getDocs(collection(
-    this.rootCollection,
-    organization,
-    this.interviewerCollectionName,
-    interviewerUID,
-    this.availabilityCollectionName
-));
-  return docCollection.docs.map(doc => doc.data());
-}
+  ): Promise<DocumentData[]> {
+    const docCollection = await getDocs(
+      collection(
+        this.rootCollection,
+        organization,
+        this.interviewerCollectionName,
+        interviewerUID,
+        this.availabilityCollectionName
+      )
+    );
+    return docCollection.docs.map((doc) => doc.data());
+  }
 
   async setAvailability(availability: Availability, organization: string) {
     const doc = await this.availabilityDocRef(
-        organization,
-        availability.interviewerUID,
-        availability.startTime
+      organization,
+      availability.interviewerUID,
+      availability.startTime
     );
     await setDoc(doc, availability);
   }
