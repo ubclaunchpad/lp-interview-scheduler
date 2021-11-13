@@ -89,18 +89,10 @@ class DataAccess {
     return res.data();
   }
 
-  async setEvent(event: Event) {
-    const doc = await this.eventDocRef(event.organization, event.eventUID);
+  async setEvent(event: Event, organization: string) {
+    const doc = await this.eventDocRef(organization, event.eventUID);
 
     await setDoc(doc, event);
-  }
-  async bookEvent(
-    organization: string,
-    eventUID: string,
-    requestedTime: string
-  ) {
-    // waiting for Jin's transaction
-    Promise.reject("waiting for transaction");
   }
 }
 

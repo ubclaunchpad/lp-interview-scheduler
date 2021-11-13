@@ -8,9 +8,7 @@ export interface Interviewer {
 }
 
 export interface Event {
-  organization: string;
-  lead1: string;
-  lead2: string;
+  leads: Array<{ leadUID: string; name: string }>;
   intervieweeEmail: string;
   confirmedTime: string;
   length: number;

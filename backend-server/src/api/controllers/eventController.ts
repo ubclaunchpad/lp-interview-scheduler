@@ -5,54 +5,44 @@ import { Event } from "../data/models";
 
 const get_uri: string = "localhost:8080/v1/event/";
 
-export async function addEvent(
-  organization: string,
-  lead1: string,
-  lead2: string,
-  intervieweeEmail: string,
-  length: number,
-  expires: string
-) {
+export async function addEvent(body: AddEventBody) {
+  const leadNames = body.leads.map((lead) => {
+    return lead.name;
+  });
+
   const eventUID: string = createHash(
-    intervieweeEmail,
-    [lead1, lead2],
-    expires
+    body.intervieweeEmail,
+    leadNames,
+    body.expires
   );
-  const confirmedTime = null;
 
   const event: Event = {
-    organization,
-    lead1,
-    lead2,
-    intervieweeEmail,
-    confirmedTime,
-    length,
-    expires,
-    eventUID,
+    leads: body.leads,
+    intervieweeEmail: body.intervieweeEmail,
+    confirmedTime: null,
+    length: body.length,
+    expires: body.expires,
+    eventUID: eventUID,
   };
 
-  await dataAccess.setEvent(event);
+  await dataAccess.setEvent(event, body.organization);
 
-  return {
-    link: `${get_uri}?organization=${event.organization}&eventUID=${event.eventUID}`,
-    event: event,
-  };
+  return event;
 }
 
 export async function getEvent(organization: string, eventUID: string) {
-  const eventData = await dataAccess.getEvent(organization, eventUID);
-  eventData["expires"] = eventData["expires"].toDate().toString();
-  return eventData;
+  return await dataAccess.getEvent(organization, eventUID);
 }
 
-export async function bookEvent(
-  organization: string,
-  eventUID: string,
-  requestedTime: string
-) {
-  try {
-    // call Jin's function to update availability for both leads, if succesful then update event, otherwise throw error
-    // const updateLeads = runtransaction();
-    await dataAccess.bookEvent(organization, eventUID, requestedTime);
-  } catch (err) {}
+export interface AddEventBody {
+  organization: string;
+  leads: Array<{ leadUID: string; name: string }>;
+  intervieweeEmail: string;
+  length: number;
+  expires: string;
+}
+
+export interface GetEventBody {
+  organization: string;
+  eventUID: string;
 }

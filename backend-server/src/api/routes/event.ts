@@ -1,27 +1,31 @@
 import { Timestamp } from "@firebase/firestore";
 import express from "express";
 import { report } from "process";
-import { addEvent, bookEvent, getEvent } from "../controllers/eventController";
+import {
+  addEvent,
+  AddEventBody,
+  getEvent,
+  GetEventBody,
+} from "../controllers/eventController";
 
 export const eventRouter = express.Router();
 
 eventRouter.post("/", async (req, res) => {
-  const { organization, lead1, lead2, intervieweeEmail, length, expires } =
-    req.body;
+  const event: Event = req.body;
   try {
-    const ret = await addEvent(
-      organization,
-      lead1,
-      lead2,
-      intervieweeEmail,
-      length,
-      expires
-    );
-    res.status(200);
+    const body: AddEventBody = {
+      organization: req.body.organization,
+      leads: req.body.leads,
+      intervieweeEmail: req.body.intervieweeEmail,
+      length: req.body.length,
+      expires: req.body.expires,
+    };
+    if (!Object.values(body).every((field) => field != null))
+      throw new Error(`Incomplete Request Body:  ${JSON.stringify(body)}`);
+    const ret = await addEvent(body);
     res.send(ret);
   } catch (err) {
-    res.status(400);
-    res.send(`error processing request: ${err}`);
+    res.status(500).send(`error processing request: ${err}`);
   }
 });
 
@@ -30,23 +34,15 @@ eventRouter.get("/", async (req, res) => {
   let eventUID: string = String(req.query.eventUID);
 
   try {
-    const eventData = await getEvent(organization, eventUID);
-    res.status(200);
+    const body: GetEventBody = {
+      organization: req.query.organization as string,
+      eventUID: req.query.eventUID as string,
+    };
+    if (!Object.values(body).every((field) => field != null))
+      throw new Error(`Incomplete Request Body:  ${JSON.stringify(body)}`);
+    const eventData = await getEvent(body.organization, body.eventUID);
     res.send(eventData);
   } catch (err) {
-    res.status(400);
-    res.send(`error processing request: ${err}`);
-  }
-});
-
-eventRouter.patch("/", async (req, res) => {
-  const { organization, eventUID, requestedTime } = req.body;
-  try {
-    await bookEvent(organization, eventUID, requestedTime);
-    res.status(200);
-    res.send(`successfully booked for interview at ${requestedTime}`);
-  } catch (err) {
-    res.status(400);
-    res.send(`error processing request: ${err}`);
+    res.status(500).send(`error processing request: ${err}`);
   }
 });
