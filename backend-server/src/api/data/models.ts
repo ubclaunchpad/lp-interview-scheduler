@@ -12,3 +12,12 @@ export interface Availability {
   bookedByEmail: string;
   durationMins: number;
 }
+
+export interface Event {
+  leads: Array<{ leadUID: string; name: string }>;
+  intervieweeEmail: string;
+  confirmedTime: string;
+  length: number;
+  expires: string;
+  eventUID: string;
+}
