@@ -6,7 +6,7 @@ import {
   DocumentData,
   Firestore,
   getDoc,
-  Timestamp,
+  getDocs,
 } from "@firebase/firestore";
 import { setDoc } from "firebase/firestore";
 import { db } from "../../firebase/db";
@@ -148,6 +148,14 @@ class DataAccess {
     const doc = await this.eventDocRef(organization, event.eventUID);
 
     await setDoc(doc, event);
+  }
+
+  async listEvents(organization: string): Promise<DocumentData[]> {
+    // return list all events in organization
+    const docCollection = await getDocs(
+      collection(this.rootCollection, organization, this.eventCollectionName)
+    );
+    return docCollection.docs.map((doc) => doc.data());
   }
 }
 
