@@ -13,7 +13,7 @@ export interface Availability {
   durationMins: number;
 }
 
-export interface CalendarAvailablity {
+export interface CalendarAvailability {
   interviewerUID: string | undefined;
   start: string;
   end: string;

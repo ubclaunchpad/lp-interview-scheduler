@@ -1,6 +1,6 @@
 import { add, differenceInMinutes, formatISO } from "date-fns";
 import { dataAccess } from "../data/dataAccess";
-import { Availability, CalendarAvailablity } from "../data/models";
+import { Availability, CalendarAvailability } from "../data/models";
 
 export interface AddAvailabilityBody {
   organization: string;
@@ -12,7 +12,7 @@ export interface AddAvailabilityBody {
 }
 
 export interface ReplaceAvailabilitiesBody {
-  eventsAPI: CalendarAvailablity[];
+  eventsAPI: CalendarAvailability[];
   interviewerUID: string;
   organization: string;
 }
@@ -48,7 +48,7 @@ export async function replaceAllAvailabilities(
 ) {
   const availabilities: Availability[] = makeMultipleAvailabilities(
     body.eventsAPI
-  );
+  ); 
 
   await dataAccess.deleteAvailabilityCollection(
     body.organization,
@@ -82,7 +82,7 @@ export async function getAllAvailabilities(
 export async function getAllCalendarAvailabilities(
   organization: string,
   interviewerUID: string
-): Promise<CalendarAvailablity[]> {
+): Promise<CalendarAvailability[]> {
   const availabilities = (await dataAccess.getAllAvailabilities(
     organization,
     interviewerUID
@@ -91,7 +91,7 @@ export async function getAllCalendarAvailabilities(
 }
 
 export function makeMultipleAvailabilities(
-  calendarAvailabilities: CalendarAvailablity[]
+  calendarAvailabilities: CalendarAvailability[]
 ): Availability[] {
   const availabilities: Availability[] = [];
   for (const calendarAvailability of calendarAvailabilities) {
@@ -103,8 +103,8 @@ export function makeMultipleAvailabilities(
 
 export function makeMultipleCalendarAvailabilities(
   availabilities: Availability[]
-): CalendarAvailablity[] {
-  const calendarAvailabilities: CalendarAvailablity[] = [];
+): CalendarAvailability[] {
+  const calendarAvailabilities: CalendarAvailability[] = [];
   for (const availability of availabilities) {
     calendarAvailabilities.push(makeSingleCalendarAvailability(availability));
   }
@@ -113,7 +113,7 @@ export function makeMultipleCalendarAvailabilities(
 }
 
 function makeSingleAvailability(
-  calendarAvailability: CalendarAvailablity
+  calendarAvailability: CalendarAvailability
 ): Availability {
   const startDate: Date = new Date(calendarAvailability.start);
   const endDate: Date = new Date(calendarAvailability.end);
@@ -136,14 +136,14 @@ function makeSingleAvailability(
 
 function makeSingleCalendarAvailability(
   availability: Availability
-): CalendarAvailablity {
+): CalendarAvailability {
   const startDate: Date = new Date(availability.startTime);
   const endDate: Date = add(startDate, { minutes: availability.durationMins });
   const start = formatISO(startDate);
   const end = formatISO(endDate);
   const interviewerUID = availability.interviewerUID;
 
-  const calendarAvailability: CalendarAvailablity = {
+  const calendarAvailability: CalendarAvailability = {
     interviewerUID,
     start,
     end,
