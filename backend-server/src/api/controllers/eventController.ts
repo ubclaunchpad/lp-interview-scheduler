@@ -33,9 +33,9 @@ export async function getEvent(organization: string, eventUID: string) {
 
 export async function getBookingCount(organization: string) {
   // get list of all documents under event collection for given organization
-  var allEvents = await dataAccess.listEvents(organization);
+  const allEvents = await dataAccess.listEvents(organization);
 
-  var bookingCounts: BookingCounts = {
+  const bookingCounts: BookingCounts = {
     organization: organization,
     leads: {},
   };
