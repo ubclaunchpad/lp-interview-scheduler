@@ -22,10 +22,6 @@ export interface GetAvailabilityParams {
   startTime: string;
 }
 
-export interface GetAllAvailabilitiesParams {
-  allAvailabilitiesBody: GetAvailabilityParams[];
-}
-
 export async function addAvailability(body: AddAvailabilityBody) {
   const availability: Availability = {
     interviewerUID: body.interviewerUID,
