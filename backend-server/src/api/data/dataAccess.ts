@@ -180,6 +180,7 @@ class DataAccess {
       );
       await deleteDoc(docRef);
     });
+  }
 
   async eventDocRef(
     organization: string,
