@@ -46,10 +46,10 @@ eventRouter.get("/", async (req, res) => {
 eventRouter.patch("/", async (req, res) => {
   try {
     const body: BookEventBody = {
-      organization: req.query.organization as string,
-      eventUID: req.query.eventUID as string,
-      leadUIDs: req.query.leads as string[],
-      times: req.query.times as string[],
+      organization: req.body.organization as string,
+      eventUID: req.body.eventUID as string,
+      leadUIDs: req.body.leads as string[],
+      times: req.body.times as string[],
     };
     if (!Object.values(body).every((field) => field != null))
       throw new Error(`Incomplete Request Body:  ${JSON.stringify(body)}`);

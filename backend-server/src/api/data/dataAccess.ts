@@ -154,8 +154,8 @@ class DataAccess {
   // Book an interview with two leads using a transaction.
   async bookInterview(
     organization: string,
-    leadUIDs: Array<string>,
-    timesToBook: Array<string>,
+    leadUIDs: string[],
+    timesToBook: string[],
     eventUID: string,
     startTime: string
   ) {
@@ -183,7 +183,7 @@ class DataAccess {
         }
 
         async function setAvailabilityT(t: Transaction, avail) {
-          avail["ref"]["isBooked"] = true;
+          avail["data"]["isBooked"] = true;
           await t.update(avail["ref"], avail["data"]);
         }
 
@@ -191,9 +191,10 @@ class DataAccess {
           t: Transaction,
           organization: string,
           eventUID: string,
-          startTime: string
+          startTime: string,
+          instance : any
         ) {
-          const eventRef = await this.eventDocRef(organization, eventUID);
+          const eventRef = await instance.eventDocRef(organization, eventUID);
           const eventDoc = await t.get(eventRef);
           const confirmedTime = await eventDoc.get("confirmedTime");
           if (confirmedTime == null) {
@@ -212,7 +213,7 @@ class DataAccess {
         }
 
         // Book Everything
-        await bookEvent(t, organization, eventUID, startTime);
+        await bookEvent(t, organization, eventUID, startTime, this);
         for (var avail of availabilitiesToBook) {
           await setAvailabilityT(t, avail);
         }
