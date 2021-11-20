@@ -40,6 +40,23 @@ export default function InterviewerCalendar({ localizer }: Props) {
     start: string | Date;
     end: string | Date;
   }): any => {
+    const shouldDelete = window.confirm("Would you like to remove this event?");
+    if (shouldDelete === true) {
+      setEvents(events.filter((event) => event.start !== start));
+      setEventsAPI(
+        eventsAPI.filter((event) => event.start !== formatISO(new Date(start)))
+      );
+    }
+  };
+
+  const handleCreate = ({
+    start,
+    end,
+  }: {
+    // component passes in Dates
+    start: string | Date;
+    end: string | Date;
+  }): any => {
     let newEvent = {} as CalendarEvent;
     newEvent.interviewerUID = interviewerUID;
     newEvent.start = moment(start).toDate();
@@ -125,8 +142,8 @@ export default function InterviewerCalendar({ localizer }: Props) {
           events={events}
           defaultView="week"
           defaultDate={moment().toDate()}
-          onSelectEvent={(event) => alert(event.start)}
-          onSelectSlot={(slotInfo) => handleSelect(slotInfo)}
+          onSelectEvent={(event) => handleSelect(event)}
+          onSelectSlot={(slotInfo) => handleCreate(slotInfo)}
           startAccessor="start"
           endAccessor="end"
           style={{ height: 700 }}
