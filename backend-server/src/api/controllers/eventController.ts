@@ -31,6 +31,23 @@ export async function getEvent(organization: string, eventUID: string) {
   return await dataAccess.getEvent(organization, eventUID);
 }
 
+export async function bookEvent(
+  organization: string,
+  eventUID: string,
+  lead_ids: Array<string>,
+  times: Array<string>) {
+      if (await dataAccess.bookInterview(organization, lead_ids, times)) {
+          // confirm that event is not already booked 
+          // do something if it is booked
+          // otherwise book the event
+          await dataAccess.bookEvent(organization, eventUID, times[0])
+          // do something if event booking is unsuccesful
+      } else {
+        // do something if lead booking is unsuccessful
+      }
+      // do something if succesful
+  }
+
 export interface AddEventBody {
   organization: string;
   leads: Array<{ leadUID: string; name: string }>;
@@ -42,4 +59,11 @@ export interface AddEventBody {
 export interface GetEventBody {
   organization: string;
   eventUID: string;
+}
+
+export interface BookEventBody {
+  organization: string;
+  eventUID: string;
+  lead_ids: Array<string>;
+  times: Array<string>;
 }
