@@ -8,8 +8,8 @@ export default function AuthenticatedApp() {
   return (
     <div className="App">
       woo hoo, you're authenticated now !
-      <Logout />
       <InterviewerCalendar localizer={momentLocalizer(moment)} />
+      <Logout />
     </div>
   );
 }

@@ -28,6 +28,7 @@ interface EventAPI {
 export default function InterviewerCalendar({ localizer }: Props) {
   const [events, setEvents] = React.useState([] as CalendarEvent[]);
   const [eventsAPI, setEventsAPI] = React.useState([] as EventAPI[]);
+  const [error, setError] = React.useState(false);
   const { user } = useAuth();
   const interviewerUID = user?.uid;
 
@@ -64,22 +65,62 @@ export default function InterviewerCalendar({ localizer }: Props) {
 
     const submitCalendarEvents = {
       method: "POST",
+      mode: "cors" as RequestMode,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ eventsAPI, interviewerUID }),
+      body: JSON.stringify({
+        eventsAPI,
+        interviewerUID,
+        organization: "launchpad",
+      }),
     };
 
-    const response = await fetch("/", submitCalendarEvents);
+    const response = await fetch(
+      "http://localhost:8080/v1/availability/multiple",
+      submitCalendarEvents
+    );
     const data = await response.json();
     console.log(data);
 
     alert("events saved yay!");
   };
 
+  const convertToCalendar = (event: EventAPI): CalendarEvent => {
+    let storedEvent = {} as CalendarEvent;
+    storedEvent.interviewerUID = event.interviewerUID;
+    storedEvent.start = new Date(event.start);
+    storedEvent.end = new Date(event.end);
+
+    return storedEvent;
+  };
+
+  React.useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch("http://localhost:8080/v1/availability/");
+        const data = await response.json();
+        // console.log(data);
+
+        // convert Data into CalendarEvent before set state
+        const storedEvents = data.map((event: EventAPI) =>
+          convertToCalendar(event)
+        );
+        setEvents(storedEvents);
+        setEventsAPI(data);
+      } catch (e) {
+        setError(true);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <>
-      <div>
+      {/* {error ? (
+        <div>Error occured.</div>
+      ) : ( */}
+      <>
         <Calendar
-          selectable={true}
+          selectable
           localizer={localizer}
           events={events}
           defaultView="week"
@@ -89,13 +130,18 @@ export default function InterviewerCalendar({ localizer }: Props) {
           startAccessor="start"
           endAccessor="end"
           style={{ height: 700 }}
-          min={new Date(2020, 11, 3, 7, 0, 0, 0)}
-          max={new Date(2020, 11, 3, 19, 0, 0, 0)}
+          min={new Date(2021, 11, 11, 7, 0)}
+          max={new Date(2021, 11, 11, 21, 0)}
+          // uncomment this for custom rendering of events
+          // components={{
+          //   event: existingEvents,
+          // }}
         />
-      </div>
-      <div>
-        <button onClick={(e) => handleClick(e, events)}>Save Changes</button>
-      </div>
+        <div>
+          <button onClick={(e) => handleClick(e, events)}>Save Changes</button>
+        </div>
+      </>
+      {/* )} */}
     </>
   );
 }
