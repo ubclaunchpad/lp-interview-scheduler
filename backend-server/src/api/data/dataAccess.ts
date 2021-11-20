@@ -150,7 +150,10 @@ class DataAccess {
     await setDoc(doc, availability);
   }
 
-  async deleteAvailabilityCollection(organization: string, interviewerUID: string) {
+  async deleteAvailabilityCollection(
+    organization: string,
+    interviewerUID: string
+  ) {
     const collectionRef = await getDocs(
       collection(
         this.rootCollection,
@@ -160,10 +163,17 @@ class DataAccess {
         this.availabilityCollectionName
       )
     );
-    const interviewerRef = await this.interviewerDocRef(organization, interviewerUID);
+    const interviewerRef = await this.interviewerDocRef(
+      organization,
+      interviewerUID
+    );
 
-    collectionRef.forEach(async (a) => {
-      const docRef = doc(interviewerRef, this.availabilityCollectionName, a.id);
+    collectionRef.forEach(async (availability) => {
+      const docRef = doc(
+        interviewerRef,
+        this.availabilityCollectionName,
+        availability.id
+      );
       await deleteDoc(docRef);
     });
   }

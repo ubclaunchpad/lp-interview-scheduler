@@ -42,18 +42,23 @@ export async function addAvailabilities(body: ReplaceAvailabilitiesBody) {
   const availabilitiesFromCalendarAvailabilities: Availability[] =
     makeMultipleAvailabilities(body.eventsAPI);
 
-    // change to use the replace function
   for (const availability of availabilitiesFromCalendarAvailabilities) {
     await dataAccess.setAvailability(availability, body.organization);
   }
 }
 
-export async function replaceAllAvailabilities(body: ReplaceAvailabilitiesBody) {
-  const availabilities: Availability[] =
-    makeMultipleAvailabilities(body.eventsAPI);
+export async function replaceAllAvailabilities(
+  body: ReplaceAvailabilitiesBody
+) {
+  const availabilities: Availability[] = makeMultipleAvailabilities(
+    body.eventsAPI
+  );
 
-  await dataAccess.deleteAvailabilityCollection(body.organization, body.interviewerUID);
-  
+  await dataAccess.deleteAvailabilityCollection(
+    body.organization,
+    body.interviewerUID
+  );
+
   for (const availability of availabilities) {
     await dataAccess.setAvailability(availability, body.organization);
   }
@@ -111,7 +116,9 @@ export function makeMultipleCalendarAvailabilities(
   return calendarAvailabilities;
 }
 
-function makeSingleAvailability(calendarAvailability: CalendarAvailablity): Availability {
+function makeSingleAvailability(
+  calendarAvailability: CalendarAvailablity
+): Availability {
   const startDate: Date = new Date(calendarAvailability.start);
   const endDate: Date = new Date(calendarAvailability.end);
   const durationMins = differenceInMinutes(endDate, startDate);
@@ -131,7 +138,9 @@ function makeSingleAvailability(calendarAvailability: CalendarAvailablity): Avai
   return availability;
 }
 
-function makeSingleCalendarAvailability(availability: Availability): CalendarAvailablity {
+function makeSingleCalendarAvailability(
+  availability: Availability
+): CalendarAvailablity {
   const startDate: Date = new Date(availability.startTime);
   const endDate: Date = add(startDate, { minutes: availability.durationMins });
   const start = formatISO(startDate);

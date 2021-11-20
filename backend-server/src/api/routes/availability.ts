@@ -91,7 +91,10 @@ availabilityRouter.get("/calendarAvailabilities", async (req, res) => {
   const organization = req.query.organization as string;
   const interviewerUID = req.query.interviewerUID as string;
   try {
-    const calendarAvailabilitiesData = await getAllCalendarAvailabilities(organization, interviewerUID);
+    const calendarAvailabilitiesData = await getAllCalendarAvailabilities(
+      organization,
+      interviewerUID
+    );
     res.send(calendarAvailabilitiesData);
   } catch (err) {
     res.send(`error processing request: ${err}`);
