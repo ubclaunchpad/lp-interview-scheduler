@@ -29,14 +29,14 @@ export async function addEvent(body: AddEventBody) {
 
 export async function getEvent(organization: string, eventUID: string) {
   return await dataAccess.getEvent(organization, eventUID);
-}
+} 
 
 export async function bookEvent(
   organization: string,
   eventUID: string,
-  lead_ids: Array<string>,
+  leadUIDs: Array<string>,
   times: Array<string>) {
-      if (await dataAccess.bookInterview(organization, lead_ids, times)) {
+      if (await dataAccess.bookInterview(organization, leadUIDs, times)) {
           // confirm that event is not already booked 
           // do something if it is booked
           // otherwise book the event
@@ -64,6 +64,6 @@ export interface GetEventBody {
 export interface BookEventBody {
   organization: string;
   eventUID: string;
-  lead_ids: Array<string>;
+  leadUIDs: Array<string>;
   times: Array<string>;
 }
