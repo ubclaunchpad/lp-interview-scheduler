@@ -1,6 +1,6 @@
 import { add, differenceInMinutes, formatISO } from "date-fns";
 import { dataAccess } from "../data/dataAccess";
-import { Availability, EventAPI } from "../data/models";
+import { Availability, CalendarAvailablity } from "../data/models";
 
 export interface AddAvailabilityBody {
   organization: string;
@@ -10,19 +10,20 @@ export interface AddAvailabilityBody {
   bookedByEmail: string;
   durationMins: number;
 }
-export interface GetAvailabilityBody {
+
+export interface ReplaceAvailabilitiesBody {
+  eventsAPI: CalendarAvailablity[];
+  interviewerUID: string;
+  organization: string;
+}
+export interface GetAvailabilityParams {
   organization: string;
   interviewerUID: string;
   startTime: string;
 }
 
-export interface getAllAvailabilitiesBody {
-  allAvailabilitiesBody: GetAvailabilityBody[];
-}
-export interface AddMultipleAvailablitiesBody {
-  eventsAPI: EventAPI[];
-  interviewerUID: string;
-  organization: string;
+export interface GetAllAvailabilitiesParams {
+  allAvailabilitiesBody: GetAvailabilityParams[];
 }
 
 export async function addAvailability(body: AddAvailabilityBody) {
@@ -37,11 +38,23 @@ export async function addAvailability(body: AddAvailabilityBody) {
   await dataAccess.setAvailability(availability, body.organization);
 }
 
-export async function addAvailabilities(body: AddMultipleAvailablitiesBody) {
-  const availabilitiesFromEvents: Availability[] =
-    transformCalendarAvaialabilities(body.eventsAPI);
+export async function addAvailabilities(body: ReplaceAvailabilitiesBody) {
+  const availabilitiesFromCalendarAvailabilities: Availability[] =
+    makeMultipleAvailabilities(body.eventsAPI);
 
-  for (const availability of availabilitiesFromEvents) {
+    // change to use the replace function
+  for (const availability of availabilitiesFromCalendarAvailabilities) {
+    await dataAccess.setAvailability(availability, body.organization);
+  }
+}
+
+export async function replaceAllAvailabilities(body: ReplaceAvailabilitiesBody) {
+  const availabilities: Availability[] =
+    makeMultipleAvailabilities(body.eventsAPI);
+
+  await dataAccess.deleteAvailabilityCollection(body.organization, body.interviewerUID);
+  
+  for (const availability of availabilities) {
     await dataAccess.setAvailability(availability, body.organization);
   }
 }
@@ -65,47 +78,47 @@ export async function getAllAvailabilities(
   return await dataAccess.getAllAvailabilities(organization, interviewerUID);
 }
 
-export async function getAllEvents(
+export async function getAllCalendarAvailabilities(
   organization: string,
   interviewerUID: string
-): Promise<EventAPI[]> {
-  const allAvailabilities = (await dataAccess.getAllAvailabilities(
+): Promise<CalendarAvailablity[]> {
+  const availabilities = (await dataAccess.getAllAvailabilities(
     organization,
     interviewerUID
   )) as Availability[];
-  return transformCalendarEvents(allAvailabilities);
+  return makeMultipleCalendarAvailabilities(availabilities);
 }
 
-export function transformCalendarAvaialabilities(
-  calEvents: EventAPI[]
+export function makeMultipleAvailabilities(
+  calendarAvailabilities: CalendarAvailablity[]
 ): Availability[] {
   const availabilities: Availability[] = [];
-  for (const calEvent of calEvents) {
-    availabilities.push(transformSingleCalendarAvailability(calEvent));
+  for (const calendarAvailability of calendarAvailabilities) {
+    availabilities.push(makeSingleAvailability(calendarAvailability));
   }
 
   return availabilities;
 }
 
-export function transformCalendarEvents(
+export function makeMultipleCalendarAvailabilities(
   availabilities: Availability[]
-): EventAPI[] {
-  const events: EventAPI[] = [];
+): CalendarAvailablity[] {
+  const calendarAvailabilities: CalendarAvailablity[] = [];
   for (const availability of availabilities) {
-    events.push(transformSingleCalendarEvent(availability));
+    calendarAvailabilities.push(makeSingleCalendarAvailability(availability));
   }
 
-  return events;
+  return calendarAvailabilities;
 }
 
-function transformSingleCalendarAvailability(calEvent: EventAPI): Availability {
-  const startDate: Date = new Date(calEvent.start);
-  const endDate: Date = new Date(calEvent.end);
+function makeSingleAvailability(calendarAvailability: CalendarAvailablity): Availability {
+  const startDate: Date = new Date(calendarAvailability.start);
+  const endDate: Date = new Date(calendarAvailability.end);
   const durationMins = differenceInMinutes(endDate, startDate);
   const startTime = formatISO(startDate);
   const isBooked = false;
   const bookedByEmail = "";
-  const interviewerUID = calEvent.interviewerUID;
+  const interviewerUID = calendarAvailability.interviewerUID;
 
   const availability: Availability = {
     interviewerUID,
@@ -118,18 +131,18 @@ function transformSingleCalendarAvailability(calEvent: EventAPI): Availability {
   return availability;
 }
 
-function transformSingleCalendarEvent(availability: Availability): EventAPI {
+function makeSingleCalendarAvailability(availability: Availability): CalendarAvailablity {
   const startDate: Date = new Date(availability.startTime);
   const endDate: Date = add(startDate, { minutes: availability.durationMins });
   const start = formatISO(startDate);
   const end = formatISO(endDate);
   const interviewerUID = availability.interviewerUID;
 
-  const event: EventAPI = {
+  const calendarAvailability: CalendarAvailablity = {
     interviewerUID,
     start,
     end,
   };
 
-  return event;
+  return calendarAvailability;
 }

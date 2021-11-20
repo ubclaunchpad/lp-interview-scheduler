@@ -3,13 +3,13 @@ import { Interviewer } from "../data/models";
 
 export async function addInterviewer(
   organization: string,
-  userUID: string,
+  interviewerUID: string,
   email: string,
   name: string
 ) {
   const interviewer: Interviewer = {
     organization,
-    userUID,
+    interviewerUID,
     email,
     name,
   };

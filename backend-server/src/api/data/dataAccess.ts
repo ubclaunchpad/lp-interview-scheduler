@@ -1,6 +1,7 @@
 import {
   collection,
   CollectionReference,
+  deleteDoc,
   doc,
   DocumentReference,
   DocumentData,
@@ -47,13 +48,13 @@ class DataAccess {
 
   async interviewerDocRef(
     organization: string,
-    userUID: string
+    interviewerUID: string
   ): Promise<DocumentReference<DocumentData>> {
     return await doc(
       this.rootCollection,
       organization,
       this.interviewerCollectionName,
-      userUID
+      interviewerUID
     );
   }
 
@@ -87,9 +88,9 @@ class DataAccess {
 
   async getInterviewer(
     organization: string,
-    userUID: string
+    interviewerUID: string
   ): Promise<DocumentData> {
-    const doc = await this.interviewerDocRef(organization, userUID);
+    const doc = await this.interviewerDocRef(organization, interviewerUID);
     const res = await getDoc(doc);
     return res.data();
   }
@@ -105,7 +106,7 @@ class DataAccess {
 
     const doc = await this.interviewerDocRef(
       interviewer.organization,
-      interviewer.userUID
+      interviewer.interviewerUID
     );
     await setDoc(doc, interviewer);
   }
@@ -147,6 +148,24 @@ class DataAccess {
       availability.startTime
     );
     await setDoc(doc, availability);
+  }
+
+  async deleteAvailabilityCollection(organization: string, interviewerUID: string) {
+    const collectionRef = await getDocs(
+      collection(
+        this.rootCollection,
+        organization,
+        this.interviewerCollectionName,
+        interviewerUID,
+        this.availabilityCollectionName
+      )
+    );
+    const interviewerRef = await this.interviewerDocRef(organization, interviewerUID);
+
+    collectionRef.forEach(async (a) => {
+      const docRef = doc(interviewerRef, this.availabilityCollectionName, a.id);
+      await deleteDoc(docRef);
+    });
   }
 }
 

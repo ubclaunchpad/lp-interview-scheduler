@@ -3,17 +3,18 @@ import {
   addAvailability,
   getAvailability,
   AddAvailabilityBody,
-  GetAvailabilityBody,
+  GetAvailabilityParams,
   getAllAvailabilities,
-  AddMultipleAvailablitiesBody,
+  ReplaceAvailabilitiesBody,
   addAvailabilities,
-  getAllEvents,
+  getAllCalendarAvailabilities,
+  replaceAllAvailabilities,
 } from "../controllers/availabilityController";
 import { Availability } from "../data/models";
 
 export const availabilityRouter = express.Router();
 
-availabilityRouter.post("/single", async (req, res) => {
+availabilityRouter.post("/", async (req, res) => {
   try {
     const body: AddAvailabilityBody = {
       organization: req.body.organization,
@@ -34,16 +35,16 @@ availabilityRouter.post("/single", async (req, res) => {
   }
 });
 
-availabilityRouter.post("/multiple", async (req, res) => {
+availabilityRouter.put("/", async (req, res) => {
   try {
-    const body: AddMultipleAvailablitiesBody = {
+    const body: ReplaceAvailabilitiesBody = {
       eventsAPI: req.body.eventsAPI,
       interviewerUID: req.body.interviewerUID,
       organization: req.body.organization,
     };
     if (!Object.values(body).every((field) => field != null))
       throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
-    await addAvailabilities(body);
+    await replaceAllAvailabilities(body);
     res.send(
       `${body.eventsAPI.length} timeslots have been added to ${body.interviewerUID}'s availabilities`
     );
@@ -54,7 +55,7 @@ availabilityRouter.post("/multiple", async (req, res) => {
 
 availabilityRouter.get("/", async (req, res) => {
   try {
-    const body: GetAvailabilityBody = {
+    const body: GetAvailabilityParams = {
       organization: req.query.organization as string,
       interviewerUID: req.query.interviewerUID as string,
       startTime: req.query.startTime as string,
@@ -72,7 +73,7 @@ availabilityRouter.get("/", async (req, res) => {
   }
 });
 
-availabilityRouter.get("/allAvailabilities", async (req, res) => {
+availabilityRouter.get("/", async (req, res) => {
   const organization = req.query.organization as string;
   const interviewerUID = req.query.interviewerUID as string;
   try {
@@ -86,12 +87,12 @@ availabilityRouter.get("/allAvailabilities", async (req, res) => {
   }
 });
 
-availabilityRouter.get("/allEvents", async (req, res) => {
+availabilityRouter.get("/calendarAvailabilities", async (req, res) => {
   const organization = req.query.organization as string;
   const interviewerUID = req.query.interviewerUID as string;
   try {
-    const eventsData = await getAllEvents(organization, interviewerUID);
-    res.send(eventsData);
+    const calendarAvailabilitiesData = await getAllCalendarAvailabilities(organization, interviewerUID);
+    res.send(calendarAvailabilitiesData);
   } catch (err) {
     res.send(`error processing request: ${err}`);
   }
