@@ -35,7 +35,6 @@ export async function addAvailability(body: AddAvailabilityBody) {
     durationMins: body.durationMins,
   };
 
-  // delete
   await dataAccess.setAvailability(availability, body.organization);
 }
 
