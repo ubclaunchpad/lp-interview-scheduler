@@ -16,8 +16,8 @@ export async function addEvent(body: AddEventBody) {
   const event: Event = {
     leads: body.leads,
     intervieweeEmail: body.intervieweeEmail,
-    confirmedTime: null,
-    length: body.length,
+    confirmedStartTime: null,
+    eventLengthInMinutes: body.length,
     expires: body.expires,
     eventUID: eventUID,
   };
@@ -29,24 +29,23 @@ export async function addEvent(body: AddEventBody) {
 
 export async function getEvent(organization: string, eventUID: string) {
   return await dataAccess.getEvent(organization, eventUID);
-} 
+}
 
 export async function bookEvent(
   organization: string,
   eventUID: string,
-  leadUIDs: Array<string>,
-  times: Array<string>) {
-      if (await dataAccess.bookInterview(organization, leadUIDs, times)) {
-          // confirm that event is not already booked 
-          // do something if it is booked
-          // otherwise book the event
-          await dataAccess.bookEvent(organization, eventUID, times[0])
-          // do something if event booking is unsuccesful
-      } else {
-        // do something if lead booking is unsuccessful
-      }
-      // do something if succesful
-  }
+  leadUIDs: string[],
+  times: string[]
+) {
+  const transactionResult = await dataAccess.bookInterview(
+    organization,
+    leadUIDs,
+    times,
+    eventUID,
+    times[0]
+  );
+  if (!transactionResult) throw `Booking event ${eventUID} transaction failed`;
+}
 
 export interface AddEventBody {
   organization: string;
@@ -64,6 +63,6 @@ export interface GetEventBody {
 export interface BookEventBody {
   organization: string;
   eventUID: string;
-  leadUIDs: Array<string>;
-  times: Array<string>;
+  leadUIDs: string[];
+  times: string[];
 }

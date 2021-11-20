@@ -5,7 +5,7 @@ import {
   getEvent,
   GetEventBody,
   bookEvent,
-  BookEventBody
+  BookEventBody,
 } from "../controllers/eventController";
 
 export const eventRouter = express.Router();
@@ -48,12 +48,17 @@ eventRouter.patch("/", async (req, res) => {
     const body: BookEventBody = {
       organization: req.query.organization as string,
       eventUID: req.query.eventUID as string,
-      leadUIDs: req.query.leads as Array<string>,
-      times: req.query.times as Array<string>
+      leadUIDs: req.query.leads as string[],
+      times: req.query.times as string[],
     };
     if (!Object.values(body).every((field) => field != null))
       throw new Error(`Incomplete Request Body:  ${JSON.stringify(body)}`);
-    const booked = await bookEvent(body.organization, body.eventUID, body.leadUIDs, body.times);
+    const booked = await bookEvent(
+      body.organization,
+      body.eventUID,
+      body.leadUIDs,
+      body.times
+    );
     res.send(booked);
   } catch (err) {
     res.status(500).send(`error processing request: ${err}`);
