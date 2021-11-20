@@ -18,3 +18,12 @@ export interface CalendarAvailablity {
   start: string;
   end: string;
 }
+
+export interface Event {
+  leads: Array<{ leadUID: string; name: string }>;
+  intervieweeEmail: string;
+  confirmedTime: string;
+  length: number;
+  expires: string;
+  eventUID: string;
+}
