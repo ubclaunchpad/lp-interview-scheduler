@@ -16,6 +16,6 @@ export async function addInterviewer(
   await dataAccess.setInterviewer(interviewer);
 }
 
-export async function getInterviewer(organization: string, userUID: string) {
-  return await dataAccess.getInterviewer(organization, userUID);
+export async function getInterviewer(organization: string, interviewerUID: string) {
+  return await dataAccess.getInterviewer(organization, interviewerUID);
 }
