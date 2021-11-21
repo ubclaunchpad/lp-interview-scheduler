@@ -160,7 +160,7 @@ class DataAccess {
     startTime: string
   ) {
     try {
-      await runTransaction(db, async (t: Transaction) => {
+      return await runTransaction(db, async (t: Transaction) => {
         async function verifyAvailability(instance, leadUID, time) {
           const availabilityRef = await instance.availabilityDocRef(
             organization,
@@ -198,7 +198,10 @@ class DataAccess {
           const eventDoc = await t.get(eventRef);
           const confirmedTime = await eventDoc.get("confirmedTime");
           if (confirmedTime == null) {
-            await t.update(eventRef, { confirmedTime: startTime });
+            const event = eventDoc.data();
+            event["confirmedTime"] = startTime;
+            await t.update(eventRef, event);
+            return event;
           } else {
             throw "Event already booked";
           }
@@ -213,12 +216,13 @@ class DataAccess {
         }
 
         // Book Everything
-        await bookEvent(t, organization, eventUID, startTime, this);
+        const bookedEvent = await bookEvent(t, organization, eventUID, startTime, this);
         for (var avail of availabilitiesToBook) {
           await setAvailabilityT(t, avail);
         }
+        return bookedEvent;
       });
-      return true;
+      //return true;
     } catch (e) {
       console.log("Transaction failure:", e);
       return false;

@@ -45,6 +45,7 @@ export async function bookEvent(
     times[0]
   );
   if (!transactionResult) throw `Booking event ${eventUID} transaction failed`;
+  return transactionResult;
 }
 
 export interface AddEventBody {

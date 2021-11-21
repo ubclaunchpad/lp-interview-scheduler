@@ -48,7 +48,7 @@ eventRouter.patch("/", async (req, res) => {
     const body: BookEventBody = {
       organization: req.body.organization as string,
       eventUID: req.body.eventUID as string,
-      leadUIDs: req.body.leads as string[],
+      leadUIDs: req.body.leadUIDs as string[],
       times: req.body.times as string[],
     };
     if (!Object.values(body).every((field) => field != null))
