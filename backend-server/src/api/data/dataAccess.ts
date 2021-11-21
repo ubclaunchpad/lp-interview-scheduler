@@ -192,7 +192,7 @@ class DataAccess {
           organization: string,
           eventUID: string,
           startTime: string,
-          instance : any
+          instance: any
         ) {
           const eventRef = await instance.eventDocRef(organization, eventUID);
           const eventDoc = await t.get(eventRef);
@@ -216,7 +216,13 @@ class DataAccess {
         }
 
         // Book Everything
-        const bookedEvent = await bookEvent(t, organization, eventUID, startTime, this);
+        const bookedEvent = await bookEvent(
+          t,
+          organization,
+          eventUID,
+          startTime,
+          this
+        );
         for (var avail of availabilitiesToBook) {
           await setAvailabilityT(t, avail);
         }
