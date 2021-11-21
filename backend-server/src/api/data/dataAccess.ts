@@ -207,6 +207,12 @@ class DataAccess {
     const doc = await this.eventDocRef(organization, event.eventUID);
 
     await setDoc(doc, event);
+  }
+
+  async getOrganizationInterviewDuration(organization: string) {
+    const organizationRef = await doc(this.rootCollection, organization);
+    const organizationDoc = await getDoc(organizationRef);
+    console.log(organizationDoc.data());
 
   }
 }

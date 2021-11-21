@@ -9,7 +9,9 @@ import {
   addAvailabilities,
   getAllCalendarAvailabilities,
   replaceAllAvailabilities,
+  GetMergedRoutesParams,
 } from "../controllers/availabilityController";
+import { findOverlapping } from "../controllers/merge";
 import { Availability } from "../data/models";
 
 export const availabilityRouter = express.Router();
@@ -96,6 +98,34 @@ availabilityRouter.get("/calendarAvailabilities", async (req, res) => {
       interviewerUID
     );
     res.send(calendarAvailabilitiesData);
+  } catch (err) {
+    res.send(`error processing request: ${err}`);
+  }
+});
+
+availabilityRouter.get("/mergedRoutes", async (req, res) => {
+  const body: GetMergedRoutesParams = {
+    organization: req.query.organization as string,
+    interviewerUID1: req.query.interviewerUID1 as string,
+    interviewerUID2: req.query.interviewerUID2 as string,
+  };
+  if (!Object.values(body).every((field) => field != null))
+    throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
+    
+  try {
+    const allAvailabilities1 = await getAllAvailabilities(
+      body.organization,
+      body.interviewerUID1
+    ) as Availability[];
+
+    const allAvailabilities2 = await getAllAvailabilities(
+      body.organization,
+      body.interviewerUID2
+    ) as Availability[];
+
+    const merged = findOverlapping(allAvailabilities1, allAvailabilities2);
+
+    res.send(merged);
   } catch (err) {
     res.send(`error processing request: ${err}`);
   }

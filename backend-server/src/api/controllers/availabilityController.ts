@@ -1,4 +1,4 @@
-import { add, differenceInMinutes, formatISO } from "date-fns";
+import { add, differenceInMinutes, format, formatISO } from "date-fns";
 import { dataAccess } from "../data/dataAccess";
 import { Availability, CalendarAvailability } from "../data/models";
 
@@ -20,6 +20,12 @@ export interface GetAvailabilityParams {
   organization: string;
   interviewerUID: string;
   startTime: string;
+}
+
+export interface GetMergedRoutesParams {
+  organization: string;
+  interviewerUID1: string;
+  interviewerUID2: string;
 }
 
 export async function addAvailability(body: AddAvailabilityBody) {
@@ -95,7 +101,7 @@ export function makeMultipleAvailabilities(
 ): Availability[] {
   const availabilities: Availability[] = [];
   for (const calendarAvailability of calendarAvailabilities) {
-    availabilities.push(makeSingleAvailability(calendarAvailability));
+    availabilities.push(...makeAvailabilitiesFromCalendarAvailability(calendarAvailability));
   }
 
   return availabilities;
@@ -112,16 +118,25 @@ export function makeMultipleCalendarAvailabilities(
   return calendarAvailabilities;
 }
 
-function makeSingleAvailability(
+function makeAvailabilitiesFromCalendarAvailability(
   calendarAvailability: CalendarAvailability
-): Availability {
+): Availability[] {
   const startDate: Date = new Date(calendarAvailability.start);
   const endDate: Date = new Date(calendarAvailability.end);
-  const durationMins = differenceInMinutes(endDate, startDate);
+  // const intervalArrayForDay: Date[] = [];
+  // for (let i = 0; i < )
+  // const durationMins = differenceInMinutes(endDate, startDate);
+  // let currStartTime = format(startDate, 'p').substr(3,5);
+  // if (durationMins % meetingDuration > 0) {
+  //   // we can do splits
+  // } else {
+  //   throw new Error("Calendar availability duration too short");
+  // }
   const startTime = formatISO(startDate);
   const isBooked = false;
   const bookedByEmail = "";
   const interviewerUID = calendarAvailability.interviewerUID;
+  const durationMins = 0;
 
   const availability: Availability = {
     interviewerUID,
@@ -131,12 +146,13 @@ function makeSingleAvailability(
     durationMins,
   };
 
-  return availability;
+  return [availability];
 }
 
 function makeSingleCalendarAvailability(
   availability: Availability
 ): CalendarAvailability {
+  // need to collapse contiguous chunks of time
   const startDate: Date = new Date(availability.startTime);
   const endDate: Date = add(startDate, { minutes: availability.durationMins });
   const start = formatISO(startDate);
