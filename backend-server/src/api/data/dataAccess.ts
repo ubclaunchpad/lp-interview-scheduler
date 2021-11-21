@@ -9,7 +9,7 @@ import {
   getDoc,
   getDocs,
   setDoc,
-  Timestamp
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "../../firebase/db";
 import { Availability, Interviewer, Event } from "./models";
@@ -209,11 +209,10 @@ class DataAccess {
     await setDoc(doc, event);
   }
 
-  async getOrganizationInterviewDuration(organization: string) {
+  async getOrganizationFields(organization: string) {
     const organizationRef = await doc(this.rootCollection, organization);
     const organizationDoc = await getDoc(organizationRef);
-    console.log(organizationDoc.data());
-
+    return organizationDoc.data();
   }
 }
 

@@ -1,4 +1,13 @@
-import { add, differenceInMinutes, format, formatISO } from "date-fns";
+import {
+  add,
+  closestTo,
+  differenceInMinutes,
+  format,
+  formatISO,
+  isBefore,
+  isSameMinute,
+  startOfDay,
+} from "date-fns";
 import { dataAccess } from "../data/dataAccess";
 import { Availability, CalendarAvailability } from "../data/models";
 
@@ -40,30 +49,26 @@ export async function addAvailability(body: AddAvailabilityBody) {
   await dataAccess.setAvailability(availability, body.organization);
 }
 
-export async function addAvailabilities(body: ReplaceAvailabilitiesBody) {
-  const availabilitiesFromCalendarAvailabilities: Availability[] =
-    makeMultipleAvailabilities(body.eventsAPI);
-
-  for (const availability of availabilitiesFromCalendarAvailabilities) {
-    await dataAccess.setAvailability(availability, body.organization);
-  }
-}
-
 export async function replaceAllAvailabilities(
   body: ReplaceAvailabilitiesBody
-) {
-  const availabilities: Availability[] = makeMultipleAvailabilities(
-    body.eventsAPI
-  ); 
+): Promise<Availability[]> {
+  const availabilities: Availability[] = await makeMultipleAvailabilities(
+    body.eventsAPI,
+    body.organization
+  );
 
   await dataAccess.deleteAvailabilityCollection(
     body.organization,
     body.interviewerUID
   );
 
+  // todo: error thrown if no availabilities to let client know
+
   for (const availability of availabilities) {
     await dataAccess.setAvailability(availability, body.organization);
   }
+
+  return availabilities;
 }
 
 export async function getAvailability(
@@ -93,77 +98,107 @@ export async function getAllCalendarAvailabilities(
     organization,
     interviewerUID
   )) as Availability[];
-  return makeMultipleCalendarAvailabilities(availabilities);
+  return makeMultipleCalendarAvailabilities(availabilities, organization);
 }
 
-export function makeMultipleAvailabilities(
-  calendarAvailabilities: CalendarAvailability[]
-): Availability[] {
+export async function makeMultipleAvailabilities(
+  calendarAvailabilities: CalendarAvailability[],
+  organization: string
+): Promise<Availability[]> {
   const availabilities: Availability[] = [];
   for (const calendarAvailability of calendarAvailabilities) {
-    availabilities.push(...makeAvailabilitiesFromCalendarAvailability(calendarAvailability));
+    availabilities.push(
+      ...(await makeAvailabilitiesFromCalendarAvailability(
+        calendarAvailability,
+        organization
+      ))
+    );
   }
 
   return availabilities;
 }
 
-export function makeMultipleCalendarAvailabilities(
-  availabilities: Availability[]
-): CalendarAvailability[] {
+export async function makeMultipleCalendarAvailabilities(
+  availabilities: Availability[],
+  organization: string
+): Promise<CalendarAvailability[]> {
+  const interviewDuration = (
+    (await dataAccess.getOrganizationFields(organization)) as any
+  ).interviewDuration as number;
   const calendarAvailabilities: CalendarAvailability[] = [];
-  for (const availability of availabilities) {
-    calendarAvailabilities.push(makeSingleCalendarAvailability(availability));
+  for (let i = 0; i < availabilities.length; i++) {
+    const currStartDate = new Date(availabilities[i].startTime);
+    let currEndDate = add(currStartDate, { minutes: interviewDuration });
+    for (let j = i + 1; j < availabilities.length; j++) {
+      const nextStartDate = new Date(availabilities[j].startTime);
+      if (!isSameMinute(currEndDate, nextStartDate)) {
+        break;
+      }
+      currEndDate = add(nextStartDate, { minutes: interviewDuration });
+      i = j;
+    }
+    const newCalendarAvailability: CalendarAvailability = {
+      interviewerUID: availabilities[i].interviewerUID,
+      start: formatISO(currStartDate),
+      end: formatISO(currEndDate),
+    };
+    calendarAvailabilities.push(newCalendarAvailability);
   }
+  console.log(calendarAvailabilities);
 
   return calendarAvailabilities;
 }
 
-function makeAvailabilitiesFromCalendarAvailability(
-  calendarAvailability: CalendarAvailability
-): Availability[] {
+async function makeAvailabilitiesFromCalendarAvailability(
+  calendarAvailability: CalendarAvailability,
+  organization: string
+): Promise<Availability[]> {
   const startDate: Date = new Date(calendarAvailability.start);
   const endDate: Date = new Date(calendarAvailability.end);
-  // const intervalArrayForDay: Date[] = [];
-  // for (let i = 0; i < )
-  // const durationMins = differenceInMinutes(endDate, startDate);
-  // let currStartTime = format(startDate, 'p').substr(3,5);
-  // if (durationMins % meetingDuration > 0) {
-  //   // we can do splits
-  // } else {
-  //   throw new Error("Calendar availability duration too short");
-  // }
-  const startTime = formatISO(startDate);
-  const isBooked = false;
-  const bookedByEmail = "";
-  const interviewerUID = calendarAvailability.interviewerUID;
-  const durationMins = 0;
+  const interviewDuration = (
+    (await dataAccess.getOrganizationFields(organization)) as any
+  ).interviewDuration as number;
+  const durationMins = differenceInMinutes(endDate, startDate);
+  const minsIn24Hours = 24 * 60;
+  const numIntervalsIn24Hours = minsIn24Hours / interviewDuration;
 
-  const availability: Availability = {
-    interviewerUID,
-    startTime,
-    isBooked,
-    bookedByEmail,
-    durationMins,
-  };
+  const intervalsOfDates: Date[] = [];
 
-  return [availability];
-}
+  let currentDate = startOfDay(startDate);
+  // populate array of date objects with all possible intervals in 24 hours
+  for (let i = 0; i < numIntervalsIn24Hours; i++) {
+    const newDate = add(currentDate, {
+      minutes: interviewDuration * i,
+    });
+    intervalsOfDates.push(newDate);
+  }
 
-function makeSingleCalendarAvailability(
-  availability: Availability
-): CalendarAvailability {
-  // need to collapse contiguous chunks of time
-  const startDate: Date = new Date(availability.startTime);
-  const endDate: Date = add(startDate, { minutes: availability.durationMins });
-  const start = formatISO(startDate);
-  const end = formatISO(endDate);
-  const interviewerUID = availability.interviewerUID;
+  // newStart is the earliest interval start time after the given startDate
+  let newStart = closestTo(startDate, intervalsOfDates);
+  if (isBefore(newStart, startDate)) {
+    newStart = closestTo(
+      add(startDate, { minutes: interviewDuration }),
+      intervalsOfDates
+    );
+  }
 
-  const calendarAvailability: CalendarAvailability = {
-    interviewerUID,
-    start,
-    end,
-  };
+  // newEnd is the potential end time for this slot relative to newStart
+  let newEnd = add(newStart, { minutes: interviewDuration });
 
-  return calendarAvailability;
+  // populate the availabilities array
+  const availabilities: Availability[] = [];
+  while (isBefore(newEnd, endDate) || isSameMinute(newEnd, endDate)) {
+    const newAvailability: Availability = {
+      interviewerUID: calendarAvailability.interviewerUID,
+      startTime: formatISO(newStart),
+      isBooked: false,
+      bookedByEmail: "",
+      durationMins: interviewDuration,
+    };
+    availabilities.push(newAvailability);
+    newStart = add(newStart, { minutes: interviewDuration });
+    newEnd = add(newStart, { minutes: interviewDuration });
+  }
+
+  return availabilities;
 }

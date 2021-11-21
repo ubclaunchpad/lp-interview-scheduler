@@ -6,7 +6,6 @@ import {
   GetAvailabilityParams,
   getAllAvailabilities,
   ReplaceAvailabilitiesBody,
-  addAvailabilities,
   getAllCalendarAvailabilities,
   replaceAllAvailabilities,
   GetMergedRoutesParams,
@@ -46,9 +45,9 @@ availabilityRouter.put("/", async (req, res) => {
     };
     if (!Object.values(body).every((field) => field != null))
       throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
-    await replaceAllAvailabilities(body);
+    const createdAvailabilities = await replaceAllAvailabilities(body);
     res.send(
-      `${body.eventsAPI.length} timeslots have been added to ${body.interviewerUID}'s availabilities`
+      `${createdAvailabilities.length} timeslots have been added to ${body.interviewerUID}'s availabilities`
     );
   } catch (err) {
     res.status(500).send(`error processing request: ${err}`);
@@ -103,7 +102,7 @@ availabilityRouter.get("/calendarAvailabilities", async (req, res) => {
   }
 });
 
-availabilityRouter.get("/mergedRoutes", async (req, res) => {
+availabilityRouter.get("/mergedTimes", async (req, res) => {
   const body: GetMergedRoutesParams = {
     organization: req.query.organization as string,
     interviewerUID1: req.query.interviewerUID1 as string,
@@ -111,17 +110,17 @@ availabilityRouter.get("/mergedRoutes", async (req, res) => {
   };
   if (!Object.values(body).every((field) => field != null))
     throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
-    
+
   try {
-    const allAvailabilities1 = await getAllAvailabilities(
+    const allAvailabilities1 = (await getAllAvailabilities(
       body.organization,
       body.interviewerUID1
-    ) as Availability[];
+    )) as Availability[];
 
-    const allAvailabilities2 = await getAllAvailabilities(
+    const allAvailabilities2 = (await getAllAvailabilities(
       body.organization,
       body.interviewerUID2
-    ) as Availability[];
+    )) as Availability[];
 
     const merged = findOverlapping(allAvailabilities1, allAvailabilities2);
 
