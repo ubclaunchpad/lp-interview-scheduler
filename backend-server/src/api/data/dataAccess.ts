@@ -214,6 +214,14 @@ class DataAccess {
     const organizationDoc = await getDoc(organizationRef);
     return organizationDoc.data();
   }
+
+  async listEvents(organization: string): Promise<DocumentData[]> {
+    // return list all events in organization
+    const docCollection = await getDocs(
+      collection(this.rootCollection, organization, this.eventCollectionName)
+    );
+    return docCollection.docs.map((doc) => doc.data());
+  }
 }
 
 export const dataAccess = new DataAccess(
