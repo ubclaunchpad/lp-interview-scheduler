@@ -13,6 +13,7 @@ export async function addInterviewer(
     email,
     name,
   };
+
   await dataAccess.setInterviewer(interviewer);
 }
 

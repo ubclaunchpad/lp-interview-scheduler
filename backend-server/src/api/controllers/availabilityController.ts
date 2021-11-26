@@ -1,8 +1,6 @@
 import {
   add,
   closestTo,
-  differenceInMinutes,
-  format,
   formatISO,
   isBefore,
   isSameMinute,
@@ -28,7 +26,6 @@ export interface ReplaceAvailabilitiesBody {
 export interface GetAvailabilityParams {
   organization: string;
   interviewerUID: string;
-  startTime: string;
 }
 
 export interface GetMergedRoutesParams {
@@ -57,12 +54,12 @@ export async function replaceAllAvailabilities(
     body.organization
   );
 
+  // TODO: throw error if no availabilities could be created
+
   await dataAccess.deleteAvailabilityCollection(
     body.organization,
     body.interviewerUID
   );
-
-  // todo: error thrown if no availabilities to let client know
 
   for (const availability of availabilities) {
     await dataAccess.setAvailability(availability, body.organization);
@@ -83,7 +80,7 @@ export async function getAvailability(
   );
 }
 
-export async function getAllAvailabilities(
+export async function getInterviewerAvailabilities(
   organization: string,
   interviewerUID: string
 ) {
@@ -98,6 +95,7 @@ export async function getAllCalendarAvailabilities(
     organization,
     interviewerUID
   )) as Availability[];
+
   return makeMultipleCalendarAvailabilities(availabilities, organization);
 }
 
@@ -122,29 +120,34 @@ export async function makeMultipleCalendarAvailabilities(
   availabilities: Availability[],
   organization: string
 ): Promise<CalendarAvailability[]> {
-  const interviewDuration = (
+  const availabilityBlockLength = (
     (await dataAccess.getOrganizationFields(organization)) as any
-  ).interviewDuration as number;
+  ).availabilityBlockLength as number;
   const calendarAvailabilities: CalendarAvailability[] = [];
+
   for (let i = 0; i < availabilities.length; i++) {
     const currStartDate = new Date(availabilities[i].startTime);
-    let currEndDate = add(currStartDate, { minutes: interviewDuration });
+    let currEndDate = add(currStartDate, { minutes: availabilityBlockLength });
+
     for (let j = i + 1; j < availabilities.length; j++) {
       const nextStartDate = new Date(availabilities[j].startTime);
+
       if (!isSameMinute(currEndDate, nextStartDate)) {
         break;
       }
-      currEndDate = add(nextStartDate, { minutes: interviewDuration });
+
+      currEndDate = add(nextStartDate, { minutes: availabilityBlockLength });
       i = j;
     }
+
     const newCalendarAvailability: CalendarAvailability = {
       interviewerUID: availabilities[i].interviewerUID,
       start: formatISO(currStartDate),
       end: formatISO(currEndDate),
     };
+
     calendarAvailabilities.push(newCalendarAvailability);
   }
-  console.log(calendarAvailabilities);
 
   return calendarAvailabilities;
 }
@@ -155,49 +158,55 @@ async function makeAvailabilitiesFromCalendarAvailability(
 ): Promise<Availability[]> {
   const startDate: Date = new Date(calendarAvailability.start);
   const endDate: Date = new Date(calendarAvailability.end);
-  const interviewDuration = (
+
+  const availabilityBlockLength = (
     (await dataAccess.getOrganizationFields(organization)) as any
-  ).interviewDuration as number;
-  const durationMins = differenceInMinutes(endDate, startDate);
+  ).availabilityBlockLength as number;
+
   const minsIn24Hours = 24 * 60;
-  const numIntervalsIn24Hours = minsIn24Hours / interviewDuration;
+  const numAvailabilityBlocksIn24Hours =
+    minsIn24Hours / availabilityBlockLength;
 
   const intervalsOfDates: Date[] = [];
 
   let currentDate = startOfDay(startDate);
+
   // populate array of date objects with all possible intervals in 24 hours
-  for (let i = 0; i < numIntervalsIn24Hours; i++) {
+  for (let i = 0; i < numAvailabilityBlocksIn24Hours; i++) {
     const newDate = add(currentDate, {
-      minutes: interviewDuration * i,
+      minutes: availabilityBlockLength * i,
     });
     intervalsOfDates.push(newDate);
   }
 
   // newStart is the earliest interval start time after the given startDate
   let newStart = closestTo(startDate, intervalsOfDates);
+
   if (isBefore(newStart, startDate)) {
     newStart = closestTo(
-      add(startDate, { minutes: interviewDuration }),
+      add(startDate, { minutes: availabilityBlockLength }),
       intervalsOfDates
     );
   }
 
   // newEnd is the potential end time for this slot relative to newStart
-  let newEnd = add(newStart, { minutes: interviewDuration });
+  let newEnd = add(newStart, { minutes: availabilityBlockLength });
+
+  const availabilities: Availability[] = [];
 
   // populate the availabilities array
-  const availabilities: Availability[] = [];
   while (isBefore(newEnd, endDate) || isSameMinute(newEnd, endDate)) {
     const newAvailability: Availability = {
       interviewerUID: calendarAvailability.interviewerUID,
       startTime: formatISO(newStart),
       isBooked: false,
       bookedByEmail: "",
-      durationMins: interviewDuration,
+      durationMins: availabilityBlockLength,
     };
+
     availabilities.push(newAvailability);
-    newStart = add(newStart, { minutes: interviewDuration });
-    newEnd = add(newStart, { minutes: interviewDuration });
+    newStart = add(newStart, { minutes: availabilityBlockLength });
+    newEnd = add(newStart, { minutes: availabilityBlockLength });
   }
 
   return availabilities;
