@@ -16,7 +16,7 @@ export async function addEvent(body: AddEventBody) {
   const event: Event = {
     leads: body.leads,
     intervieweeEmail: body.intervieweeEmail,
-    confirmedStartTime: null,
+    confirmedTime: null,
     eventLengthInMinutes: body.length,
     expires: body.expires,
     eventUID: eventUID,
