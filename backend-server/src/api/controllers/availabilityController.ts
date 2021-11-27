@@ -54,7 +54,9 @@ export async function replaceAllAvailabilities(
     body.organization
   );
 
-  // TODO: throw error if no availabilities could be created
+  if (!availabilities.length) {
+    throw new Error("Can not construct availabilities from given input");
+  }
 
   await dataAccess.deleteAvailabilityCollection(
     body.organization,
@@ -72,22 +74,25 @@ export async function getAvailability(
   organization: string,
   interviewerUID: string,
   startTime: string
-) {
-  return await dataAccess.getAvailability(
+): Promise<Availability> {
+  return (await dataAccess.getAvailability(
     organization,
     interviewerUID,
     startTime
-  );
+  )) as Availability;
 }
 
 export async function getInterviewerAvailabilities(
   organization: string,
   interviewerUID: string
-) {
-  return await dataAccess.getAllAvailabilities(organization, interviewerUID);
+): Promise<Availability[]> {
+  return (await dataAccess.getAllAvailabilities(
+    organization,
+    interviewerUID
+  )) as Availability[];
 }
 
-export async function getAllCalendarAvailabilities(
+export async function getInterviewerCalendarAvailabilities(
   organization: string,
   interviewerUID: string
 ): Promise<CalendarAvailability[]> {

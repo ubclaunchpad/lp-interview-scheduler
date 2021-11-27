@@ -5,7 +5,7 @@ import {
   GetAvailabilityParams,
   getInterviewerAvailabilities,
   ReplaceAvailabilitiesBody,
-  getAllCalendarAvailabilities,
+  getInterviewerCalendarAvailabilities,
   replaceAllAvailabilities,
   GetMergedRoutesParams,
 } from "../controllers/availabilityController";
@@ -62,10 +62,10 @@ availabilityRouter.get("/", async (req, res) => {
   const interviewerUID = req.query.interviewerUID as string;
   const body: GetAvailabilityParams = { organization, interviewerUID };
 
-  if (!Object.values(body).every((field) => field != null))
-    throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
-
   try {
+    if (!Object.values(body).every((field) => field != null))
+      throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
+
     const availabilityData = await getInterviewerAvailabilities(
       organization,
       interviewerUID
@@ -79,12 +79,14 @@ availabilityRouter.get("/", async (req, res) => {
 availabilityRouter.get("/calendarAvailabilities", async (req, res) => {
   const organization = req.query.organization as string;
   const interviewerUID = req.query.interviewerUID as string;
+  const body: GetAvailabilityParams = { organization, interviewerUID };
 
   try {
-    const calendarAvailabilitiesData = await getAllCalendarAvailabilities(
-      organization,
-      interviewerUID
-    );
+    if (!Object.values(body).every((field) => field != null))
+      throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
+
+    const calendarAvailabilitiesData =
+      await getInterviewerCalendarAvailabilities(organization, interviewerUID);
     res.send(calendarAvailabilitiesData);
   } catch (err) {
     res.send(`error processing request: ${err}`);
@@ -98,10 +100,10 @@ availabilityRouter.get("/mergedTimes", async (req, res) => {
     interviewerUID2: req.query.interviewerUID2 as string,
   };
 
-  if (!Object.values(body).every((field) => field != null))
-    throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
-
   try {
+    if (!Object.values(body).every((field) => field != null))
+      throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
+
     const allAvailabilities1 = (await getInterviewerAvailabilities(
       body.organization,
       body.interviewerUID1
