@@ -3,7 +3,7 @@ import { Availability, CalendarAvailability } from "../data/models";
 export function findOverlapping(
   availabilities1: Availability[],
   availabilities2: Availability[]
-) {
+): Availability[] {
   const output: Availability[] = [];
 
   availabilities1.forEach((timeSlot) => {
