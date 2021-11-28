@@ -1,3 +1,10 @@
 .App {
     text-align: center;
 }
+
+.rbc-allday-cell {
+  display: none;
+}
+.rbc-time-view .rbc-header {
+  border-bottom: none;
+}
