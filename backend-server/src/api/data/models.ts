@@ -1,6 +1,6 @@
 export interface Interviewer {
   organization: string;
-  userUID: string;
+  interviewerUID: string;
   email: string;
   name: string;
 }
@@ -11,6 +11,12 @@ export interface Availability {
   isBooked: boolean;
   bookedByEmail: string;
   durationMins: number;
+}
+
+export interface CalendarAvailability {
+  interviewerUID: string | undefined;
+  start: string;
+  end: string;
 }
 
 export interface Event {
