@@ -7,6 +7,9 @@ import {
 } from "../controllers/availabilityController";
 
 export const availabilityRouter = express.Router();
+// enable cors
+var cors = require("cors");
+availabilityRouter.use(cors());
 
 availabilityRouter.post("/", async (req, res) => {
   try {
@@ -22,10 +25,10 @@ availabilityRouter.post("/", async (req, res) => {
       throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
     await addAvailability(body);
     res.send(
-      `A timeslot at ${body.startTime} has been added to interviewer ${body.interviewerUID}'s availability`
+      `"A timeslot at ${body.startTime} has been added to interviewer ${body.interviewerUID}'s availability"`
     );
   } catch (err) {
-    res.status(500).send(`error processing request: ${err}`);
+    res.status(500).send(`"error processing request: ${err}"`);
   }
 });
 
@@ -45,6 +48,6 @@ availabilityRouter.get("/", async (req, res) => {
     );
     res.send(availabilityData);
   } catch (err) {
-    res.status(500).send(`error processing request: ${err}`);
+    res.status(500).send(`"error processing request: ${err}"`);
   }
 });
