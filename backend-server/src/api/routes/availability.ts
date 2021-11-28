@@ -7,9 +7,6 @@ import {
 } from "../controllers/availabilityController";
 
 export const availabilityRouter = express.Router();
-// enable cors
-var cors = require("cors");
-availabilityRouter.use(cors());
 
 availabilityRouter.post("/", async (req, res) => {
   try {
