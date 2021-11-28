@@ -13,6 +13,9 @@ import { findOverlapping } from "../controllers/mergeController";
 import { Availability } from "../data/models";
 
 export const availabilityRouter = express.Router();
+// enable cors
+var cors = require("cors");
+availabilityRouter.use(cors());
 
 availabilityRouter.post("/", async (req, res) => {
   const body: AddAvailabilityBody = {
@@ -30,10 +33,10 @@ availabilityRouter.post("/", async (req, res) => {
 
     await addAvailability(body);
     res.send(
-      `A timeslot at ${body.startTime} has been added to interviewer ${body.interviewerUID}'s availability`
+      `"A timeslot at ${body.startTime} has been added to interviewer ${body.interviewerUID}'s availability"`
     );
   } catch (err) {
-    res.status(500).send(`error processing request: ${err}`);
+    res.status(500).send(`"error processing request: ${err}"`);
   }
 });
 
@@ -50,10 +53,10 @@ availabilityRouter.put("/", async (req, res) => {
 
     const createdAvailabilities = await replaceAllAvailabilities(body);
     res.send(
-      `${createdAvailabilities.length} timeslots have been added to ${body.interviewerUID}'s availabilities`
+      `"${createdAvailabilities.length} timeslots have been added to ${body.interviewerUID}'s availabilities"`
     );
   } catch (err) {
-    res.status(500).send(`error processing request: ${err}`);
+    res.status(500).send(`"error processing request: ${err}"`);
   }
 });
 
@@ -72,7 +75,7 @@ availabilityRouter.get("/", async (req, res) => {
     );
     res.send(availabilityData);
   } catch (err) {
-    res.send(`error processing request: ${err}`);
+    res.send(`"error processing request: ${err}"`);
   }
 });
 

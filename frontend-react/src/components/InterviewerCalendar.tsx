@@ -6,16 +6,13 @@ import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
 import { formatISO } from "date-fns";
 
-// Setup the localizer by providing the moment (or globalize) Object
-// to the correct localizer.
-
 interface Props {
   localizer: DateLocalizer;
 }
 
 interface CalendarEvent {
   interviewerUID: string | undefined;
-  start: Date; // Date.toISOString()
+  start: Date;
   end: Date;
 }
 
@@ -40,6 +37,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
     start: string | Date;
     end: string | Date;
   }): any => {
+    // option to delete when event timeslot is clicked / selected
     const shouldDelete = window.confirm("Would you like to remove this event?");
     if (shouldDelete === true) {
       setEvents(events.filter((event) => event.start !== start));
@@ -49,6 +47,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
     }
   };
 
+  // called when user drags through calendar to create new timeslots
   const handleCreate = ({
     start,
     end,
@@ -57,6 +56,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
     start: string | Date;
     end: string | Date;
   }): any => {
+    // create new CalendarEvent and add to events state
     let newEvent = {} as CalendarEvent;
     newEvent.interviewerUID = interviewerUID;
     newEvent.start = moment(start).toDate();
@@ -64,6 +64,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
 
     setEvents([...events, newEvent]);
 
+    // create new EventAPI and add to eventsAPI state
     let newEventAPI = {} as EventAPI;
     newEventAPI.interviewerUID = newEvent.interviewerUID;
     newEventAPI.start = formatISO(newEvent.start);
@@ -72,13 +73,12 @@ export default function InterviewerCalendar({ localizer }: Props) {
     setEventsAPI([...eventsAPI, newEventAPI]);
   };
 
+  // submit created events to be saved
   const handleClick = async (
     e: React.MouseEvent<HTMLButtonElement>,
     eventsToSave: CalendarEvent[]
   ): Promise<void> => {
     e.preventDefault();
-
-    console.log(JSON.stringify({ eventsAPI, interviewerUID }));
 
     const submitCalendarEvents = {
       method: "POST",
@@ -101,6 +101,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
     alert("events saved yay!");
   };
 
+  // converts eventsAPI received from GET request to renderable CalendarEvents
   const convertToCalendar = (event: EventAPI): CalendarEvent => {
     let storedEvent = {} as CalendarEvent;
     storedEvent.interviewerUID = event.interviewerUID;
