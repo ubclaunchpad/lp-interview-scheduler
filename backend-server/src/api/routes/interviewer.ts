@@ -29,7 +29,7 @@ interviewerRouter.get("/", async (req, res) => {
 
   try {
     const interviewerData = await getInterviewer(organization, userUID);
-    res.send(interviewerData);
+    res.json(interviewerData);
   } catch (err) {
     res.status(500).send(`Internal Server Error: ${err}`);
   }

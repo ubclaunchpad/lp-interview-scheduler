@@ -28,6 +28,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
   const [error, setError] = React.useState(false);
   const { user } = useAuth();
   const interviewerUID = user?.uid;
+  const organization = "launchpad";
 
   const handleSelect = ({
     start,
@@ -85,18 +86,28 @@ export default function InterviewerCalendar({ localizer }: Props) {
       mode: "cors" as RequestMode,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        eventsAPI,
-        interviewerUID,
-        organization: "launchpad",
+        eventsAPI: eventsAPI,
+        interviewerUID: interviewerUID,
+        organization: organization,
       }),
     };
+
+    console.log(submitCalendarEvents);
 
     const response = await fetch(
       "http://localhost:8080/v1/availabilities/",
       submitCalendarEvents
     );
-    const data = await response.json();
-    console.log(data);
+    console.log(response);
+    try {
+      const data = await response.json();
+      console.log("data");
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+      console.log("response causing error");
+      console.log(response);
+    }
 
     alert(JSON.stringify(eventsAPI));
   };
@@ -113,11 +124,13 @@ export default function InterviewerCalendar({ localizer }: Props) {
     });
   };
 
+  // we should refactor this, getting linter error right now about
+  // exhaustive dependencies
   React.useEffect(() => {
     async function fetchData() {
       try {
         const response = await fetch(
-          "http://localhost:8080/v1/availabilities/calendarAvailabilities?organization=launchpad&interviewerUID=aymen123"
+          `http://localhost:8080/v1/availabilities/calendarAvailabilities?organization=${organization}&interviewerUID=${interviewerUID}`
         );
         const data = await response.json();
         console.log(data);
