@@ -1,6 +1,11 @@
 import { dataAccess } from "../data/dataAccess";
 import { Interviewer } from "../data/models";
 
+export interface GetInterviewerParams {
+  interviewerUID: string;
+  organization: string;
+}
+
 export async function addInterviewer(
   organization: string,
   interviewerUID: string,
