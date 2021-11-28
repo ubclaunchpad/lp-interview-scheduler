@@ -3,19 +3,23 @@ import { Interviewer } from "../data/models";
 
 export async function addInterviewer(
   organization: string,
-  userUID: string,
+  interviewerUID: string,
   email: string,
   name: string
 ) {
   const interviewer: Interviewer = {
     organization,
-    userUID,
+    interviewerUID,
     email,
     name,
   };
+
   await dataAccess.setInterviewer(interviewer);
 }
 
-export async function getInterviewer(organization: string, userUID: string) {
-  return await dataAccess.getInterviewer(organization, userUID);
+export async function getInterviewer(
+  organization: string,
+  interviewerUID: string
+) {
+  return await dataAccess.getInterviewer(organization, interviewerUID);
 }

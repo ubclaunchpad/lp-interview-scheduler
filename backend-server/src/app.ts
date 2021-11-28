@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import * as dotenv from "dotenv";
 import { v1Router } from "./api/versions/v1";
 
@@ -11,9 +11,7 @@ app.listen(port, () => {
   console.log(`Running on PORT ${port}!`);
 });
 
-const handler = (request: Request, response: Response, next: NextFunction) => {
-  response.status(200).send("Hello World!");
-};
+app.get("/", (req, res) => res.status(200).send("hello world!"));
+app.get("/ping", (req, res) => res.status(200).send("pong"));
 
-app.get("/", handler);
 app.use("/v1", v1Router);
