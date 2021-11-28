@@ -114,14 +114,18 @@ export default function InterviewerCalendar({ localizer }: Props) {
 
   // converts eventsAPI received from GET request to renderable CalendarEvents
   const convertToCalendar = (eventsFromAPI: EventAPI[]) => {
+    const convertedEvents: CalendarEvent[] = [];
     eventsFromAPI.forEach(function (event) {
-      let storedEvent = {} as CalendarEvent;
-      storedEvent.interviewerUID = event.interviewerUID;
-      storedEvent.start = new Date(event.start);
-      storedEvent.end = new Date(event.end);
+      const storedEvent: CalendarEvent = {
+        interviewerUID: event.interviewerUID,
+        start: new Date(event.start),
+        end: new Date(event.end),
+      };
 
-      setEvents([...events, storedEvent]);
+      convertedEvents.push(storedEvent);
     });
+
+    setEvents(convertedEvents);
   };
 
   // we should refactor this, getting linter error right now about
@@ -133,7 +137,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
           `http://localhost:8080/v1/availabilities/calendarAvailabilities?organization=${organization}&interviewerUID=${interviewerUID}`
         );
         const data = await response.json();
-        console.log(data);
+        console.log({ data });
 
         // convert data (EventAPI[]) into CalendarEvent[]
         convertToCalendar(data);
@@ -146,6 +150,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
     fetchData();
   }, []);
 
+  console.log({ events });
   return (
     <>
       {error ? (
