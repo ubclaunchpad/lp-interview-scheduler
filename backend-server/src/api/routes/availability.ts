@@ -30,7 +30,7 @@ availabilityRouter.post("/", async (req, res) => {
 
     await addAvailability(body);
     res.send(
-      `A timeslot at ${body.startTime} has been added to interviewer ${body.interviewerUID}'s availability`
+      `"A timeslot at ${body.startTime} has been added to interviewer ${body.interviewerUID}'s availability"`
     );
   } catch (err) {
     res.status(500).send(`error processing request: ${err}`);
@@ -70,7 +70,7 @@ availabilityRouter.get("/", async (req, res) => {
       organization,
       interviewerUID
     );
-    res.send(availabilityData);
+    res.json(availabilityData);
   } catch (err) {
     res.send(`error processing request: ${err}`);
   }
@@ -87,7 +87,7 @@ availabilityRouter.get("/calendarAvailabilities", async (req, res) => {
 
     const calendarAvailabilitiesData =
       await getInterviewerCalendarAvailabilities(organization, interviewerUID);
-    res.send(calendarAvailabilitiesData);
+    res.json(calendarAvailabilitiesData);
   } catch (err) {
     res.send(`error processing request: ${err}`);
   }
@@ -115,7 +115,7 @@ availabilityRouter.get("/mergedTimes", async (req, res) => {
     )) as Availability[];
 
     const merged = findOverlapping(allAvailabilities1, allAvailabilities2);
-    res.send(merged);
+    res.json(merged);
   } catch (err) {
     res.send(`error processing request: ${err}`);
   }

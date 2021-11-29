@@ -21,7 +21,7 @@ eventRouter.post("/", async (req, res) => {
     if (!Object.values(body).every((field) => field != null))
       throw new Error(`Incomplete Request Body:  ${JSON.stringify(body)}`);
     const ret = await addEvent(body);
-    res.send(ret);
+    res.json(ret);
   } catch (err) {
     res.status(500).send(`error processing request: ${err}`);
   }
@@ -36,7 +36,7 @@ eventRouter.get("/", async (req, res) => {
     if (!Object.values(body).every((field) => field != null))
       throw new Error(`Incomplete Request Body:  ${JSON.stringify(body)}`);
     const eventData = await getEvent(body.organization, body.eventUID);
-    res.send(eventData);
+    res.json(eventData);
   } catch (err) {
     res.status(500).send(`error processing request: ${err}`);
   }
@@ -47,7 +47,7 @@ eventRouter.get("/bookingCount/", async (req, res) => {
     const organization: string = req.query.organization as string;
     if (organization == null) throw new Error(`No organization provided`);
     const bookingCount = await getBookingCount(organization);
-    res.send(bookingCount);
+    res.json(bookingCount);
   } catch (err) {
     res.status(500).send(`error processing request: ${err}`);
   }
