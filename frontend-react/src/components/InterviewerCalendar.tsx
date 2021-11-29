@@ -128,8 +128,6 @@ export default function InterviewerCalendar({ localizer }: Props) {
     setEvents(convertedEvents);
   };
 
-  // we should refactor this, getting linter error right now about
-  // exhaustive dependencies
   React.useEffect(() => {
     async function fetchData() {
       try {
@@ -148,7 +146,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
       }
     }
     fetchData();
-  }, []);
+  }, [interviewerUID]);
 
   console.log({ events });
   return (
