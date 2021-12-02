@@ -64,10 +64,10 @@ export default function BookingPage() {
         style={{ height: 500 }}
         min={new Date(2021, 11, 11, 7, 0)}
         max={new Date(2021, 11, 11, 21, 0)}
-        // uncomment this for custom rendering of events
-        // components={{
-        //   event: existingEvents,
-        // }}
+      // uncomment this for custom rendering of events
+      // components={{
+      //   event: existingEvents,
+      // }}
       />
       <div>
         <button onClick={(e) => handleSubmit(e)}>Create Booking Link</button>
@@ -75,4 +75,29 @@ export default function BookingPage() {
       </div>
     </>
   );
+}
+
+
+
+async function getAllLeads(organization: string): Promise<{ interviewerUID: string; interviewerName: string; }[]> {
+  return Promise.reject("not there yet");
+  
+}
+
+async function addEvent(
+  organization: string,
+  leads: Array<{ leadUID: string; name: string }>,
+  intervieweeEmail: string,
+  length: number,
+  expires: string
+): Promise<any> {
+  return Promise.reject("not there yet");
+}
+
+async function getMergedAvailabilities(
+  organization: string,
+  leadUID1: string,
+  leadUID2: string
+): Promise<CalendarEvent[]> {
+  return Promise.reject("not there yet");
 }
