@@ -28,3 +28,22 @@ export async function getInterviewer(
 ) {
   return await dataAccess.getInterviewer(organization, interviewerUID);
 }
+
+export async function getAllInterviewers(
+  organization: string
+): Promise<SimpleInterviewer[]> {
+  const interviewers: any[] = await dataAccess.listInterviewers(organization);
+  const simpleInterviewers: SimpleInterviewer[] = [];
+  interviewers.forEach((val) =>
+    simpleInterviewers.push({
+      interviewerUID: val.interviewerUID,
+      interviewerName: val.name,
+    })
+  );
+  return Promise.resolve(simpleInterviewers);
+}
+
+interface SimpleInterviewer {
+  interviewerUID: string;
+  interviewerName: string;
+}

@@ -54,7 +54,7 @@ export async function replaceAllAvailabilities(
     body.organization
   );
 
-  // // I think we want to allow zero length availabilities 
+  // // I think we want to allow zero length availabilities
   // // (if the interviewer wiped their availability)
   // if (!availabilities.length) {
   //   throw new Error("Can not construct availabilities from given input");

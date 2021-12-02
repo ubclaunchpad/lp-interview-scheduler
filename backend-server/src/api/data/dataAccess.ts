@@ -115,6 +115,18 @@ class DataAccess {
     await setDoc(doc, interviewer);
   }
 
+  async listInterviewers(organization: string) {
+    // return list all events in organization
+    const docCollection = await getDocs(
+      collection(
+        this.rootCollection,
+        organization,
+        this.interviewerCollectionName
+      )
+    );
+    return docCollection.docs.map((doc) => doc.data());
+  }
+
   async getAvailability(
     organization: string,
     interviewerUID: string,
