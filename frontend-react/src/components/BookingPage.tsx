@@ -5,7 +5,6 @@ import "../App.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
 
-
 const localizer = momentLocalizer(moment);
 
 interface CalendarEvent {
@@ -21,23 +20,29 @@ export default function BookingPage() {
     intervieweeEmail: "",
     userUID: user?.uid,
     partnerUID: "",
-    length: 0
+    length: 0,
   });
-  const [calendarEvent, setCalendarEvent] = React.useState([] as CalendarEvent[]);
-
+  const [calendarEvent, setCalendarEvent] = React.useState(
+    [] as CalendarEvent[]
+  );
 
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // submit selected lead
+    // submit form data
     event.preventDefault();
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     // set lead state and set the chosen lead's availabilities to events
-    const value = event.target.value; 
+    const value = event.target.value;
     setEventData({
-      ...eventData, 
-      [event.target.name]: value
-    })}; 
+      ...eventData,
+      [event.target.name]: value,
+    });
+  };
 
   const handleSelect = ({
     start,
@@ -51,64 +56,109 @@ export default function BookingPage() {
     console.log("end: " + end);
   };
 
+  React.useEffect(() => {
+    // getMergedAvailabilities(
+    //   eventData.organization,
+    //   eventData.userUID,
+    //   eventData.partnerUID
+    // );
+    console.log(eventData.userUID);
+    console.log("my partner is:" + eventData.partnerUID);
+  }, [eventData.partnerUID]);
+
   return (
     <>
       <h1>booking page</h1>
       <form>
-        <div className="dropdown-lead">
-          <label>
-            Choose your partner:
-            <select name = "partnerUID" value={eventData.partnerUID} onChange={handleChange}>
-              <option value="lead1">Lead 1</option>
-              <option value="lead2">Lead 2</option>
-              <option value="lead3">Lead 3</option>
-              <option value="lead4">Lead 4</option>
-            </select>
-          </label>
-          <label>
-            Interviewee Email:
-            <textarea name = "intervieweeEmail" value={eventData.intervieweeEmail} onChange={handleChange}/>            
-          </label>
-          <label>
-            Select Interview Length:
+        <div className="event-info-form">
+          <div className="left-side">
             <div>
-              <input type="radio" value={30} name="length" onChange = {handleChange}/> Male
-              <input type="radio" value={60} name="length" onChange = {handleChange}/> Female
-              <input type="radio" value={90} name="length" onChange = {handleChange}/> Other
+              <label>
+                Choose your partner:
+                <select
+                  name="partnerUID"
+                  value={eventData.partnerUID}
+                  onChange={handleChange}
+                >
+                  <option value="lead1">Lead 1</option>
+                  <option value="lead2">Lead 2</option>
+                  <option value="lead3">Lead 3</option>
+                  <option value="lead4">Lead 4</option>
+                </select>
+              </label>
             </div>
-          </label>
+            <div>
+              <label>
+                Interviewee Email:
+                <textarea
+                  name="intervieweeEmail"
+                  value={eventData.intervieweeEmail}
+                  onChange={handleChange}
+                />
+              </label>
+            </div>
+            <div>
+              <label>
+                Select Interview Length:
+                <div>
+                  <input
+                    type="radio"
+                    value={30}
+                    name="length"
+                    onChange={handleChange}
+                  />{" "}
+                  30 mins
+                  <input
+                    type="radio"
+                    value={60}
+                    name="length"
+                    onChange={handleChange}
+                  />{" "}
+                  60 mins
+                  <input
+                    type="radio"
+                    value={90}
+                    name="length"
+                    onChange={handleChange}
+                  />{" "}
+                  90 mins
+                </div>
+              </label>
+            </div>
+          </div>
+          <div className="right-side">
+            <Calendar
+              selectable
+              localizer={localizer}
+              events={calendarEvent}
+              defaultView="week"
+              defaultDate={moment().toDate()}
+              onSelectEvent={(event) => handleSelect(event)}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: 500 }}
+              min={new Date(2021, 11, 11, 7, 0)}
+              max={new Date(2021, 11, 11, 21, 0)}
+              // uncomment this for custom rendering of events
+              // components={{
+              //   event: existingEvents,
+              // }}
+            />
+          </div>
         </div>
-        <Calendar
-          selectable
-          localizer={localizer}
-          events={calendarEvent}
-          defaultView="week"
-          defaultDate={moment().toDate()}
-          onSelectEvent={(event) => handleSelect(event)}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 500 }}
-          min={new Date(2021, 11, 11, 7, 0)}
-          max={new Date(2021, 11, 11, 21, 0)}
-        // uncomment this for custom rendering of events
-        // components={{
-        //   event: existingEvents,
-        // }}
-        />
         <div>
           <button onClick={(e) => handleSubmit(e)}>Create Booking Link</button>
           <input type="text" id="unique-link" name="unique-link"></input>
         </div>
       </form>
-      </>
+    </>
   );
 }
 
-
-
-async function getAllLeads(organization: string): Promise<{ interviewerUID: string; interviewerName: string; }[]> {
+async function getAllLeads(
+  organization: string
+): Promise<{ interviewerUID: string; interviewerName: string }[]> {
   return Promise.reject("not there yet");
-
 }
 
 async function addEvent(
