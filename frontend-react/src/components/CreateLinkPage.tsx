@@ -14,6 +14,20 @@ interface CalendarEvent {
   end: Date;
 }
 
+interface AddEventBody {
+  organization: string;
+  leads: { leadUID: string; name: string }[];
+  intervieweeEmail: string;
+  length: number;
+  expires: string
+}
+
+interface APICalendarEvent {
+  interviewerUID: string | undefined;
+  start: string;
+  end: string;
+}
+
 export default function CreateLinkPage() {
   const { user } = useAuth();
   const [eventData, setEventData] = React.useState({
@@ -158,26 +172,63 @@ export default function CreateLinkPage() {
   );
 }
 
-// async function getAllLeads(
-//   organization: string
-// ): Promise<{ interviewerUID: string; interviewerName: string }[]> {
-//   return Promise.reject("not there yet");
-// }
+async function getAllLeads(
+  organization: string
+): Promise<{ interviewerUID: string; interviewerName: string }[]> {
+  try {
+    const interviewersRes: Response = await fetch(`localhost:8080/v1/interviewers/?organization=${organization}`);
+    if (!interviewersRes.ok) 
+      throw new Error(`Error calling getAllLead api with organization ${organization}`);
+    const interviewers: {interviewerUID: string; interviewerName: string}[] = [];
+    interviewersRes.json().then(val => 
+      val.array.forEach((element: { name: string; interviewerUID: string; }) => {
+        interviewers.push({
+          interviewerName: element.name,
+          interviewerUID: element.interviewerUID
+        });
+      }));
+    return Promise.resolve(interviewers);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
 
-// async function addEvent(
-//   organization: string,
-//   leads: { leadUID: string; name: string }[],
-//   intervieweeEmail: string,
-//   length: number,
-//   expires: string
-// ): Promise<any> {
-//   return Promise.reject("not there yet");
-// }
+async function addEvent(
+  organization: string,
+  leads: { leadUID: string; name: string }[],
+  intervieweeEmail: string,
+  length: number,
+  expires: string
+): Promise<any> {
+  const addEventBody: AddEventBody = {
+    organization: organization,
+    leads: leads,
+    intervieweeEmail: intervieweeEmail,
+    length: length,
+    expires: expires
+  };
+  try {
+    const eventRes: Response = await fetch("localhost:8080/v1/events/", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(addEventBody)
+    });
+    if (!eventRes.ok)
+      throw new Error(`error adding event ${JSON.stringify(addEventBody, null, '\t')}`);
+    return Promise.resolve(await eventRes.json());
+  } catch(err) {
+    return Promise.reject(err);
+  }
+}
 
-// async function getMergedAvailabilities(
-//   organization: string,
-//   leadUID1: string,
-//   leadUID2: string
-// ): Promise<CalendarEvent[]> {
-//   return Promise.reject("not there yet");
-// }
+async function getMergedAvailabilities(
+  organization: string,
+  leadUID1: string,
+  leadUID2: string
+): Promise<CalendarEvent[]> {
+  
+  return Promise.reject("not there yet");
+}
+
