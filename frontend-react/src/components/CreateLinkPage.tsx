@@ -156,10 +156,10 @@ export default function CreateLinkPage() {
               style={{ height: 500 }}
               min={new Date(2021, 11, 11, 7, 0)}
               max={new Date(2021, 11, 11, 21, 0)}
-              // uncomment this for custom rendering of events
-              // components={{
-              //   event: existingEvents,
-              // }}
+            // uncomment this for custom rendering of events
+            // components={{
+            //   event: existingEvents,
+            // }}
             />
           </div>
         </div>
@@ -177,10 +177,10 @@ async function getAllLeads(
 ): Promise<{ interviewerUID: string; interviewerName: string }[]> {
   try {
     const interviewersRes: Response = await fetch(`localhost:8080/v1/interviewers/?organization=${organization}`);
-    if (!interviewersRes.ok) 
-      throw new Error(`Error calling getAllLead api with organization ${organization}`);
-    const interviewers: {interviewerUID: string; interviewerName: string}[] = [];
-    interviewersRes.json().then(val => 
+    if (!interviewersRes.ok)
+      throw new Error(`Error calling getAllLeads api with organization ${organization}`);
+    const interviewers: { interviewerUID: string; interviewerName: string }[] = [];
+    interviewersRes.json().then(val =>
       val.array.forEach((element: { name: string; interviewerUID: string; }) => {
         interviewers.push({
           interviewerName: element.name,
@@ -218,7 +218,7 @@ async function addEvent(
     if (!eventRes.ok)
       throw new Error(`error adding event ${JSON.stringify(addEventBody, null, '\t')}`);
     return Promise.resolve(await eventRes.json());
-  } catch(err) {
+  } catch (err) {
     return Promise.reject(err);
   }
 }
@@ -228,7 +228,29 @@ async function getMergedAvailabilities(
   leadUID1: string,
   leadUID2: string
 ): Promise<CalendarEvent[]> {
-  
-  return Promise.reject("not there yet");
+  try {
+    const mergedRes: Response =
+      await fetch(`localhost:8080/v1/availabilities/mergedTimes?organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}&inCalendarAvailability=true`);
+    if (!mergedRes.ok)
+      throw new Error(`error calling api merged times with organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}`);
+    const calendarEvents: CalendarEvent[] = ConvertAPICalEventsToCalEvents(await mergedRes.json() as APICalendarEvent[]);
+    return Promise.resolve(calendarEvents);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
+
+// converts eventsAPI received from GET request to renderable CalendarEvents
+function ConvertAPICalEventsToCalEvents(APICalEvents: APICalendarEvent[]): CalendarEvent[] {
+  const convertedEvents: CalendarEvent[] = [];
+  APICalEvents.forEach(function (event) {
+    const storedEvent: CalendarEvent = {
+      interviewerUID: event.interviewerUID,
+      start: new Date(event.start),
+      end: new Date(event.end),
+    };
+    convertedEvents.push(storedEvent);
+  });
+  return convertedEvents;
 }
 
