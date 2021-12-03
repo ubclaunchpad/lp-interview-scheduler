@@ -107,6 +107,11 @@ export default function BookingPage() {
 
 
 async function getAllLeads(organization: string): Promise<{ interviewerUID: string; interviewerName: string; }[]> {
+  try {
+    
+  } catch(err) {
+    Promise.reject(err);
+  }
   return Promise.reject("not there yet");
 
 }
