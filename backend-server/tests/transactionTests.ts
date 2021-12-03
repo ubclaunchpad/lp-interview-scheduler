@@ -36,7 +36,7 @@ const testEvent: Event = {
     },
   ],
   intervieweeEmail: "",
-  confirmedTime: "",
+  confirmedTime: null,
   eventLengthInMinutes: 30,
   expires: "",
   eventUID: "testEvent",
