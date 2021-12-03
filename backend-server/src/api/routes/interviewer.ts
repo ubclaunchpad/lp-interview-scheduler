@@ -27,6 +27,8 @@ interviewerRouter.post("/", async (req, res) => {
 interviewerRouter.get("/", async (req, res) => {
   if (!req.query.interviewerUID) {
     try {
+      if (!req.query.organization) 
+        throw new Error("Incomplete Request, Include Query Params");
       const organization: string = req.query.organization as string;
       res.json(await getAllInterviewers(organization));
     } catch (err) {

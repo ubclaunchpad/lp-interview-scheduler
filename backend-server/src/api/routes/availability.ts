@@ -8,9 +8,10 @@ import {
   getInterviewerCalendarAvailabilities,
   replaceAllAvailabilities,
   GetMergedRoutesParams,
+  makeMultipleCalendarAvailabilities,
 } from "../controllers/availabilityController";
 import { findOverlapping } from "../controllers/mergeController";
-import { Availability } from "../data/models";
+import { Availability, CalendarAvailability } from "../data/models";
 
 export const availabilityRouter = express.Router();
 
@@ -115,7 +116,15 @@ availabilityRouter.get("/mergedTimes", async (req, res) => {
     )) as Availability[];
 
     const merged = findOverlapping(allAvailabilities1, allAvailabilities2);
-    res.json(merged);
+
+    if (!req.query.inCalendarAvailability || req.query.inCalendarAvailability as string === "false") {
+      res.json(merged);
+    } else if (req.query.inCalendarAvailability as string === "true") {
+      const mergedCalendar: CalendarAvailability[] = await makeMultipleCalendarAvailabilities(merged, body.organization);
+      res.json(mergedCalendar);
+    } else {
+      throw new Error(`Incompatible Query Key: inCalendarAvailability=${req.query.inCalendarAvailability}`);
+    }
   } catch (err) {
     res.send(`error processing request: ${err}`);
   }
