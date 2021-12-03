@@ -31,16 +31,34 @@ export async function getInterviewer(
 
 export async function getAllInterviewers(
   organization: string
-): Promise<SimpleInterviewer[]> {
-  const interviewers: any[] = await dataAccess.listInterviewers(organization);
-  const simpleInterviewers: SimpleInterviewer[] = [];
-  interviewers.forEach((val) =>
-    simpleInterviewers.push({
+): Promise<Interviewer[]> {
+  // const interviewers: any[] = await dataAccess.listInterviewers(organization);
+  // const simpleInterviewers: SimpleInterviewer[] = [];
+  // interviewers.forEach((val) =>
+  //   simpleInterviewers.push({
+  //     interviewerUID: val.interviewerUID,
+  //     interviewerName: val.name,
+  //   })
+  // );
+  // return Promise.resolve(simpleInterviewers);
+  const interviewerDocs: any[] = await dataAccess.listInterviewers(organization);
+  // const simpleInterviewers: SimpleInterviewer[] = [];
+  // interviewers.forEach((val) =>
+  //   simpleInterviewers.push({
+  //     interviewerUID: val.interviewerUID,
+  //     interviewerName: val.name,
+  //   })
+  // );
+  const interviewers: Interviewer[] = [];
+  interviewerDocs.forEach(val => {
+    interviewers.push({
       interviewerUID: val.interviewerUID,
-      interviewerName: val.name,
+      name: val.name,
+      email: val.email,
+      organization: val.organization
     })
-  );
-  return Promise.resolve(simpleInterviewers);
+  })
+  return Promise.resolve(interviewers);
 }
 
 interface SimpleInterviewer {
