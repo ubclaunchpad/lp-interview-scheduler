@@ -81,12 +81,12 @@ export default function BookingPage() {
 
 async function getAllLeads(organization: string): Promise<{ interviewerUID: string; interviewerName: string; }[]> {
   return Promise.reject("not there yet");
-  
+
 }
 
 async function addEvent(
   organization: string,
-  leads: Array<{ leadUID: string; name: string }>,
+  leads: { leadUID: string; name: string }[],
   intervieweeEmail: string,
   length: number,
   expires: string
