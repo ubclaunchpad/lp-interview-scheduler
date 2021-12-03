@@ -7,19 +7,19 @@ import { Interviewer, Event } from "./../src/api/data/models";
 // In the future we can add a formal framework w/ asserts.
 const Interviewer1: Interviewer = {
   organization: "launchpad",
-  userUID: "transactionTest1",
+  interviewerUID: "transactionTest1",
   email: "test@test.com",
   name: "Transaction Test 1",
 };
 const Interviewer2: Interviewer = {
   organization: "launchpad",
-  userUID: "transactionTest2",
+  interviewerUID: "transactionTest2",
   email: "test@test.com",
   name: "Transaction Test 2",
 };
 const Interviewer3: Interviewer = {
   organization: "launchpad",
-  userUID: "transactionTest3",
+  interviewerUID: "transactionTest3",
   email: "test@test.com",
   name: "Transaction Test 3",
 };
@@ -73,12 +73,12 @@ async function beforeEach() {
   // Interviewer 3:
   // transactionTest3 (doc) -> availabilities (collection) -> Time1 (doc) -> isBooked : False
   //                                                       -> Time2 (doc) -> isBooked : False
-  await setTime(Interviewer1.userUID, "Time1", false);
-  await setTime(Interviewer1.userUID, "Time2", false);
-  await setTime(Interviewer2.userUID, "Time1", false);
-  await setTime(Interviewer2.userUID, "Time2", true);
-  await setTime(Interviewer3.userUID, "Time1", false);
-  await setTime(Interviewer3.userUID, "Time2", false);
+  await setTime(Interviewer1.interviewerUID, "Time1", false);
+  await setTime(Interviewer1.interviewerUID, "Time2", false);
+  await setTime(Interviewer2.interviewerUID, "Time1", false);
+  await setTime(Interviewer2.interviewerUID, "Time2", true);
+  await setTime(Interviewer3.interviewerUID, "Time1", false);
+  await setTime(Interviewer3.interviewerUID, "Time2", false);
   await dataAccess.setEvent(testEvent, "launchpad");
 }
 

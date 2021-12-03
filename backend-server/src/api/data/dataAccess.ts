@@ -1,6 +1,7 @@
 import {
   collection,
   CollectionReference,
+  deleteDoc,
   doc,
   DocumentReference,
   DocumentData,
@@ -9,7 +10,11 @@ import {
   runTransaction,
   Transaction,
 } from "@firebase/firestore";
-import { setDoc } from "firebase/firestore";
+import { 
+  setDoc,
+  getDocs,
+  Timestamp 
+} from "firebase/firestore";
 import { db } from "../../firebase/db";
 import { Availability, Interviewer, Event } from "./models";
 
@@ -51,13 +56,13 @@ class DataAccess {
 
   async interviewerDocRef(
     organization: string,
-    userUID: string
+    interviewerUID: string
   ): Promise<DocumentReference<DocumentData>> {
     return await doc(
       this.rootCollection,
       organization,
       this.interviewerCollectionName,
-      userUID
+      interviewerUID
     );
   }
 
@@ -76,11 +81,24 @@ class DataAccess {
     );
   }
 
+  async allAvailabilitiesDocRef(
+    organization: string,
+    interviewerUID: string
+  ): Promise<DocumentReference<DocumentData>> {
+    return await doc(
+      this.rootCollection,
+      organization,
+      this.interviewerCollectionName,
+      interviewerUID,
+      this.availabilityCollectionName
+    );
+  }
+
   async getInterviewer(
     organization: string,
-    userUID: string
+    interviewerUID: string
   ): Promise<DocumentData> {
-    const doc = await this.interviewerDocRef(organization, userUID);
+    const doc = await this.interviewerDocRef(organization, interviewerUID);
     const res = await getDoc(doc);
     return res.data();
   }
@@ -96,7 +114,7 @@ class DataAccess {
 
     const doc = await this.interviewerDocRef(
       interviewer.organization,
-      interviewer.userUID
+      interviewer.interviewerUID
     );
     await setDoc(doc, interviewer);
   }
@@ -115,6 +133,22 @@ class DataAccess {
     return res.data();
   }
 
+  async getAllAvailabilities(
+    organization: string,
+    interviewerUID: string
+  ): Promise<DocumentData[]> {
+    const docCollection = await getDocs(
+      collection(
+        this.rootCollection,
+        organization,
+        this.interviewerCollectionName,
+        interviewerUID,
+        this.availabilityCollectionName
+      )
+    );
+    return docCollection.docs.map((doc) => doc.data());
+  }
+
   async setAvailability(availability: Availability, organization: string) {
     const doc = await this.availabilityDocRef(
       organization,
@@ -122,6 +156,34 @@ class DataAccess {
       availability.startTime
     );
     await setDoc(doc, availability);
+  }
+
+  async deleteAvailabilityCollection(
+    organization: string,
+    interviewerUID: string
+  ) {
+    const collectionRef = await getDocs(
+      collection(
+        this.rootCollection,
+        organization,
+        this.interviewerCollectionName,
+        interviewerUID,
+        this.availabilityCollectionName
+      )
+    );
+    const interviewerRef = await this.interviewerDocRef(
+      organization,
+      interviewerUID
+    );
+
+    collectionRef.forEach(async (availability) => {
+      const docRef = doc(
+        interviewerRef,
+        this.availabilityCollectionName,
+        availability.id
+      );
+      await deleteDoc(docRef);
+    });
   }
 
   async eventDocRef(
@@ -233,6 +295,20 @@ class DataAccess {
       console.log("Transaction failure:", e);
       return false;
     }
+  }
+  
+  async getOrganizationFields(organization: string) {
+    const organizationRef = await doc(this.rootCollection, organization);
+    const organizationDoc = await getDoc(organizationRef);
+    return organizationDoc.data();
+  }
+
+  async listEvents(organization: string): Promise<DocumentData[]> {
+    // return list all events in organization
+    const docCollection = await getDocs(
+      collection(this.rootCollection, organization, this.eventCollectionName)
+    );
+    return docCollection.docs.map((doc) => doc.data());
   }
 }
 

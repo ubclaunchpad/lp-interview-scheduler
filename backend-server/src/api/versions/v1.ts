@@ -6,6 +6,6 @@ import { interviewerRouter } from "../routes/interviewer";
 
 export const v1Router = express.Router();
 
-v1Router.use("/interviewer", interviewerRouter);
-v1Router.use("/availability", availabilityRouter);
-v1Router.use("/event", eventRouter);
+v1Router.use("/interviewers", interviewerRouter);
+v1Router.use("/availabilities", availabilityRouter);
+v1Router.use("/events", eventRouter);
