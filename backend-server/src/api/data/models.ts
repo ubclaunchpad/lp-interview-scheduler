@@ -16,7 +16,7 @@ export interface Availability {
 export interface Event {
   leads: Array<{ leadUID: string; name: string }>;
   intervieweeEmail: string;
-  confirmedStartTime: string;
+  confirmedTime: string;
   eventLengthInMinutes: number;
   expires: string;
   eventUID: string;
