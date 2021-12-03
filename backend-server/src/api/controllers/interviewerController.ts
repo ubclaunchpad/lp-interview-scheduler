@@ -32,23 +32,7 @@ export async function getInterviewer(
 export async function getAllInterviewers(
   organization: string
 ): Promise<Interviewer[]> {
-  // const interviewers: any[] = await dataAccess.listInterviewers(organization);
-  // const simpleInterviewers: SimpleInterviewer[] = [];
-  // interviewers.forEach((val) =>
-  //   simpleInterviewers.push({
-  //     interviewerUID: val.interviewerUID,
-  //     interviewerName: val.name,
-  //   })
-  // );
-  // return Promise.resolve(simpleInterviewers);
   const interviewerDocs: any[] = await dataAccess.listInterviewers(organization);
-  // const simpleInterviewers: SimpleInterviewer[] = [];
-  // interviewers.forEach((val) =>
-  //   simpleInterviewers.push({
-  //     interviewerUID: val.interviewerUID,
-  //     interviewerName: val.name,
-  //   })
-  // );
   const interviewers: Interviewer[] = [];
   interviewerDocs.forEach(val => {
     interviewers.push({
@@ -59,9 +43,4 @@ export async function getAllInterviewers(
     })
   })
   return Promise.resolve(interviewers);
-}
-
-interface SimpleInterviewer {
-  interviewerUID: string;
-  interviewerName: string;
 }
