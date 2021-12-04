@@ -2,19 +2,9 @@ import { useLocation } from "react-router-dom";
 import React from "react";
 
 const linkPrefix = "http://localhost:8080/v1/";
-type MyState = {
-  eventBody: string;
-  mergedAvailabilities: string;
-};
+export default function PageThree() {
 
-export default class PageThree extends React.Component<MyState> {
-  state: MyState = {
-    eventBody: "",
-    mergedAvailabilities: "",
-  };
-
-  render() {
-    const { search } = useLocation();
+    const { search } = useLocation()
     const params = new URLSearchParams(search);
 
     if (!params.has("eventUID") || !params.has("organization")) {
@@ -46,5 +36,4 @@ export default class PageThree extends React.Component<MyState> {
 
     getEvent();
     return <h1>TEST</h1>;
-  }
 }
