@@ -19,7 +19,7 @@ interface AddEventBody {
   leads: { leadUID: string; name: string }[];
   intervieweeEmail: string;
   length: number;
-  expires: string
+  expires: string;
 }
 
 interface APICalendarEvent {
@@ -46,6 +46,8 @@ export default function CreateLinkPage() {
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     // submit form data
     event.preventDefault();
+
+    // create unique url
   };
 
   const handleChange = (
@@ -83,15 +85,24 @@ export default function CreateLinkPage() {
     loadLeadsList();
   }, [])
 
-  // React.useEffect(() => {
-  //   // getMergedAvailabilities(
-  //   //   eventData.organization,
-  //   //   eventData.userUID,
-  //   //   eventData.partnerUID
-  //   // );
-  //   console.log(eventData.userUID);
-  //   console.log("my partner is:" + eventData.partnerUID);
-  // }, [eventData.partnerUID]);
+  // useEffect for populating Calendar with mergedTimes, might need another useEffect for populating leads
+  React.useEffect(() => {
+    // first run of useEffect results in an error bec default partner lead is null atm
+    const fetchMergedLeadTimes = async () => {
+      try {
+        const response = await getMergedAvailabilities(
+          eventData.organization,
+          eventData.userUID,
+          eventData.partnerUID
+        );
+        setCalendarEvent(response);
+        console.log(JSON.stringify(response));
+      } catch (e) {
+        console.log(JSON.stringify(e));
+      }
+    };
+    fetchMergedLeadTimes();
+  }, [eventData.organization, eventData.userUID, eventData.partnerUID]);
 
   return (
     <div className="Create-Link">
@@ -165,10 +176,10 @@ export default function CreateLinkPage() {
               style={{ height: 500 }}
               min={new Date(2021, 11, 11, 7, 0)}
               max={new Date(2021, 11, 11, 21, 0)}
-            // uncomment this for custom rendering of events
-            // components={{
-            //   event: existingEvents,
-            // }}
+              // uncomment this for custom rendering of events
+              // components={{
+              //   event: existingEvents,
+              // }}
             />
           </div>
         </div>
@@ -185,17 +196,23 @@ async function getAllLeads(
   organization: string
 ): Promise<{ interviewerUID: string; interviewerName: string }[]> {
   try {
-    const interviewersRes: Response = await fetch(`localhost:8080/v1/interviewers/?organization=${organization}`);
+    const interviewersRes: Response = await fetch(
+      `localhost:8080/v1/interviewers/?organization=${organization}`
+    );
     if (!interviewersRes.ok)
-      throw new Error(`Error calling getAllLeads api with organization ${organization}`);
-    const interviewers: { interviewerUID: string; interviewerName: string }[] = [];
-    interviewersRes.json().then(val =>
-      val.array.forEach((element: { name: string; interviewerUID: string; }) => {
+      throw new Error(
+        `Error calling getAllLeads api with organization ${organization}`
+      );
+    const interviewers: { interviewerUID: string; interviewerName: string }[] =
+      [];
+    interviewersRes.json().then((val) =>
+      val.array.forEach((element: { name: string; interviewerUID: string }) => {
         interviewers.push({
           interviewerName: element.name,
-          interviewerUID: element.interviewerUID
+          interviewerUID: element.interviewerUID,
         });
-      }));
+      })
+    );
     return Promise.resolve(interviewers);
   } catch (err) {
     return Promise.reject(err);
@@ -214,18 +231,20 @@ async function addEvent(
     leads: leads,
     intervieweeEmail: intervieweeEmail,
     length: length,
-    expires: expires
+    expires: expires,
   };
   try {
     const eventRes: Response = await fetch("localhost:8080/v1/events/", {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(addEventBody)
+      body: JSON.stringify(addEventBody),
     });
     if (!eventRes.ok)
-      throw new Error(`error adding event ${JSON.stringify(addEventBody, null, '\t')}`);
+      throw new Error(
+        `error adding event ${JSON.stringify(addEventBody, null, "\t")}`
+      );
     return Promise.resolve(await eventRes.json());
   } catch (err) {
     return Promise.reject(err);
@@ -234,15 +253,20 @@ async function addEvent(
 
 async function getMergedAvailabilities(
   organization: string,
-  leadUID1: string,
+  leadUID1: string | undefined,
   leadUID2: string
 ): Promise<CalendarEvent[]> {
   try {
-    const mergedRes: Response =
-      await fetch(`localhost:8080/v1/availabilities/mergedTimes?organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}&inCalendarAvailability=true`);
+    const mergedRes: Response = await fetch(
+      `http://localhost:8080/v1/availabilities/mergedTimes?organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}&inCalendarAvailability=true`
+    );
     if (!mergedRes.ok)
-      throw new Error(`error calling api merged times with organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}`);
-    const calendarEvents: CalendarEvent[] = ConvertAPICalEventsToCalEvents(await mergedRes.json() as APICalendarEvent[]);
+      throw new Error(
+        `error calling api merged times with organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}`
+      );
+    const calendarEvents: CalendarEvent[] = ConvertAPICalEventsToCalEvents(
+      (await mergedRes.json()) as APICalendarEvent[]
+    );
     return Promise.resolve(calendarEvents);
   } catch (err) {
     return Promise.reject(err);
@@ -250,7 +274,9 @@ async function getMergedAvailabilities(
 }
 
 // converts eventsAPI received from GET request to renderable CalendarEvents
-function ConvertAPICalEventsToCalEvents(APICalEvents: APICalendarEvent[]): CalendarEvent[] {
+function ConvertAPICalEventsToCalEvents(
+  APICalEvents: APICalendarEvent[]
+): CalendarEvent[] {
   const convertedEvents: CalendarEvent[] = [];
   APICalEvents.forEach(function (event) {
     const storedEvent: CalendarEvent = {
@@ -262,4 +288,3 @@ function ConvertAPICalEventsToCalEvents(APICalEvents: APICalendarEvent[]): Calen
   });
   return convertedEvents;
 }
-
