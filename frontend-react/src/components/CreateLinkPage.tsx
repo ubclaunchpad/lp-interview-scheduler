@@ -16,7 +16,7 @@ interface CalendarEvent {
 
 interface AddEventBody {
   organization: string;
-  leads: { leadUID: string; name: string }[];
+  leads: { leadUID: string; leadName: string }[];
   intervieweeEmail: string;
   length: number;
   expires: string;
@@ -28,26 +28,49 @@ interface APICalendarEvent {
   end: string;
 }
 
+interface LeadList {
+  [key: string]: { leadUID: string; leadName: string }
+}
+
 export default function CreateLinkPage() {
   const { user } = useAuth();
   const [eventData, setEventData] = React.useState({
-    organization: "launchpad",
-    intervieweeEmail: "",
-    userUID: user?.uid,
-    partnerUID: "",
+    organization: "launchpad" as string,
+    intervieweeEmail: "" as string,
+    userUID: user?.uid as string,
+    partnerUID: "" as string,
     length: 0,
+    expires:"2012-04-23T18:25:43.511Z" as string
   });
-
-  const [leadsList, setLeadsList] = React.useState([{leadUID: "", name: ""}]);
+  const [bookingLink, setBookingLink] = React.useState("" as string)
+  const [leadsList, setLeadsList] = React.useState({} as LeadList);
   const [calendarEvent, setCalendarEvent] = React.useState(
     [] as CalendarEvent[]
   );
 
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // submit form data
-    event.preventDefault();
+    
+    const submitEvent = async () => {
+      try{
+        // submit form data
+        const eventResponse = await addEvent(
+          eventData.organization,
+          [leadsList[eventData.userUID], leadsList[eventData.partnerUID]],
+          eventData.intervieweeEmail,
+          eventData.length,
+          eventData.expires
+        );
 
-    // create unique url
+        // create unique url
+        const path: string = `launchpad.com/booking?eventUID=${eventResponse.eventUID}&${eventData.organization}`;
+        setBookingLink(path);
+      } catch(err) {
+        console.log(err);
+      }
+    }
+
+    event.preventDefault();
+    submitEvent();    
   };
 
   const handleChange = (
@@ -73,17 +96,56 @@ export default function CreateLinkPage() {
   }): any => {
     console.log("start: " + start);
     console.log("end: " + end);
-  }; 
+  };
+  
+  const populateDropdown = () => {
+    const loadLeadsList = async () => {
+      
+      const allLeads = await getAllLeads(eventData.organization);
+      const leadDict: LeadList = {};
+      allLeads.forEach(lead => {
+        leadDict[lead.leadUID] = lead;
+      })
+      setLeadsList(leadDict);
+    };
 
-  const loadLeadsList = async () => {
-    const allLeads = await getAllLeads(eventData.organization);
-    var userIndex = allLeads.findIndex(lead => lead.interviewerUID === eventData.userUID);
-    allLeads.splice(userIndex, 1);
-  }
+    try {
+      loadLeadsList();
 
-  React.useEffect(() => {
-    loadLeadsList();
-  }, [])
+      const options = [];
+      for (var key in leadsList){
+        if (key != eventData.userUID) {
+          options.push(leadsList[key]);
+        }
+      }
+
+      return options.map(lead => {
+        return (
+          <option value={lead.leadUID} key={lead.leadUID}> {lead.leadName} </option>
+        )
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // useEffect for populating dropdown menu of leads excluding user
+  // React.useEffect(() => {
+  //   const loadLeadsList = async () => {
+  //     const allLeads = await getAllLeads(eventData.organization);
+  //     var userIndex = allLeads.findIndex(lead => lead.interviewerUID === eventData.userUID);
+  //     allLeads.splice(userIndex, 1);
+  //     setLeadsList(allLeads)
+
+  //     return leadsList.map(lead => {
+  //       return (
+  //         <option value={lead.interviewerUID} key={lead.interviewerUID}> {lead.interviewerName} </option>
+  //       )
+  //     })
+  //   };
+
+  //   loadLeadsList();
+  // });
 
   // useEffect for populating Calendar with mergedTimes, might need another useEffect for populating leads
   React.useEffect(() => {
@@ -120,7 +182,12 @@ export default function CreateLinkPage() {
                   value={eventData.partnerUID}
                   onChange={handleChange}
                 >
-                  {leadsList.map((lead) => <option value={lead.leadUID}> {lead.name}</option>)}
+                  {populateDropdown()}
+                  {/* {leadsList.map(lead => {
+                    return (
+                      <option value={lead.interviewerUID} key={lead.interviewerUID}> {lead.interviewerName} </option>
+                    )
+                  })} */}
                 </select>
               </label>
             </div>
@@ -185,7 +252,7 @@ export default function CreateLinkPage() {
         </div>
         <div>
           <button onClick={(e) => handleSubmit(e)}>Create Booking Link</button>
-          <input type="text" id="unique-link" name="unique-link"></input>
+          <input type={bookingLink} id="unique-link" name="unique-link"></input>
         </div>
       </form>
     </div>
@@ -194,7 +261,7 @@ export default function CreateLinkPage() {
 
 async function getAllLeads(
   organization: string
-): Promise<{ interviewerUID: string; interviewerName: string }[]> {
+): Promise<{ leadUID: string; leadName: string }[]> {
   try {
     const interviewersRes: Response = await fetch(
       `http://localhost:8080/v1/interviewers/?organization=${organization}`
@@ -203,12 +270,12 @@ async function getAllLeads(
       throw new Error(
         `Error calling getAllLeads api with organization ${organization}`
       );
-    const interviewers: { interviewerUID: string; interviewerName: string }[] = [];
+    const interviewers: { leadUID: string; leadName: string }[] = [];
     interviewersRes.json().then((val) =>
       val.forEach((element: { name: string; interviewerUID: string }) => {
         interviewers.push({
-          interviewerName: element.name,
-          interviewerUID: element.interviewerUID,
+          leadName: element.name,
+          leadUID: element.interviewerUID,
         });
       })
     );
@@ -220,7 +287,7 @@ async function getAllLeads(
 
 async function addEvent(
   organization: string,
-  leads: { leadUID: string; name: string }[],
+  leads: { leadUID: string; leadName: string }[],
   intervieweeEmail: string,
   length: number,
   expires: string
