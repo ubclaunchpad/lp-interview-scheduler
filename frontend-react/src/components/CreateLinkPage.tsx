@@ -77,7 +77,7 @@ export default function CreateLinkPage() {
 
   const loadLeadsList = async () => {
     const allLeads = await getAllLeads(eventData.organization);
-    var userIndex = allLeads.findIndex(lead => lead.interviewerUID== eventData.userUID);
+    var userIndex = allLeads.findIndex(lead => lead.interviewerUID === eventData.userUID);
     allLeads.splice(userIndex, 1);
   }
 
@@ -196,24 +196,30 @@ async function getAllLeads(
   organization: string
 ): Promise<{ interviewerUID: string; interviewerName: string }[]> {
   try {
-    const interviewersRes: Response = await fetch(
-      `localhost:8080/v1/interviewers/?organization=${organization}`
-    );
-    if (!interviewersRes.ok)
-      throw new Error(
-        `Error calling getAllLeads api with organization ${organization}`
-      );
-    const interviewers: { interviewerUID: string; interviewerName: string }[] =
-      [];
-    interviewersRes.json().then((val) =>
-      val.array.forEach((element: { name: string; interviewerUID: string }) => {
-        interviewers.push({
-          interviewerName: element.name,
-          interviewerUID: element.interviewerUID,
-        });
-      })
-    );
-    return Promise.resolve(interviewers);
+    return Promise.resolve([
+      { interviewerUID: "lead1", interviewerName: "Ryan" },
+      { interviewerUID: "lead2", interviewerName: "Ray" },
+      { interviewerUID: "lead3", interviewerName: "Tricia" },
+      { interviewerUID: "lead7", interviewerName: "Ryan" }
+  ])
+    // const interviewersRes: Response = await fetch(
+    //   `http://localhost:8080/v1/interviewers/?organization=${organization}`
+    // );
+    // if (!interviewersRes.ok)
+    //   throw new Error(
+    //     `Error calling getAllLeads api with organization ${organization}`
+    //   );
+    // const interviewers: { interviewerUID: string; interviewerName: string }[] =
+    //   [];
+    // interviewersRes.json().then((val) =>
+    //   val.forEach((element: { name: string; interviewerUID: string }) => {
+    //     interviewers.push({
+    //       interviewerName: element.name,
+    //       interviewerUID: element.interviewerUID,
+    //     });
+    //   })
+    // );
+    // return Promise.resolve(interviewers);
   } catch (err) {
     return Promise.reject(err);
   }
@@ -234,7 +240,7 @@ async function addEvent(
     expires: expires,
   };
   try {
-    const eventRes: Response = await fetch("localhost:8080/v1/events/", {
+    const eventRes: Response = await fetch("http://localhost:8080/v1/events/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
