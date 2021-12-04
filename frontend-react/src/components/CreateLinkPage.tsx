@@ -37,6 +37,8 @@ export default function CreateLinkPage() {
     partnerUID: "",
     length: 0,
   });
+
+  const [leadsList, setLeadsList] = React.useState([{leadUID: "", name: ""}]);
   const [calendarEvent, setCalendarEvent] = React.useState(
     [] as CalendarEvent[]
   );
@@ -69,7 +71,17 @@ export default function CreateLinkPage() {
   }): any => {
     console.log("start: " + start);
     console.log("end: " + end);
-  };
+  }; 
+
+  const loadLeadsList = async () => {
+    const allLeads = await getAllLeads(eventData.organization);
+    var userIndex = allLeads.findIndex(lead => lead.interviewerUID== eventData.userUID);
+    allLeads.splice(userIndex, 1);
+  }
+
+  React.useEffect(() => {
+    loadLeadsList();
+  }, [])
 
   // React.useEffect(() => {
   //   // getMergedAvailabilities(
@@ -97,10 +109,7 @@ export default function CreateLinkPage() {
                   value={eventData.partnerUID}
                   onChange={handleChange}
                 >
-                  <option value="lead1">Lead 1</option>
-                  <option value="lead2">Lead 2</option>
-                  <option value="lead3">Lead 3</option>
-                  <option value="lead4">Lead 4</option>
+                  {leadsList.map((lead) => <option value={lead.leadUID}> {lead.name}</option>)}
                 </select>
               </label>
             </div>
