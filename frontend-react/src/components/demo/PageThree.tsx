@@ -59,12 +59,12 @@ export default function PageThree() {
       }
     }
 
+    console.log(showAvailabilitiesButton)
+
     if (showAvailabilitiesButton) {
       return <div><button onClick={handleGetEvent}>
       Display Event Body
-    </button><p>{JSON.stringify(eventBody, null, '\t')}</p><button onClick={handleMergeAvailabilities}><p>{mergedAvailabilities}</p>
-    Display Merged Availabilities
-    </button><p>hello</p></div>
+    </button><p>{JSON.stringify(eventBody, null, '\t')}</p><button onClick={handleMergeAvailabilities}>Display Merged Availabilities</button><p>{JSON.stringify(mergedAvailabilities, null, '\t')}</p></div>
     } else {
       return <div><button onClick={handleGetEvent}>
       Display Event Body
