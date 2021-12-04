@@ -33,10 +33,23 @@ export function AuthProvider(props: AuthProviderProps) {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
+        console.log("logging in");
+        await fetch("http://localhost:8080/v1/interviewers", {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            organization: "launchpad",
+            interviewerUID: user.uid,
+            email: user.email,
+            name: user.displayName,
+          }),
+        });
       }
+
       setLoading(false);
     });
 

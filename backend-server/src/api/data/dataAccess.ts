@@ -46,8 +46,19 @@ class DataAccess {
     const orgRef = await doc(this.rootCollection, organization);
     const org = await getDoc(orgRef);
 
-    if (org.exists()) return true;
-    else return false;
+    return !!org.exists();
+  }
+
+  async checkInterviewerExists(interviewer: Interviewer): Promise<boolean> {
+    const interviewerRef = await doc(
+      this.rootCollection,
+      interviewer.organization,
+      INTERVIEWER_COLLECTION,
+      interviewer.interviewerUID
+    );
+    const interviewerDoc = await getDoc(interviewerRef);
+
+    return !!interviewerDoc.exists();
   }
 
   async interviewerDocRef(
@@ -103,16 +114,20 @@ class DataAccess {
     const orgExists = await this.checkOrganizationExists(
       interviewer.organization
     );
+    const interviewerExists = await this.checkInterviewerExists(interviewer);
+
     if (!orgExists)
       throw new Error(
         `Organization "${interviewer.organization}" does not exist in Firebase!`
       );
 
-    const doc = await this.interviewerDocRef(
-      interviewer.organization,
-      interviewer.interviewerUID
-    );
-    await setDoc(doc, interviewer);
+    if (!interviewerExists) {
+      const doc = await this.interviewerDocRef(
+        interviewer.organization,
+        interviewer.interviewerUID
+      );
+      await setDoc(doc, interviewer);
+    }
   }
 
   async getAvailability(
