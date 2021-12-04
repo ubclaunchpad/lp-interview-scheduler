@@ -64,10 +64,10 @@ export default function PageThree() {
     if (showAvailabilitiesButton) {
       return <div><button onClick={handleGetEvent}>
       Display Event Body
-    </button><p>{JSON.stringify(eventBody, null, '\t')}</p><button onClick={handleMergeAvailabilities}>Display Merged Availabilities</button><p>{JSON.stringify(mergedAvailabilities, null, '\t')}</p></div>
+    </button><pre id="json">{JSON.stringify(eventBody, null, '\t')}</pre><button onClick={handleMergeAvailabilities}>Display Merged Availabilities</button><pre id="json">{JSON.stringify(mergedAvailabilities, null, '\t')}</pre></div>
     } else {
       return <div><button onClick={handleGetEvent}>
       Display Event Body
-    </button><p>{JSON.stringify(eventBody, null, '\t')}</p></div>
+    </button><pre id="json">{JSON.stringify(eventBody, null, '\t')}</pre></div>
     }
 }
