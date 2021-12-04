@@ -16,3 +16,11 @@
   justify-content: center;
   align-items: center;
 }
+
+.left-side {
+  width: 50%;
+}
+
+.unique-url {
+  word-break: break-all;
+}

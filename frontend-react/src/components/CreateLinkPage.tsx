@@ -29,7 +29,7 @@ interface APICalendarEvent {
 }
 
 interface LeadList {
-  [key: string]: { leadUID: string; leadName: string }
+  [key: string]: { leadUID: string; leadName: string };
 }
 
 export default function CreateLinkPage() {
@@ -40,18 +40,17 @@ export default function CreateLinkPage() {
     userUID: user?.uid as string,
     partnerUID: "" as string,
     length: 0,
-    expires:"2012-04-23T18:25:43.511Z" as string
+    expires: "2012-04-23T18:25:43.511Z" as string,
   });
-  const [bookingLink, setBookingLink] = React.useState("" as string)
+  const [bookingLink, setBookingLink] = React.useState("" as string);
   const [leadsList, setLeadsList] = React.useState({} as LeadList);
   const [calendarEvent, setCalendarEvent] = React.useState(
     [] as CalendarEvent[]
   );
 
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
-    
     const submitEvent = async () => {
-      try{
+      try {
         // submit form data
         const eventResponse = await addEvent(
           eventData.organization,
@@ -64,13 +63,13 @@ export default function CreateLinkPage() {
         // create unique url
         const path: string = `launchpad.com/booking?eventUID=${eventResponse.eventUID}&${eventData.organization}`;
         setBookingLink(path);
-      } catch(err) {
+      } catch (err) {
         console.log(err);
       }
-    }
+    };
 
     event.preventDefault();
-    submitEvent();    
+    submitEvent();
   };
 
   const handleChange = (
@@ -97,15 +96,14 @@ export default function CreateLinkPage() {
     console.log("start: " + start);
     console.log("end: " + end);
   };
-  
+
   const populateDropdown = () => {
     const loadLeadsList = async () => {
-      
       const allLeads = await getAllLeads(eventData.organization);
       const leadDict: LeadList = {};
-      allLeads.forEach(lead => {
+      allLeads.forEach((lead) => {
         leadDict[lead.leadUID] = lead;
-      })
+      });
       setLeadsList(leadDict);
     };
 
@@ -113,16 +111,19 @@ export default function CreateLinkPage() {
       loadLeadsList();
 
       const options = [];
-      for (var key in leadsList){
+      for (var key in leadsList) {
         if (key != eventData.userUID) {
           options.push(leadsList[key]);
         }
       }
 
-      return options.map(lead => {
+      return options.map((lead) => {
         return (
-          <option value={lead.leadUID} key={lead.leadUID}> {lead.leadName} </option>
-        )
+          <option value={lead.leadUID} key={lead.leadUID}>
+            {" "}
+            {lead.leadName}{" "}
+          </option>
+        );
       });
     } catch (err) {
       console.log(err);
@@ -150,7 +151,7 @@ export default function CreateLinkPage() {
   // useEffect for populating Calendar with mergedTimes, might need another useEffect for populating leads
   React.useEffect(() => {
     // first run of useEffect results in an error bec default partner lead is null atm
-    const fetchMergedLeadTimes = async () => {
+    const loadMergedLeadTimes = async () => {
       try {
         const response = await getMergedAvailabilities(
           eventData.organization,
@@ -163,7 +164,7 @@ export default function CreateLinkPage() {
         console.log(JSON.stringify(e));
       }
     };
-    fetchMergedLeadTimes();
+    loadMergedLeadTimes();
   }, [eventData.organization, eventData.userUID, eventData.partnerUID]);
 
   return (
@@ -229,6 +230,11 @@ export default function CreateLinkPage() {
                 </div>
               </label>
             </div>
+            <button onClick={(e) => handleSubmit(e)}>
+              Create Booking Link
+            </button>
+            <p>[dummy unique url]</p>
+            <p className="unique-url">{bookingLink}</p>
           </div>
           <div className="right-side">
             <Calendar
@@ -249,10 +255,6 @@ export default function CreateLinkPage() {
               // }}
             />
           </div>
-        </div>
-        <div>
-          <button onClick={(e) => handleSubmit(e)}>Create Booking Link</button>
-          <input type={bookingLink} id="unique-link" name="unique-link"></input>
         </div>
       </form>
     </div>
