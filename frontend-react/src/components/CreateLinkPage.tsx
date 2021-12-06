@@ -100,7 +100,7 @@ export default function CreateLinkPage() {
   };
 
   const handleDropdownSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSelectedLeads = [selectedLeads[0], {leadUID: event.target.value, leadName: event.target.textContent as string}];
+    const newSelectedLeads = [selectedLeads[0], {leadUID: event.target.value, leadName: event.target.options[event.target.selectedIndex].text as string}];
     setSelectedLeads(newSelectedLeads);
     handleChange(event);
   }
