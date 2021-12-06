@@ -249,10 +249,10 @@ export default function CreateLinkPage() {
               style={{ height: 500 }}
               min={new Date(2021, 11, 11, 7, 0)}
               max={new Date(2021, 11, 11, 21, 0)}
-              // uncomment this for custom rendering of events
-              // components={{
-              //   event: existingEvents,
-              // }}
+            // uncomment this for custom rendering of events
+            // components={{
+            //   event: existingEvents,
+            // }}
             />
           </div>
         </div>
@@ -273,14 +273,13 @@ async function getAllLeads(
         `Error calling getAllLeads api with organization ${organization}`
       );
     const interviewers: { leadUID: string; leadName: string }[] = [];
-    interviewersRes.json().then((val) =>
-      val.forEach((element: { name: string; interviewerUID: string }) => {
-        interviewers.push({
-          leadName: element.name,
-          leadUID: element.interviewerUID,
-        });
-      })
-    );
+    const interviewersJSON = await interviewersRes.json();
+    interviewersJSON.forEach((element: { name: string; interviewerUID: string }) => {
+      interviewers.push({
+        leadName: element.name,
+        leadUID: element.interviewerUID,
+      });
+    });
     return Promise.resolve(interviewers);
   } catch (err) {
     return Promise.reject(err);
