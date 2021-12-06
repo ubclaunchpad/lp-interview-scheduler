@@ -28,9 +28,9 @@ interface APICalendarEvent {
   end: string;
 }
 
-interface LeadList {
-  [key: string]: { leadUID: string; leadName: string };
-}
+// interface LeadList {
+//   [key: string]: { leadUID: string; leadName: string };
+// }
 
 export default function CreateLinkPage() {
   const { user } = useAuth();
@@ -42,8 +42,9 @@ export default function CreateLinkPage() {
     length: 0,
     expires: "2012-04-23T18:25:43.511Z" as string,
   });
-  const [bookingLink, setBookingLink] = React.useState("" as string);
-  const [leadsList, setLeadsList] = React.useState({} as LeadList);
+  const [bookingLink, setBookingLink] = React.useState("");
+  const [leadsList, setLeadsList] = React.useState([] as {leadUID:string, leadName: string}[]);
+  const [selectedLeads, setSelectedLeads] = React.useState([] as {leadUID:string, leadName: string}[])
   const [calendarEvent, setCalendarEvent] = React.useState(
     [] as CalendarEvent[]
   );
@@ -54,14 +55,14 @@ export default function CreateLinkPage() {
         // submit form data
         const eventResponse = await addEvent(
           eventData.organization,
-          [leadsList[eventData.userUID], leadsList[eventData.partnerUID]],
+          leadsList,
           eventData.intervieweeEmail,
           eventData.length,
           eventData.expires
         );
 
         // create unique url
-        const path: string = `launchpad.com/booking?eventUID=${eventResponse.eventUID}&${eventData.organization}`;
+        const path: string = `localhost3000:/test?eventUID=${eventResponse.eventUID}&${eventData.organization}`;
         setBookingLink(path);
       } catch (err) {
         console.log(err);
@@ -84,6 +85,7 @@ export default function CreateLinkPage() {
       [event.target.name]: value,
     });
   };
+  
 
   const handleSelect = ({
     start,
@@ -97,56 +99,73 @@ export default function CreateLinkPage() {
     console.log("end: " + end);
   };
 
-  const populateDropdown = () => {
-    const loadLeadsList = async () => {
-      const allLeads = await getAllLeads(eventData.organization);
-      const leadDict: LeadList = {};
-      allLeads.forEach((lead) => {
-        leadDict[lead.leadUID] = lead;
-      });
-      setLeadsList(leadDict);
-    };
+  const handleDropdownSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSelectedLeads = [selectedLeads[0], {leadUID: event.target.value, leadName: event.target.textContent as string}];
+    setSelectedLeads(newSelectedLeads);
+    handleChange(event);
+  }
 
-    try {
-      loadLeadsList();
-
-      const options = [];
-      for (var key in leadsList) {
-        if (key != eventData.userUID) {
-          options.push(leadsList[key]);
-        }
-      }
-
-      return options.map((lead) => {
-        return (
-          <option value={lead.leadUID} key={lead.leadUID}>
-            {" "}
-            {lead.leadName}{" "}
-          </option>
-        );
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  // useEffect for populating dropdown menu of leads excluding user
-  // React.useEffect(() => {
+  // const populateDropdown = () => {
   //   const loadLeadsList = async () => {
   //     const allLeads = await getAllLeads(eventData.organization);
-  //     var userIndex = allLeads.findIndex(lead => lead.interviewerUID === eventData.userUID);
-  //     allLeads.splice(userIndex, 1);
-  //     setLeadsList(allLeads)
-
-  //     return leadsList.map(lead => {
-  //       return (
-  //         <option value={lead.interviewerUID} key={lead.interviewerUID}> {lead.interviewerName} </option>
-  //       )
-  //     })
+  //     const leadDict: LeadList = {};
+  //     allLeads.forEach((lead) => {
+  //       leadDict[lead.leadUID] = lead;
+  //     });
+  //     setLeadsList(leadDict);
   //   };
 
-  //   loadLeadsList();
-  // });
+  //   try {
+  //     loadLeadsList();
+
+  //     const options = [];
+  //     for (var key in leadsList) {
+  //       if (key != eventData.userUID) {
+  //         options.push(leadsList[key]);
+  //       }
+  //     }
+
+  //     return options.map((lead) => {
+  //       return (
+  //         <option value={lead.leadUID} key={lead.leadUID}>
+  //           {" "}
+  //           {lead.leadName}{" "}
+  //         </option>
+  //       );
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
+  // useEffect for populating dropdown menu of leads excluding user
+  React.useEffect(() => {
+    // const loadLeadsList = async () => {
+    //   const allLeads = await getAllLeads(eventData.organization);
+    //   var userIndex = allLeads.findIndex(lead => lead.leadUID === eventData.userUID);
+    //   allLeads.splice(userIndex, 1);
+    //   setLeadsList(allLeads)
+
+    //   return leadsList.map(lead => {
+    //     return (
+    //       <option value={lead.leadUID} key={lead.leadUID}> {lead.leadName} </option>
+    //     )
+    //   })
+    // };
+
+    // loadLeadsList();
+    getAllLeads(eventData.organization).then(leads => {
+      for (const lead of leads) {
+        if (lead.leadUID === eventData.userUID) {
+          setSelectedLeads([{
+            leadUID: lead.leadUID,
+            leadName: lead.leadName
+          }])
+        }
+      }
+      setLeadsList(leads);
+    })
+  }, []);
 
   // useEffect for populating Calendar with mergedTimes, might need another useEffect for populating leads
   React.useEffect(() => {
@@ -180,15 +199,13 @@ export default function CreateLinkPage() {
                 Choose your partner:
                 <select
                   name="partnerUID"
-                  value={eventData.partnerUID}
-                  onChange={handleChange}
+                  // value={eventData.partnerUID}
+                  onChange={handleDropdownSelect}
                 >
-                  {populateDropdown()}
-                  {/* {leadsList.map(lead => {
-                    return (
-                      <option value={lead.interviewerUID} key={lead.interviewerUID}> {lead.interviewerName} </option>
-                    )
-                  })} */}
+                  {/* {populateDropdown()} */}
+                  {leadsList.map(lead => 
+                      (<option value={lead.leadUID} key={lead.leadUID}> {lead.leadName} </option>)
+                  )}
                 </select>
               </label>
             </div>
@@ -264,27 +281,40 @@ export default function CreateLinkPage() {
 async function getAllLeads(
   organization: string
 ): Promise<{ leadUID: string; leadName: string }[]> {
-  try {
-    const interviewersRes: Response = await fetch(
-      `http://localhost:8080/v1/interviewers/?organization=${organization}`
-    );
-    if (!interviewersRes.ok)
-      throw new Error(
-        `Error calling getAllLeads api with organization ${organization}`
-      );
-    const interviewers: { leadUID: string; leadName: string }[] = [];
-    interviewersRes.json().then((val) =>
-      val.forEach((element: { name: string; interviewerUID: string }) => {
-        interviewers.push({
-          leadName: element.name,
-          leadUID: element.interviewerUID,
-        });
-      })
-    );
-    return Promise.resolve(interviewers);
-  } catch (err) {
-    return Promise.reject(err);
-  }
+  return Promise.resolve([{
+    leadUID: "test1",
+    leadName: "Ryan"
+  }, {
+    leadUID: "test2",
+    leadName: "Ray"
+  }, {
+    leadUID: "test3", 
+    leadName: "Tricia"
+  }, {
+    leadUID: "test4",
+    leadName: "Ryan"
+  }]);
+  // try {
+  //   const interviewersRes: Response = await fetch(
+  //     `http://localhost:8080/v1/interviewers/?organization=${organization}`
+  //   );
+  //   if (!interviewersRes.ok)
+  //     throw new Error(
+  //       `Error calling getAllLeads api with organization ${organization}`
+  //     );
+  //   const interviewers: { leadUID: string; leadName: string }[] = [];
+  //   interviewersRes.json().then((val) =>
+  //     val.forEach((element: { name: string; interviewerUID: string }) => {
+  //       interviewers.push({
+  //         leadName: element.name,
+  //         leadUID: element.interviewerUID,
+  //       });
+  //     })
+  //   );
+  //   return Promise.resolve(interviewers);
+  // } catch (err) {
+  //   return Promise.reject(err);
+  // }
 }
 
 async function addEvent(
