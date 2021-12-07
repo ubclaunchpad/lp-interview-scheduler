@@ -302,7 +302,6 @@ class DataAccess {
         }
         return bookedEvent;
       });
-      //return true;
     } catch (e) {
       console.log("Transaction failure:", e);
       return false;
