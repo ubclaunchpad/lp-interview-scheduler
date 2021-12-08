@@ -4,7 +4,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
-import { formatISO } from "date-fns";
+import { endOfWeek, formatISO, startOfWeek } from "date-fns";
 
 interface Props {
   localizer: DateLocalizer;
@@ -14,12 +14,15 @@ interface CalendarEvent {
   interviewerUID: string | undefined;
   start: Date;
   end: Date;
+  resource: { isBooked: boolean; bookedByEmail: string };
 }
 
 interface EventAPI {
   interviewerUID: string | undefined;
   start: string;
   end: string;
+  isBooked: boolean;
+  bookedByEmail: string;
 }
 
 export default function InterviewerCalendar({ localizer }: Props) {
@@ -30,20 +33,25 @@ export default function InterviewerCalendar({ localizer }: Props) {
   const interviewerUID = user?.uid;
   const organization = "launchpad";
 
-  const handleSelect = ({
-    start,
-    end,
-  }: {
-    // component passes in Dates
-    start: string | Date;
-    end: string | Date;
-  }): any => {
+  const handleSelect = (event: CalendarEvent): any => {
     // option to delete when event timeslot is clicked / selected
-    const shouldDelete = window.confirm("Would you like to remove this event?");
-    if (shouldDelete === true) {
-      setEvents(events.filter((event) => event.start !== start));
-      setEventsAPI(
-        eventsAPI.filter((event) => event.start !== formatISO(new Date(start)))
+    if (!event.resource.isBooked) {
+      const shouldDelete = window.confirm(
+        "Would you like to remove this event?"
+      );
+      if (shouldDelete === true) {
+        setEvents(
+          events.filter((currEvent) => currEvent.start !== event.start)
+        );
+        setEventsAPI(
+          eventsAPI.filter(
+            (event) => event.start !== formatISO(new Date(event.start))
+          )
+        );
+      }
+    } else {
+      window.alert(
+        `Can not delete a currently booked slot\nThis slot is currently booked by: ${event.resource.bookedByEmail}`
       );
     }
   };
@@ -58,18 +66,23 @@ export default function InterviewerCalendar({ localizer }: Props) {
     end: string | Date;
   }): any => {
     // create new CalendarEvent and add to events state
-    let newEvent = {} as CalendarEvent;
-    newEvent.interviewerUID = interviewerUID;
-    newEvent.start = moment(start).toDate();
-    newEvent.end = moment(end).toDate();
+    const newEvent: CalendarEvent = {
+      interviewerUID: interviewerUID,
+      start: new Date(start),
+      end: new Date(end),
+      resource: { isBooked: false, bookedByEmail: "" },
+    };
 
     setEvents([...events, newEvent]);
 
     // create new EventAPI and add to eventsAPI state
-    let newEventAPI = {} as EventAPI;
-    newEventAPI.interviewerUID = newEvent.interviewerUID;
-    newEventAPI.start = formatISO(newEvent.start);
-    newEventAPI.end = formatISO(newEvent.end);
+    const newEventAPI: EventAPI = {
+      interviewerUID: interviewerUID,
+      start: formatISO(newEvent.start),
+      end: formatISO(newEvent.end),
+      isBooked: false,
+      bookedByEmail: "",
+    };
 
     setEventsAPI([...eventsAPI, newEventAPI]);
   };
@@ -120,6 +133,10 @@ export default function InterviewerCalendar({ localizer }: Props) {
         interviewerUID: event.interviewerUID,
         start: new Date(event.start),
         end: new Date(event.end),
+        resource: {
+          isBooked: event.isBooked,
+          bookedByEmail: event.bookedByEmail,
+        },
       };
 
       convertedEvents.push(storedEvent);
@@ -142,13 +159,21 @@ export default function InterviewerCalendar({ localizer }: Props) {
 
         setEventsAPI(data);
       } catch (e) {
+        console.error(e);
         setError(true);
       }
     }
+    console.log("FETCHING");
     fetchData();
   }, [interviewerUID]);
 
   console.log({ events });
+  const eventPropGetterHandler = (event: CalendarEvent) => {
+    const backgroundColor = event?.resource?.isBooked ? "#f25c5c" : "#5cf2a2";
+    const color = "black";
+    return { style: { backgroundColor, color } };
+  };
+
   return (
     <>
       {error ? (
@@ -166,8 +191,9 @@ export default function InterviewerCalendar({ localizer }: Props) {
             startAccessor="start"
             endAccessor="end"
             style={{ height: 700 }}
-            min={new Date(2021, 11, 11, 7, 0)}
-            max={new Date(2021, 11, 11, 21, 0)}
+            min={startOfWeek(new Date())}
+            max={endOfWeek(new Date())}
+            eventPropGetter={eventPropGetterHandler}
             // uncomment this for custom rendering of events
             // components={{
             //   event: existingEvents,

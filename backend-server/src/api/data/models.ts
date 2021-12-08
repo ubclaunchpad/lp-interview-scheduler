@@ -17,6 +17,8 @@ export interface CalendarAvailability {
   interviewerUID: string | undefined;
   start: string;
   end: string;
+  isBooked: boolean;
+  bookedByEmail: string;
 }
 
 export interface Event {
