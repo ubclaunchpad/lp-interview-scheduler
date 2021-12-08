@@ -28,10 +28,6 @@ interface APICalendarEvent {
   end: string;
 }
 
-interface LeadList {
-  [key: string]: { leadUID: string; leadName: string };
-}
-
 export default function CreateLinkPage() {
   const { user } = useAuth();
   const [eventData, setEventData] = React.useState({
@@ -40,13 +36,15 @@ export default function CreateLinkPage() {
     userUID: user?.uid as string,
     partnerUID: "" as string,
     length: 0,
-    expires: "2012-04-23T18:25:43.511Z" as string,
+    expires: "2022-04-23T18:25:43.511Z" as string,
   });
-  const [bookingLink, setBookingLink] = React.useState("" as string);
-  const [leadsList, setLeadsList] = React.useState({} as LeadList);
+  const [bookingLink, setBookingLink] = React.useState("");
+  const [leadsList, setLeadsList] = React.useState([] as {leadUID:string, leadName: string}[]);
+  const [selectedLeads, setSelectedLeads] = React.useState([] as {leadUID:string, leadName: string}[])
   const [calendarEvent, setCalendarEvent] = React.useState(
     [] as CalendarEvent[]
   );
+  const [event, setEvent] = React.useState({"event": "not created yet"});
 
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     const submitEvent = async () => {
@@ -54,20 +52,20 @@ export default function CreateLinkPage() {
         // submit form data
         const eventResponse = await addEvent(
           eventData.organization,
-          [leadsList[eventData.userUID], leadsList[eventData.partnerUID]],
+          selectedLeads,
           eventData.intervieweeEmail,
           eventData.length,
           eventData.expires
         );
 
         // create unique url
-        const path: string = `launchpad.com/booking?eventUID=${eventResponse.eventUID}&${eventData.organization}`;
+        const path: string = `localhost:3000/test?eventUID=${eventResponse.eventUID}&organization=${eventData.organization}`;
         setBookingLink(path);
+        setEvent(eventResponse);
       } catch (err) {
         console.log(err);
       }
     };
-
     event.preventDefault();
     submitEvent();
   };
@@ -84,6 +82,7 @@ export default function CreateLinkPage() {
       [event.target.name]: value,
     });
   };
+  
 
   const handleSelect = ({
     start,
@@ -97,56 +96,37 @@ export default function CreateLinkPage() {
     console.log("end: " + end);
   };
 
-  const populateDropdown = () => {
-    const loadLeadsList = async () => {
-      const allLeads = await getAllLeads(eventData.organization);
-      const leadDict: LeadList = {};
-      allLeads.forEach((lead) => {
-        leadDict[lead.leadUID] = lead;
-      });
-      setLeadsList(leadDict);
-    };
-
-    try {
-      loadLeadsList();
-
-      const options = [];
-      for (var key in leadsList) {
-        if (key != eventData.userUID) {
-          options.push(leadsList[key]);
-        }
-      }
-
-      return options.map((lead) => {
-        return (
-          <option value={lead.leadUID} key={lead.leadUID}>
-            {" "}
-            {lead.leadName}{" "}
-          </option>
-        );
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const handleDropdownSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSelectedLeads = [selectedLeads[0], {leadUID: event.target.value, leadName: event.target.options[event.target.selectedIndex].text as string}];
+    setSelectedLeads(newSelectedLeads);
+    handleChange(event);
+  }
 
   // useEffect for populating dropdown menu of leads excluding user
-  // React.useEffect(() => {
-  //   const loadLeadsList = async () => {
-  //     const allLeads = await getAllLeads(eventData.organization);
-  //     var userIndex = allLeads.findIndex(lead => lead.interviewerUID === eventData.userUID);
-  //     allLeads.splice(userIndex, 1);
-  //     setLeadsList(allLeads)
-
-  //     return leadsList.map(lead => {
-  //       return (
-  //         <option value={lead.interviewerUID} key={lead.interviewerUID}> {lead.interviewerName} </option>
-  //       )
-  //     })
-  //   };
-
-  //   loadLeadsList();
-  // });
+  React.useEffect(() => {
+    getAllLeads(eventData.organization).then(leads => {
+      let index = 0;
+      for (const lead of leads) {  
+        if (lead.leadUID === eventData.userUID) {
+          setSelectedLeads([{
+            leadUID: lead.leadUID,
+            leadName: lead.leadName
+          }])
+          break;
+        }
+        index++;
+      }
+      leads.splice(index, 1);
+      setLeadsList(leads);
+      // remove this part when Aymen's user info branch is merged
+      if (selectedLeads.length === 0) 
+        setSelectedLeads([{
+          leadUID: user?.uid as string,
+          leadName: user?.displayName as string
+        }]);
+      //-----------------------------------------------------------
+    });
+  }, [eventData.organization, eventData.userUID]);
 
   // useEffect for populating Calendar with mergedTimes, might need another useEffect for populating leads
   React.useEffect(() => {
@@ -180,15 +160,13 @@ export default function CreateLinkPage() {
                 Choose your partner:
                 <select
                   name="partnerUID"
-                  value={eventData.partnerUID}
-                  onChange={handleChange}
+                  // value={eventData.partnerUID}
+                  onChange={handleDropdownSelect}
                 >
-                  {populateDropdown()}
-                  {/* {leadsList.map(lead => {
-                    return (
-                      <option value={lead.interviewerUID} key={lead.interviewerUID}> {lead.interviewerName} </option>
-                    )
-                  })} */}
+                  {/* {populateDropdown()} */}
+                  {leadsList.map(lead => 
+                      (<option value={lead.leadUID} key={lead.leadUID}> {lead.leadName} </option>)
+                  )}
                 </select>
               </label>
             </div>
@@ -233,8 +211,9 @@ export default function CreateLinkPage() {
             <button onClick={(e) => handleSubmit(e)}>
               Create Booking Link
             </button>
-            <p>[dummy unique url]</p>
-            <p className="unique-url">{bookingLink}</p>
+            {/* <p>[dummy unique url]</p> */}
+            <p className="unique-url">unique url: {bookingLink}</p>
+            <pre className="event-info">event info: {JSON.stringify(event, null, '\t')}</pre>
           </div>
           <div className="right-side">
             <Calendar
@@ -264,6 +243,7 @@ export default function CreateLinkPage() {
 async function getAllLeads(
   organization: string
 ): Promise<{ leadUID: string; leadName: string }[]> {
+
   try {
     const interviewersRes: Response = await fetch(
       `http://localhost:8080/v1/interviewers/?organization=${organization}`
@@ -273,13 +253,13 @@ async function getAllLeads(
         `Error calling getAllLeads api with organization ${organization}`
       );
     const interviewers: { leadUID: string; leadName: string }[] = [];
-    const interviewersJSON = await interviewersRes.json();
+    const interviewersJSON: { name: string; interviewerUID: string }[] = await interviewersRes.json();
     interviewersJSON.forEach((element: { name: string; interviewerUID: string }) => {
-      interviewers.push({
-        leadName: element.name,
-        leadUID: element.interviewerUID,
+        interviewers.push({
+          leadName: element.name,
+          leadUID: element.interviewerUID,
+        });
       });
-    });
     return Promise.resolve(interviewers);
   } catch (err) {
     return Promise.reject(err);
