@@ -7,9 +7,13 @@ import {
   DocumentData,
   Firestore,
   getDoc,
-  getDocs,
+  runTransaction,
+  Transaction,
+} from "@firebase/firestore";
+import { 
   setDoc,
-  Timestamp,
+  getDocs,
+  Timestamp 
 } from "firebase/firestore";
 import { db } from "../../firebase/db";
 import { Availability, Interviewer, Event } from "./models";
@@ -224,6 +228,89 @@ class DataAccess {
     await setDoc(doc, event);
   }
 
+  // Book an interview with two leads using a transaction.
+  async bookInterview(
+    organization: string,
+    leadUIDs: string[],
+    timesToBook: string[],
+    eventUID: string,
+    startTime: string
+  ) {
+    try {
+      return await runTransaction(db, async (t: Transaction) => {
+        async function verifyAvailability(instance, leadUID, time) {
+          const availabilityRef = await instance.availabilityDocRef(
+            organization,
+            leadUID,
+            time
+          );
+          const availabilityDoc = await t.get(availabilityRef);
+          if (!availabilityDoc.exists()) {
+            throw "Leads do not exist or do not have specified availability for one of requested times.";
+          }
+          const availabilityData = availabilityDoc.data();
+          if (availabilityData["isBooked"]) {
+            throw "Interviews already booked for one or both leads at one of requested times.";
+          }
+
+          return {
+            ref: availabilityRef,
+            data: availabilityData,
+          };
+        }
+
+        async function setAvailabilityT(t: Transaction, avail) {
+          avail["data"]["isBooked"] = true;
+          await t.update(avail["ref"], avail["data"]);
+        }
+
+        async function bookEvent(
+          t: Transaction,
+          organization: string,
+          eventUID: string,
+          startTime: string,
+          instance: any
+        ) {
+          const eventRef = await instance.eventDocRef(organization, eventUID);
+          const eventDoc = await t.get(eventRef);
+          const confirmedTime = await eventDoc.get("confirmedTime");
+          if (confirmedTime == null) {
+            const event = eventDoc.data();
+            event["confirmedTime"] = startTime;
+            await t.update(eventRef, event);
+            return event;
+          } else {
+            throw "Event already booked";
+          }
+        }
+
+        const availabilitiesToBook = [];
+        for (var id of leadUIDs) {
+          for (var time of timesToBook) {
+            const availability = await verifyAvailability(this, id, time);
+            availabilitiesToBook.push(availability);
+          }
+        }
+
+        // Book Everything
+        const bookedEvent = await bookEvent(
+          t,
+          organization,
+          eventUID,
+          startTime,
+          this
+        );
+        for (var avail of availabilitiesToBook) {
+          await setAvailabilityT(t, avail);
+        }
+        return bookedEvent;
+      });
+    } catch (e) {
+      console.log("Transaction failure:", e);
+      return false;
+    }
+  }
+  
   async getOrganizationFields(organization: string) {
     const organizationRef = await doc(this.rootCollection, organization);
     const organizationDoc = await getDoc(organizationRef);

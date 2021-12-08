@@ -25,7 +25,7 @@ export interface Event {
   leads: Array<{ leadUID: string; name: string }>;
   intervieweeEmail: string;
   confirmedTime: string;
-  length: number;
+  eventLengthInMinutes: number;
   expires: string;
   eventUID: string;
 }

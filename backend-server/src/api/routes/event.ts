@@ -4,7 +4,9 @@ import {
   AddEventBody,
   getEvent,
   GetEventBody,
-  getBookingCount,
+  bookEvent,
+  BookEventBody,
+  getBookingCount
 } from "../controllers/eventController";
 
 export const eventRouter = express.Router();
@@ -48,6 +50,28 @@ eventRouter.get("/bookingCount/", async (req, res) => {
     if (organization == null) throw new Error(`No organization provided`);
     const bookingCount = await getBookingCount(organization);
     res.json(bookingCount);
+  } catch (err) {
+    res.status(500).send(`error processing request: ${err}`);
+  }
+});
+
+eventRouter.patch("/", async (req, res) => {
+  try {
+    const body: BookEventBody = {
+      organization: req.body.organization as string,
+      eventUID: req.body.eventUID as string,
+      leadUIDs: req.body.leadUIDs as string[],
+      times: req.body.times as string[],
+    };
+    if (!Object.values(body).every((field) => field != null))
+      throw new Error(`Incomplete Request Body:  ${JSON.stringify(body)}`);
+    const booked = await bookEvent(
+      body.organization,
+      body.eventUID,
+      body.leadUIDs,
+      body.times
+    );
+    res.send(booked);
   } catch (err) {
     res.status(500).send(`error processing request: ${err}`);
   }
