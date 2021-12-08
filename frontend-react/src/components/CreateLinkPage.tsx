@@ -36,7 +36,7 @@ export default function CreateLinkPage() {
     userUID: user?.uid as string,
     partnerUID: "" as string,
     length: 0,
-    expires: "2012-04-23T18:25:43.511Z" as string,
+    expires: "2022-04-23T18:25:43.511Z" as string,
   });
   const [bookingLink, setBookingLink] = React.useState("");
   const [leadsList, setLeadsList] = React.useState([] as {leadUID:string, leadName: string}[]);
