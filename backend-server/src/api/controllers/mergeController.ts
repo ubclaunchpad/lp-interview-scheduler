@@ -54,6 +54,9 @@ function findOverlappingGeneric(
           interviewerUID: "",
           start: startTime,
           end: endTime,
+          // fixme: this function isn't being used, adding this so that it compiles
+          isBooked: false,
+          bookedByEmail: "",
         };
         output.push(newAvailability);
 
@@ -62,6 +65,9 @@ function findOverlappingGeneric(
             interviewerUID: "",
             start: currAvailability.end,
             end: prevAvailability.end,
+            // fixme: this function isn't being used, adding this so that it compiles
+            isBooked: false,
+            bookedByEmail: "",
           };
         } else {
           prevAvailability = currAvailability;

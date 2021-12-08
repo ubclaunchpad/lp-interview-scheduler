@@ -54,12 +54,6 @@ export async function replaceAllAvailabilities(
     body.organization
   );
 
-  // // I think we want to allow zero length availabilities 
-  // // (if the interviewer wiped their availability)
-  // if (!availabilities.length) {
-  //   throw new Error("Can not construct availabilities from given input");
-  // }
-
   await dataAccess.deleteAvailabilityCollection(
     body.organization,
     body.interviewerUID
@@ -136,21 +130,31 @@ export async function makeMultipleCalendarAvailabilities(
     const currStartDate = new Date(availabilities[i].startTime);
     let currEndDate = add(currStartDate, { minutes: availabilityBlockLength });
 
-    for (let j = i + 1; j < availabilities.length; j++) {
-      const nextStartDate = new Date(availabilities[j].startTime);
+    const currIsBooked = availabilities[i].isBooked;
+    const bookedByEmail = currIsBooked ? availabilities[i].bookedByEmail : "";
 
-      if (!isSameMinute(currEndDate, nextStartDate)) {
-        break;
+    if (!currIsBooked) {
+      for (let j = i + 1; j < availabilities.length; j++) {
+        const nextStartDate = new Date(availabilities[j].startTime);
+
+        if (
+          !isSameMinute(currEndDate, nextStartDate) ||
+          availabilities[j].isBooked
+        ) {
+          break;
+        }
+
+        currEndDate = add(nextStartDate, { minutes: availabilityBlockLength });
+        i = j;
       }
-
-      currEndDate = add(nextStartDate, { minutes: availabilityBlockLength });
-      i = j;
     }
 
     const newCalendarAvailability: CalendarAvailability = {
       interviewerUID: availabilities[i].interviewerUID,
       start: formatISO(currStartDate),
       end: formatISO(currEndDate),
+      isBooked: currIsBooked,
+      bookedByEmail,
     };
 
     calendarAvailabilities.push(newCalendarAvailability);
@@ -206,8 +210,8 @@ async function makeAvailabilitiesFromCalendarAvailability(
     const newAvailability: Availability = {
       interviewerUID: calendarAvailability.interviewerUID,
       startTime: formatISO(newStart),
-      isBooked: false,
-      bookedByEmail: "",
+      isBooked: calendarAvailability.isBooked,
+      bookedByEmail: calendarAvailability.bookedByEmail,
       durationMins: availabilityBlockLength,
     };
 
