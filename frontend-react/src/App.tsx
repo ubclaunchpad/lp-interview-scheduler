@@ -3,6 +3,7 @@ import BookingPage from "./components/BookingPage";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./App.css";
 import LandingPage from "./components/LandingPage";
+import PageThree from "./components/demo/PageThree";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route exact path="/" component={LandingPage} />
           <Route path="/booking" component={BookingPage} />
           <Route path="/app" component={AdminApp} />
+          <Route path="/test" component={PageThree} />
         </Switch>
       </BrowserRouter>
     </div>
