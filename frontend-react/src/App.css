@@ -5,6 +5,22 @@
 .rbc-allday-cell {
   display: none;
 }
+
 .rbc-time-view .rbc-header {
   border-bottom: none;
+}
+
+.event-info-form {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.left-side {
+  width: 50%;
+}
+
+.unique-url {
+  word-break: break-all;
 }
