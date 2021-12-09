@@ -39,12 +39,16 @@ export default function CreateLinkPage() {
     expires: "2022-04-23T18:25:43.511Z" as string,
   });
   const [bookingLink, setBookingLink] = React.useState("");
-  const [leadsList, setLeadsList] = React.useState([] as {leadUID:string, leadName: string}[]);
-  const [selectedLeads, setSelectedLeads] = React.useState([] as {leadUID:string, leadName: string}[])
+  const [leadsList, setLeadsList] = React.useState(
+    [] as { leadUID: string; leadName: string }[]
+  );
+  const [selectedLeads, setSelectedLeads] = React.useState(
+    [] as { leadUID: string; leadName: string }[]
+  );
   const [calendarEvent, setCalendarEvent] = React.useState(
     [] as CalendarEvent[]
   );
-  const [event, setEvent] = React.useState({"event": "not created yet"});
+  const [event, setEvent] = React.useState({ event: "not created yet" });
 
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     const submitEvent = async () => {
@@ -82,7 +86,6 @@ export default function CreateLinkPage() {
       [event.target.name]: value,
     });
   };
-  
 
   const handleSelect = ({
     start,
@@ -96,22 +99,33 @@ export default function CreateLinkPage() {
     console.log("end: " + end);
   };
 
-  const handleDropdownSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSelectedLeads = [selectedLeads[0], {leadUID: event.target.value, leadName: event.target.options[event.target.selectedIndex].text as string}];
+  const handleDropdownSelect = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const newSelectedLeads = [
+      selectedLeads[0],
+      {
+        leadUID: event.target.value,
+        leadName: event.target.options[event.target.selectedIndex]
+          .text as string,
+      },
+    ];
     setSelectedLeads(newSelectedLeads);
     handleChange(event);
-  }
+  };
 
   // useEffect for populating dropdown menu of leads excluding user
   React.useEffect(() => {
-    getAllLeads(eventData.organization).then(leads => {
+    getAllLeads(eventData.organization).then((leads) => {
       let index = 0;
-      for (const lead of leads) {  
+      for (const lead of leads) {
         if (lead.leadUID === eventData.userUID) {
-          setSelectedLeads([{
-            leadUID: lead.leadUID,
-            leadName: lead.leadName
-          }])
+          setSelectedLeads([
+            {
+              leadUID: lead.leadUID,
+              leadName: lead.leadName,
+            },
+          ]);
           break;
         }
         index++;
@@ -157,9 +171,12 @@ export default function CreateLinkPage() {
                   onChange={handleDropdownSelect}
                 >
                   {/* {populateDropdown()} */}
-                  {leadsList.map(lead => 
-                      (<option value={lead.leadUID} key={lead.leadUID}> {lead.leadName} </option>)
-                  )}
+                  {leadsList.map((lead) => (
+                    <option value={lead.leadUID} key={lead.leadUID}>
+                      {" "}
+                      {lead.leadName}{" "}
+                    </option>
+                  ))}
                 </select>
               </label>
             </div>
@@ -206,7 +223,9 @@ export default function CreateLinkPage() {
             </button>
             {/* <p>[dummy unique url]</p> */}
             <p className="unique-url">unique url: {bookingLink}</p>
-            <pre className="event-info">event info: {JSON.stringify(event, null, '\t')}</pre>
+            <pre className="event-info">
+              event info: {JSON.stringify(event, null, "\t")}
+            </pre>
           </div>
           <div className="right-side">
             <Calendar
@@ -221,10 +240,10 @@ export default function CreateLinkPage() {
               style={{ height: 500 }}
               min={new Date(2021, 11, 11, 7, 0)}
               max={new Date(2021, 11, 11, 21, 0)}
-            // uncomment this for custom rendering of events
-            // components={{
-            //   event: existingEvents,
-            // }}
+              // uncomment this for custom rendering of events
+              // components={{
+              //   event: existingEvents,
+              // }}
             />
           </div>
         </div>
@@ -236,7 +255,6 @@ export default function CreateLinkPage() {
 async function getAllLeads(
   organization: string
 ): Promise<{ leadUID: string; leadName: string }[]> {
-
   try {
     const interviewersRes: Response = await fetch(
       `http://localhost:8080/v1/interviewers/?organization=${organization}`
@@ -246,13 +264,16 @@ async function getAllLeads(
         `Error calling getAllLeads api with organization ${organization}`
       );
     const interviewers: { leadUID: string; leadName: string }[] = [];
-    const interviewersJSON: { name: string; interviewerUID: string }[] = await interviewersRes.json();
-    interviewersJSON.forEach((element: { name: string; interviewerUID: string }) => {
+    const interviewersJSON: { name: string; interviewerUID: string }[] =
+      await interviewersRes.json();
+    interviewersJSON.forEach(
+      (element: { name: string; interviewerUID: string }) => {
         interviewers.push({
           leadName: element.name,
           leadUID: element.interviewerUID,
         });
-      });
+      }
+    );
     return Promise.resolve(interviewers);
   } catch (err) {
     return Promise.reject(err);
