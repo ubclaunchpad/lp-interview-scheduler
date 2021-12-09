@@ -118,13 +118,6 @@ export default function CreateLinkPage() {
       }
       leads.splice(index, 1);
       setLeadsList(leads);
-      // remove this part when Aymen's user info branch is merged
-      if (selectedLeads.length === 0) 
-        setSelectedLeads([{
-          leadUID: user?.uid as string,
-          leadName: user?.displayName as string
-        }]);
-      //-----------------------------------------------------------
     });
   }, [eventData.organization, eventData.userUID]);
 
