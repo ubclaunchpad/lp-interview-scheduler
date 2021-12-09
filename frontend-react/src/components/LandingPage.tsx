@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function LandingPage() {
   return (
     <div>
-      <h1>issa landing page innit</h1>
+      <h1>really awesome landing page 🚀</h1>
       <Link to="/booking">
         <button>goto booking</button>
       </Link>

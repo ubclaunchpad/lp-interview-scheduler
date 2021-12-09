@@ -45,7 +45,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
         );
         setEventsAPI(
           eventsAPI.filter(
-            (event) => event.start !== formatISO(new Date(event.start))
+            (currEvent) => currEvent.start !== formatISO(new Date(event.start))
           )
         );
       }
