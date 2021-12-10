@@ -15,7 +15,11 @@ export default function AdminApp() {
         <Route exact path="/app/authorized">
           {user ? <AuthenticatedApp /> : <Redirect to="/app/unauthorized" />}
         </Route>
-        <Route path="/app/authorized/createlink" component={CreateLinkPage} />
+        <Route
+          exact
+          path="/app/authorized/createlink"
+          component={CreateLinkPage}
+        />
         <Redirect from="/app" to="/app/unauthorized" />
       </Switch>
     </BrowserRouter>
