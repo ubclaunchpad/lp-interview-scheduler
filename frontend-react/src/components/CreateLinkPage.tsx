@@ -177,9 +177,7 @@ export default function CreateLinkPage() {
                   {/* {populateDropdown()} */}
                   {leadsList.map((lead) => (
                     <option value={lead.leadUID} key={lead.leadUID}>
-                      {" "}
-                      {lead.leadName} {"(created events: "} {lead.bookingCount}
-                      {") "}
+                      {createRow(lead)}
                     </option>
                   ))}
                 </select>
@@ -257,6 +255,10 @@ export default function CreateLinkPage() {
   );
 }
 
+function createRow(interviewer: Lead) : string {
+  return `  ${interviewer.leadName} : ${interviewer.bookingCount} events`;
+}
+
 async function getAllLeads(organization: string): Promise<Lead[]> {
   try {
     const interviewersRes: Response = await fetch(
@@ -287,15 +289,7 @@ async function getAllLeads(organization: string): Promise<Lead[]> {
     return Promise.reject(err);
   }
 }
-// function compare( a, b ) {
-//   if ( a.last_nom < b.last_nom ){
-//     return -1;
-//   }
-//   if ( a.last_nom > b.last_nom ){
-//     return 1;
-//   }
-//   return 0;
-// }
+
 
 function compare(leadA: Lead, leadB: Lead): number {
   if (leadA.bookingCount < leadB.bookingCount) return -1;
