@@ -5,6 +5,7 @@ import moment from "moment";
 import "../App.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
+import { NumberLiteralType } from "typescript";
 
 const localizer = momentLocalizer(moment);
 
@@ -32,6 +33,8 @@ interface Lead {
   leadUID: string;
   leadName: string;
   bookingCount: number;
+  pending: Number;
+  confirmed: Number;
 }
 
 export default function CreateLinkPage() {
@@ -111,6 +114,8 @@ export default function CreateLinkPage() {
         leadName: event.target.options[event.target.selectedIndex]
           .text as string,
         bookingCount: 0,
+        confirmed: 0,
+        pending: 0
       },
     ];
     setSelectedLeads(newSelectedLeads);
@@ -128,6 +133,8 @@ export default function CreateLinkPage() {
               leadUID: lead.leadUID,
               leadName: lead.leadName,
               bookingCount: 0,
+              pending: 0,
+              confirmed: 0
             },
           ]);
           break;
@@ -256,7 +263,7 @@ export default function CreateLinkPage() {
 }
 
 function createRow(interviewer: Lead) : string {
-  return `  ${interviewer.leadName} : ${interviewer.bookingCount} events`;
+  return `  ${interviewer.leadName} : ${interviewer.confirmed} confirmed, ${interviewer.pending} pending  `;
 }
 
 async function getAllLeads(organization: string): Promise<Lead[]> {
@@ -277,6 +284,8 @@ async function getAllLeads(organization: string): Promise<Lead[]> {
           leadName: element.name,
           leadUID: element.interviewerUID,
           bookingCount: 0,
+          pending: 0,
+          confirmed: 0
         });
       }
     );
@@ -324,6 +333,8 @@ async function updateInterviewersWithBookingCount(
         let bookingInfo: { confirmed: number; pending: number } =
           bookingCountJSON.leads[lead.leadUID];
         lead.bookingCount = bookingInfo.confirmed + bookingInfo.pending;
+        lead.confirmed = bookingInfo.confirmed;
+        lead.pending = bookingInfo.pending;
       }
     }
   } catch (err) {
