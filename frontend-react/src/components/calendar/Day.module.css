@@ -1,0 +1,57 @@
+.day {
+    aspect-ratio: 1;
+    padding: 10%;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    border-radius: 50%;
+    margin-top: 30%;
+    margin-bottom: 30%;
+}
+
+.day:hover {
+    cursor: pointer;
+    background-color: #eaecf7;
+    color: black;
+}
+
+p {
+    margin: 0;
+}
+
+.disabled {
+    background-color: white;
+    color: #9b9b9b;
+}
+
+.disabled .colorBar {
+    background-color: #e0e0e0;
+}
+
+.disabled:hover {
+    background-color: white;
+    color: #9b9b9b;
+    cursor: not-allowed;
+}    
+
+.highlighted .colorBar {
+    background-color: #1d2da5;
+}
+
+.selected {
+    background-color: #9ddadd;
+    color: white;
+}
+
+.selected:hover {
+    background-color: #97c6c9;
+    color: white;
+}
+
+.colorBar {
+    width: 20px;
+    height: 6px;
+    border-radius: 3px;
+    margin-top: 5px;
+    background-color: #e0e0e0;
+}

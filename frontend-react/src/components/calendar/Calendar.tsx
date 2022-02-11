@@ -1,73 +1,81 @@
 import moment, { Moment } from 'moment';
 import Day from './Day';
+import styles from './Calendar.module.css';
+import React from 'react';
 
 interface Props {
     onDayClick: Function
-    highlightDays: number[],
-    year: number,
-    month: number
+    highlightDays: Moment[]
 }
 
-const tableStyle = {
-    margin: "0 auto",
-    width: "60%",
-    maxWidth: "500px",
-};
-
 export default function Calendar(props: Props) {
-    const onDayClick = (day: number) => {
-        props.onDayClick(props.year, props.month, day)
+    let todaysDate: Moment = moment(new Date());
+    const [selected, setSelected] = React.useState(-1);
+    const [month, setMonth] = React.useState(todaysDate.month());
+    const [year, setYear] = React.useState(todaysDate.year());
+    const [highlightedInMonth, setHighlightedInMonth] = React.useState(props.highlightDays.filter(d => d.year() === year && d.month() === month).map(d => d.date()) as number[]);
+
+    const flip = (direction: number) => {
+        // + 12 because TS doesn't do well with negative moduluo
+        let newMonth = (month + direction + 12) % 12;
+        setMonth(newMonth);
+        let newYear = year;
+        if (month + direction < 0) {
+          newYear = year - 1;
+        } else if (month + direction >= 12) {
+          newYear = year + 1;
+        }
+        setYear(newYear);
+        setHighlightedInMonth(props.highlightDays.filter(d => d.year() === newYear && d.month() === newMonth).map(d => d.date()));
+        setSelected(-1);
     }
 
-    let referenceDate: Moment = moment(new Date(props.year, props.month, 1));
-    let firstDay: Number = Number(referenceDate.format("d"));
+    const onDayClick = (day: number) => {
+        setSelected(day);
+        props.onDayClick(year, month, day);
+    }
+
+    let referenceDate: Moment = moment(new Date(year, month, 1));
+    let firstDay: Number = Number(referenceDate.format('d'));
     let numDays: Number = referenceDate.daysInMonth();
 
     let calendar = [];
-    let week = [];
+
+    let weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    weekdays.forEach(day => {
+        calendar.push(
+            <div>
+                <p>{day}</p>
+            </div>
+        );
+    });
 
     // Pad the beginning of the table with empty cells to account for months that
     // do not start on a Sunday
     for (let i = 0; i < firstDay; i++) {
-        week.push(
-            <td key={-i} />
-        );
+        calendar.push(<div></div>);
     }
 
     for (let i = 1; i <= numDays; i++) {
-        // If we have reached the end of a week, push the current week into the calendar
-        // and start a new week
-        if (week.length === 7) {
-            calendar.push(<tr key={i}>{week}</tr>);
-            week = [];
-        }
-
-        week.push(
-            <td key={i}>
-                <Day date={i} onClick={onDayClick} highlight={props.highlightDays.includes(i)} />
-            </td>
+        let disabled = todaysDate.isAfter(moment(new Date(year, month, i)));
+        calendar.push(
+            <Day date={i} onClick={onDayClick} highlight={highlightedInMonth.includes(i)} selected={selected === i} disabled={disabled}/>
         );
     }
 
     // Push the last, possibly incomplete, week into the calendar
-    calendar.push(<tr key={0}>{week}</tr>);
+    //calendar.push(<tr key={0}>{week}</tr>);
 
     return (
-        <div>
-            <table style={tableStyle}>
-                <thead>
-                    <tr>
-                        <th>S</th>
-                        <th>M</th>
-                        <th>T</th>
-                        <th>W</th>
-                        <th>T</th>
-                        <th>F</th>
-                        <th>S</th>
-                    </tr>
-                </thead>
-                <tbody>{calendar}</tbody>
-            </table>
+        <div className={styles.calendar}>
+            <div className={styles.calendarHead}>
+                <button onClick={() => flip(-1)}><i className={`${styles.arrow} ${styles.left}`}></i></button>
+                <p>{moment().month(month).format('MMMM')} {year}</p>
+                <button onClick={() => flip(1)}><i className={`${styles.arrow} ${styles.right}`}></i></button>
+            </div>
+            <div className={styles.calendarGrid}>
+                {calendar}
+            </div>
         </div>
     );
 }

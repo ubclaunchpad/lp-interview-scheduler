@@ -1,69 +1,81 @@
-import { render } from "@testing-library/react";
 import React from "react";
 import moment, { Moment } from 'moment';
 import Calendar from "./calendar/Calendar";
-
-const titleStyle = {
-  display: "flex",
-  flexDirection: "row" as "row",
-  justifyContent: "center"
-}
-
-const buttonStyle = {
-  margin: "10px 10px"
-}
-
-const listStyle = {
-  listStyleType: "none"
-}
+import styles from './BookingPage.module.css';
+import { isToday } from "date-fns/esm";
 
 export default function BookingPage() {
-  // TODO: remove hard-coded availabilities
-  const availabilities: Map<string, String[]> = new Map<string, string[]>([
-    [moment(new Date(2022, 1, 1)).format("yyyy-MM-DD"), ["12:00pm - 1:00pm", "2:00pm - 3:00pm", "7:00pm - 8:00pm"]],
-    [moment(new Date(2022, 1, 12)).format("yyyy-MM-DD"), ["2:00pm - 3:00pm", "7:00pm - 8:00pm"]],
-    [moment(new Date(2022, 2, 15)).format("yyyy-MM-DD"), ["1:00pm - 2:00pm", "5:00pm - 6:00pm"]],
-  ]);
-
-  const [month, setMonth] = React.useState(1);
-  const [year, setYear] = React.useState(2022);
-
-  const flip = (direction: number) => {
-    // + 12 because TS doesn't do well with negative moduluo
-    setMonth((month + direction + 12) % 12);
-    if (month + direction < 0) {
-        setYear(year - 1);
-    } else if (month + direction >= 12) {
-        setYear(year + 1);
-    } 
+  const getSlots = () => {
+    // TODO: remove hard-coded availabilities
+    return [
+      moment(new Date(2022, 1, 12, 12)),
+      moment(new Date(2022, 1, 12, 15)),
+      moment(new Date(2022, 1, 12, 17)),
+      moment(new Date(2022, 1, 13, 9)),
+      moment(new Date(2022, 1, 13, 17)),
+      moment(new Date(2022, 1, 15, 8)),
+      moment(new Date(2022, 1, 15, 12)),
+      moment(new Date(2022, 1, 15, 13)),
+      moment(new Date(2022, 1, 15, 15)),
+      moment(new Date(2022, 1, 15, 16)),
+      moment(new Date(2022, 1, 15, 17)),
+      moment(new Date(2022, 1, 15, 18))
+    ];
   }
 
-  const onDayClick = function(year: number, month: number, day: number) {
-    setDisplayAvailabilities(availabilities.get(moment(new Date(year, month, day)).format("yyyy-MM-DD")) as string[]);
-  }
-  
-  const [displayAvailabilities, setDisplayAvailabilities] = React.useState(["Select a date to see availabilities."] as string[]);
+  const slots: Moment[] = getSlots();
+  const [selectedSlot, setSelectedSlot] = React.useState<Moment>();
+  const [displaySlots, setDisplaySlots] = React.useState(slots.filter(s => isToday(s.toDate())) as Moment[]);
 
-  const availList = displayAvailabilities === undefined ? ["No availability"] : displayAvailabilities.map((avail) =>
-    <li key={avail}>{avail}</li>
+  const sameDay = (a: Moment, b: Moment) => {
+    return a.year() === b.year() && a.month() === b.month() && a.date() === b.date();
+  }
+
+  const sameSlot = (a?: Moment, b?: Moment) => {
+    if (a == null || b == null) {
+      return false;
+    }
+    return sameDay(a, b) && a.hours() === b.hours() && a.minutes() === b.minutes();
+  }
+
+  const handleDaySelect = function (year: number, month: number, day: number) {
+    setDisplaySlots(slots.filter(a => sameDay(a, moment(new Date(year, month, day)))) as Moment[]);
+  }
+
+  const displaySlotTimes = displaySlots.length === 0 ? "No availability" : displaySlots.map((avail) =>
+    <li key={avail.format('LT')} onClick={() => setSelectedSlot(avail)} className={sameSlot(selectedSlot, avail) ? styles.selectedTime : styles.defaultTime}>
+      {avail.format('LT')}
+    </li>
   );
 
-  const highlightDays: number[] = Array.from(availabilities.keys())
-    .filter((dateStr) => moment(dateStr).year() === year && moment(dateStr).month() === month)
-    .map((dateStr) => moment(dateStr).date());
+  const disableBooking = () => {
+    if (selectedSlot == null || selectedSlot?.hours() == null) {
+      return true;
+    }
+    for (let i = 0; i < displaySlots.length; i++) {
+      if (sameSlot(selectedSlot, displaySlots[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  const bookSlot = () => {
+    // TODO: actually book interview
+    if (!disableBooking()) {
+      window.alert("You have successfully booked an interview for " + selectedSlot?.format('LLLL'));
+    }
+  }
 
   return (
-    <div>
-      <div style={titleStyle}>
-          <button style={buttonStyle} onClick={() => flip(-1)}>&lt;</button>
-          <p>{moment().month(month).format('MMMM')} {year}</p>
-          <button style={buttonStyle} onClick={() => flip(1)}>&gt;</button>
+    <div className={styles.apptPicker}>
+      <Calendar onDayClick={handleDaySelect} highlightDays={slots} />
+      <div className={styles.apptTimePicker}>
+        <ul className={styles.apptList}>
+          {displaySlotTimes}
+        </ul>
+        <button onClick={bookSlot} id={disableBooking() ? styles.disabled : ''}>Book Interview</button>
       </div>
-      <Calendar onDayClick={onDayClick} highlightDays={highlightDays} year={year} month={month} />
-      <ul style={listStyle}>
-        {availList}
-      </ul>
     </div>
   );
-
 }
