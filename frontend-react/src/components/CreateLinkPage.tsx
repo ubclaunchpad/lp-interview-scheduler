@@ -177,6 +177,7 @@ export default function CreateLinkPage() {
                       {lead.leadName}{" "}
                     </option>
                   ))}
+                  <option value={undefined} key={undefined}>No Partner</option>
                 </select>
               </label>
             </div>

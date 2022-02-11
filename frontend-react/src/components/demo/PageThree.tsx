@@ -41,12 +41,21 @@ export default function PageThree() {
     // TOOD : Request to get merged availabilities
     // TODO : Set state so that we have the availability?
     try {
+      let lead2_UID, response;
+
       const lead1_UID = eventBody["leads"][0]["leadUID"];
-      const lead2_UID = eventBody["leads"][1]["leadUID"];
-      const response = await fetch(
-        linkPrefix +
-          `availabilities/mergedTimes/?organization=${organization}&interviewerUID1=${lead1_UID}&interviewerUID2=${lead2_UID}`
-      );
+      if (eventBody["leads"].length === 1) {
+        response = await fetch(
+          linkPrefix + `availabilities/calendarAvailabilities?organization=${organization}&interviewerUID=${(lead1_UID)}`
+        )
+      } else {
+        lead2_UID = eventBody["leads"][1]["leadUID"];
+        response = await fetch(
+          linkPrefix +
+            `availabilities/mergedTimes/?organization=${organization}&interviewerUID1=${lead1_UID}&interviewerUID2=${lead2_UID}`
+        );
+      }
+
       if (!response.ok) {
         alert("Get Event request failed");
       }
