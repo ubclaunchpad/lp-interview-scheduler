@@ -59,6 +59,7 @@ export default function PageThree() {
       if (!response.ok) {
         alert("Get Event request failed");
       }
+      
       const data = await response.json();
       setAvailabilities(data);
       console.log(data);
