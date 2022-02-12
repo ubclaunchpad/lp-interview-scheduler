@@ -11,7 +11,7 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route exact path="/" component={LandingPage} />
-          <Route path="/booking" component={BookingPage} />
+          <Route path="/test" component={BookingPage} />
           <Route path="/app" component={AdminApp} />
         </Switch>
       </BrowserRouter>

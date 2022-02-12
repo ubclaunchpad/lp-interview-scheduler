@@ -73,7 +73,7 @@ export default function PageThree() {
       handleGetEvent().then((data) => handleMergeAvailabilities(data));
     }
     
-  });
+  }, []);
 
 
   const bookSlot = (slot: Moment) => {
