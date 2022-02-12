@@ -1,12 +1,11 @@
 .day {
     aspect-ratio: 1;
-    padding: 10%;
+    padding: 5px;
     display: grid;
     justify-content: center;
     align-content: center;
     border-radius: 50%;
-    margin-top: 30%;
-    margin-bottom: 30%;
+    margin: 25px;
 }
 
 .day:hover {
@@ -54,4 +53,22 @@ p {
     border-radius: 3px;
     margin-top: 5px;
     background-color: #e0e0e0;
+}
+
+@media screen and (max-width: 1200px) {
+    .day {
+        padding: 5px;
+        margin: 15px;
+    }
+}
+
+@media screen and (max-width: 760px) {
+    .day {
+        padding: 0;
+        margin: 5px;
+    }
+
+    .colorBar {
+        margin-top: 0;
+    }
 }

@@ -15,6 +15,10 @@ export default function Calendar(props: Props) {
     const [year, setYear] = React.useState(todaysDate.year());
     const [highlightedInMonth, setHighlightedInMonth] = React.useState(props.highlightDays.filter(d => d.year() === year && d.month() === month).map(d => d.date()) as number[]);
 
+    React.useEffect(() => {
+        setHighlightedInMonth(props.highlightDays.filter(d => d.year() === year && d.month() === month).map(d => d.date()));
+    }, [props.highlightDays, year, month]);
+    
     const flip = (direction: number) => {
         // + 12 because TS doesn't do well with negative moduluo
         let newMonth = (month + direction + 12) % 12;
