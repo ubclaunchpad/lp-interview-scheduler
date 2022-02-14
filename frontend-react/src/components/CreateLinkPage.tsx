@@ -5,6 +5,7 @@ import moment from "moment";
 import "../App.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
+import { NumberLiteralType } from "typescript";
 
 const localizer = momentLocalizer(moment);
 
@@ -28,6 +29,14 @@ interface APICalendarEvent {
   end: string;
 }
 
+interface Lead {
+  leadUID: string;
+  leadName: string;
+  bookingCount: number;
+  pending: Number;
+  confirmed: Number;
+}
+
 export default function CreateLinkPage() {
   const { user } = useAuth();
   const [eventData, setEventData] = React.useState({
@@ -39,12 +48,8 @@ export default function CreateLinkPage() {
     expires: "2022-04-23T18:25:43.511Z" as string,
   });
   const [bookingLink, setBookingLink] = React.useState("");
-  const [leadsList, setLeadsList] = React.useState(
-    [] as { leadUID: string; leadName: string }[]
-  );
-  const [selectedLeads, setSelectedLeads] = React.useState(
-    [] as { leadUID: string; leadName: string }[]
-  );
+  const [leadsList, setLeadsList] = React.useState([] as Lead[]);
+  const [selectedLeads, setSelectedLeads] = React.useState([] as Lead[]);
   const [calendarEvent, setCalendarEvent] = React.useState(
     [] as CalendarEvent[]
   );
@@ -108,6 +113,9 @@ export default function CreateLinkPage() {
         leadUID: event.target.value,
         leadName: event.target.options[event.target.selectedIndex]
           .text as string,
+        bookingCount: 0,
+        confirmed: 0,
+        pending: 0
       },
     ];
     setSelectedLeads(newSelectedLeads);
@@ -124,6 +132,9 @@ export default function CreateLinkPage() {
             {
               leadUID: lead.leadUID,
               leadName: lead.leadName,
+              bookingCount: 0,
+              pending: 0,
+              confirmed: 0
             },
           ]);
           break;
@@ -173,8 +184,7 @@ export default function CreateLinkPage() {
                   {/* {populateDropdown()} */}
                   {leadsList.map((lead) => (
                     <option value={lead.leadUID} key={lead.leadUID}>
-                      {" "}
-                      {lead.leadName}{" "}
+                      {createRow(lead)}
                     </option>
                   ))}
                   <option value={undefined} key={undefined}>No Partner</option>
@@ -253,9 +263,11 @@ export default function CreateLinkPage() {
   );
 }
 
-async function getAllLeads(
-  organization: string
-): Promise<{ leadUID: string; leadName: string }[]> {
+function createRow(interviewer: Lead) : string {
+  return `  ${interviewer.leadName} : ${interviewer.confirmed} confirmed, ${interviewer.pending} pending  `;
+}
+
+async function getAllLeads(organization: string): Promise<Lead[]> {
   try {
     const interviewersRes: Response = await fetch(
       `http://localhost:8080/v1/interviewers/?organization=${organization}`
@@ -264,7 +276,7 @@ async function getAllLeads(
       throw new Error(
         `Error calling getAllLeads api with organization ${organization}`
       );
-    const interviewers: { leadUID: string; leadName: string }[] = [];
+    const interviewers: Lead[] = [];
     const interviewersJSON: { name: string; interviewerUID: string }[] =
       await interviewersRes.json();
     interviewersJSON.forEach(
@@ -272,10 +284,60 @@ async function getAllLeads(
         interviewers.push({
           leadName: element.name,
           leadUID: element.interviewerUID,
+          bookingCount: 0,
+          pending: 0,
+          confirmed: 0
         });
       }
     );
+    await updateInterviewersWithBookingCount(organization, interviewers);
+
+    //sort
+    interviewers.sort(compare);
     return Promise.resolve(interviewers);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
+
+
+function compare(leadA: Lead, leadB: Lead): number {
+  if (leadA.bookingCount < leadB.bookingCount) return -1;
+  if (leadA.bookingCount > leadB.bookingCount) return 1;
+  return 0;
+}
+
+async function updateInterviewersWithBookingCount(
+  organization: string,
+  leads: Lead[]
+) {
+  try {
+    const bookingCountRes: Response = await fetch(
+      `http://localhost:8080/v1/events/bookingCount/?organization=${organization}`
+    );
+    if (!bookingCountRes.ok)
+      throw new Error(
+        `Error calling getAllLeads api with organization ${organization}`
+      );
+    const bookingCountJSON: {
+      organization: string;
+      leads: {
+        [leadUID: string]: {
+          name: string;
+          confirmed: number;
+          pending: number;
+        };
+      };
+    } = await bookingCountRes.json();
+    for (let lead of leads) {
+      if (bookingCountJSON.leads[lead.leadUID]) {
+        let bookingInfo: { confirmed: number; pending: number } =
+          bookingCountJSON.leads[lead.leadUID];
+        lead.bookingCount = bookingInfo.confirmed + bookingInfo.pending;
+        lead.confirmed = bookingInfo.confirmed;
+        lead.pending = bookingInfo.pending;
+      }
+    }
   } catch (err) {
     return Promise.reject(err);
   }
@@ -283,14 +345,16 @@ async function getAllLeads(
 
 async function addEvent(
   organization: string,
-  leads: { leadUID: string; leadName: string }[],
+  leads: Lead[],
   intervieweeEmail: string,
   length: number,
   expires: string
 ): Promise<any> {
   const addEventBody: AddEventBody = {
     organization: organization,
-    leads: leads,
+    leads: leads.map((lead) => {
+      return { leadUID: lead.leadUID, leadName: lead.leadName };
+    }),
     intervieweeEmail: intervieweeEmail,
     length: length,
     expires: expires,
