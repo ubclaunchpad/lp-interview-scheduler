@@ -86,9 +86,13 @@ export default function PageThree() {
           leadUIDs: leadUIDs,
           times: [slot.format("YYYY-MM-DDTHH:mm:ssZ")]
         })
-    }).then(() => {
-      setConfirmedTime(slot.toString());
-      window.alert("You have successfully booked an interview for " + slot.format('LLLL'));
+    }).then((res) => {
+      if (res.status == 200) {
+        setConfirmedTime(slot.toString());
+        window.alert("You have successfully booked an interview for " + slot.format('LLLL'));
+      } else {
+        window.alert("Error booking interview.");
+      }
     });
   }
 
