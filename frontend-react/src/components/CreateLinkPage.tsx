@@ -5,7 +5,6 @@ import moment from "moment";
 import "../App.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
-import { NumberLiteralType } from "typescript";
 
 const localizer = momentLocalizer(moment);
 
@@ -54,7 +53,6 @@ export default function CreateLinkPage() {
     [] as CalendarEvent[]
   );
   const [event, setEvent] = React.useState({ event: "not created yet" });
-
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     const submitEvent = async () => {
       try {
@@ -86,10 +84,12 @@ export default function CreateLinkPage() {
   ) => {
     // set lead state and set the chosen lead's availabilities to events
     const value = event.target.value;
-    setEventData({
-      ...eventData,
-      [event.target.name]: value,
-    });
+    let newEventData = {...eventData, [event.target.name]: value};
+    if (event.target.name === "partnerUID" && value !== "no_partner") {
+      newEventData["partnerUID"] = JSON.parse(value).UID;
+    }
+    console.log(newEventData);
+    setEventData(newEventData);
   };
 
   const handleSelect = ({
@@ -107,20 +107,22 @@ export default function CreateLinkPage() {
   const handleDropdownSelect = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const newSelectedLeads = [
-      selectedLeads[0],
-      {
-        leadUID: event.target.value,
-        leadName: event.target.options[event.target.selectedIndex]
-          .text as string,
-        bookingCount: 0,
-        confirmed: 0,
-        pending: 0
-      },
-    ];
+    const selectedInterviewer : string = event.target.value;
+    let newSelectedLeads : Lead[] = [selectedLeads[0]];
+    if (selectedInterviewer !== "no_partner") {
+      const partnerJSON : {UID: string; name: string} = JSON.parse(selectedInterviewer);
+      newSelectedLeads[1] = {
+          leadUID: partnerJSON.UID,
+          leadName: partnerJSON.name,
+          bookingCount: 0,
+          confirmed: 0,
+          pending: 0
+        };
+    }
     setSelectedLeads(newSelectedLeads);
     handleChange(event);
   };
+
 
   // useEffect for populating dropdown menu of leads excluding user
   React.useEffect(() => {
@@ -162,8 +164,26 @@ export default function CreateLinkPage() {
         console.log(JSON.stringify(e));
       }
     };
-    loadMergedLeadTimes();
-  }, [eventData.organization, eventData.userUID, eventData.partnerUID]);
+    const loadSingleInterviewerTimes = async () => {
+      try {
+        const response = await getSingleAvailability(
+          eventData.organization,
+          eventData.userUID,
+        );
+        console.log("here");
+        console.log(response);
+        setCalendarEvent(response);
+        console.log(JSON.stringify(response));
+      } catch (e) {
+        console.log(JSON.stringify(e));
+      }
+    };
+    if (selectedLeads.length === 1) {
+      loadSingleInterviewerTimes();
+    } else {
+      loadMergedLeadTimes();
+    }
+  }, [eventData.organization, eventData.userUID, selectedLeads]);
 
   return (
     <div className="Create-Link">
@@ -182,12 +202,8 @@ export default function CreateLinkPage() {
                   onChange={handleDropdownSelect}
                 >
                   {/* {populateDropdown()} */}
-                  {leadsList.map((lead) => (
-                    <option value={lead.leadUID} key={lead.leadUID}>
-                      {createRow(lead)}
-                    </option>
-                  ))}
-                  <option value={undefined} key={undefined}>No Partner</option>
+                  {leadsList.map((lead) => createRow(lead))}
+                  <option value={"no_partner"}>No Partner</option>
                 </select>
               </label>
             </div>
@@ -263,8 +279,10 @@ export default function CreateLinkPage() {
   );
 }
 
-function createRow(interviewer: Lead) : string {
-  return `  ${interviewer.leadName} : ${interviewer.confirmed} confirmed, ${interviewer.pending} pending  `;
+function createRow(interviewer: Lead) : JSX.Element {
+  return <option value={`{"UID": "${interviewer.leadUID}", "name": "${interviewer.leadName}"}`} key={interviewer.leadUID}>
+  {`  ${interviewer.leadName} : ${interviewer.confirmed} confirmed, ${interviewer.pending} pending  `}
+</option>
 }
 
 async function getAllLeads(organization: string): Promise<Lead[]> {
@@ -392,6 +410,28 @@ async function getMergedAvailabilities(
       );
     const calendarEvents: CalendarEvent[] = ConvertAPICalEventsToCalEvents(
       (await mergedRes.json()) as APICalendarEvent[]
+    );
+    return Promise.resolve(calendarEvents);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
+
+async function getSingleAvailability(
+  organization: string,
+  leadUID: string | undefined,
+): Promise<CalendarEvent[]> {
+  try {
+    const singleRes: Response = await fetch(
+      `http://localhost:8080/v1/availabilities/calendarAvailabilities?organization=${organization}&interviewerUID=${leadUID}`
+    );
+    if (!singleRes.ok)
+      throw new Error(
+        `error calling api availabilities with organization=${organization}&interviewerUID=${leadUID}`
+      );
+    // console.log(await singleRes.json());
+    const calendarEvents: CalendarEvent[] = ConvertAPICalEventsToCalEvents(
+      (await singleRes.json()) as APICalendarEvent[]
     );
     return Promise.resolve(calendarEvents);
   } catch (err) {
