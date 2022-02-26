@@ -3,14 +3,17 @@ import * as dotenv from "dotenv";
 import { v1Router } from "./api/versions/v1";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
+import { insertTest } from "./api/controllers/googleCalendarController";
 
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1-minute window 
+  windowMs: 60 * 1000, // 1-minute window
   max: 30, // max 30 requests per minute
   message: `Exceeded API rate limit, please check your code and try again later.`,
   onLimitReached: (req, res, options) => {
-    console.log(`ERROR: Rate limit exceeded for request path ${req.originalUrl}`);
-  }
+    console.log(
+      `ERROR: Rate limit exceeded for request path ${req.originalUrl}`
+    );
+  },
 });
 dotenv.config();
 export const app = express();
@@ -27,3 +30,6 @@ app.get("/", (req, res) => res.status(200).send("hello world!"));
 app.get("/ping", (req, res) => res.status(200).send("pong"));
 
 app.use("/v1", v1Router);
+console.log("testing event");
+insertTest();
+console.log("making event");
