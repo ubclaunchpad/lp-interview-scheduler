@@ -10,11 +10,7 @@ import {
   runTransaction,
   Transaction,
 } from "@firebase/firestore";
-import { 
-  setDoc,
-  getDocs,
-  Timestamp 
-} from "firebase/firestore";
+import { setDoc, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/db";
 import { Availability, Interviewer, Event } from "./models";
 
@@ -203,14 +199,14 @@ class DataAccess {
       interviewerUID
     );
 
-    collectionRef.forEach(async (availability) => {
+    for (const availability of collectionRef.docs) {
       const docRef = doc(
         interviewerRef,
         this.availabilityCollectionName,
         availability.id
       );
       await deleteDoc(docRef);
-    });
+    }
   }
 
   async eventDocRef(
@@ -322,7 +318,7 @@ class DataAccess {
       return false;
     }
   }
-  
+
   async getOrganizationFields(organization: string) {
     const organizationRef = await doc(this.rootCollection, organization);
     const organizationDoc = await getDoc(organizationRef);
