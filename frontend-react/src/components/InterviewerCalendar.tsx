@@ -111,7 +111,13 @@ export default function InterviewerCalendar({ localizer }: Props) {
       "http://localhost:8080/v1/availabilities/",
       submitCalendarEvents
     );
-    console.log(response);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      alert(errorText);
+      return;
+    }
+
     try {
       const data = await response.json();
       console.log("data");
