@@ -7,14 +7,31 @@ import BookingPage from "./components/BookingPage";
 function App() {
   return (
     <div className="App">
-      <h1>our main app</h1>
-      <BrowserRouter>
-        <Switch>
-          <Route exact path="/" component={LandingPage} />
-          <Route path="/test" component={BookingPage} />
-          <Route path="/app" component={AdminApp} />
-        </Switch>
-      </BrowserRouter>
+      <div className="top-navbar">
+        <div>logo</div>
+        <ul className="navbar-tabs">
+          <li>
+            <a className="navbar-links" href="/">
+              Availabilities
+            </a>
+          </li>
+          <li>
+            <a className="navbar-links" href="/">
+              Bookings
+            </a>
+          </li>
+        </ul>
+        <div>account</div>
+      </div>
+      <div className="body">
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/" component={LandingPage} />
+            <Route path="/test" component={BookingPage} />
+            <Route path="/app" component={AdminApp} />
+          </Switch>
+        </BrowserRouter>
+      </div>
     </div>
   );
 }

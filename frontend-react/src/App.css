@@ -1,5 +1,53 @@
 .App {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
   text-align: center;
+  font-size: 100%;
+  color: white;
+  background-color: #0c0634;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+.App .top-navbar {
+  position: fixed;
+  height: 60px;
+  top: 0px;
+  width: 100%;
+  padding: 16px;
+  padding-right: 24px;
+  padding-left: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.App .top-navbar .navbar-tabs {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  list-style: none;
+  padding: 0;
+}
+
+.App .top-navbar .navbar-tabs .navbar-links {
+  text-decoration: none;
+  color: white;
+  padding-right: 40px;
+  padding-left: 40px;
+}
+
+.App .body {
+  position: relative;
+  top: 60px;
+  margin: 60px;
+  padding: 0;
 }
 
 .rbc-allday-cell {
