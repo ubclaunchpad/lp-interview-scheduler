@@ -5,6 +5,7 @@ import moment from "moment";
 import "../App.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
+import { getLeadingCommentRanges } from "typescript";
 
 const localizer = momentLocalizer(moment);
 
@@ -13,6 +14,7 @@ interface CalendarEvent {
   start: Date;
   end: Date;
 }
+
 
 interface AddEventBody {
   organization: string;
@@ -86,7 +88,7 @@ export default function CreateLinkPage() {
     const value = event.target.value;
     let newEventData = {...eventData, [event.target.name]: value};
     if (event.target.name === "partnerUID" && value !== "no_partner") {
-      newEventData["partnerUID"] = JSON.parse(value).UID;
+      newEventData["partnerUID"] = JSON.parse(value).leadUID;
     }
     console.log(newEventData);
     setEventData(newEventData);
@@ -110,13 +112,13 @@ export default function CreateLinkPage() {
     const selectedInterviewer : string = event.target.value;
     let newSelectedLeads : Lead[] = [selectedLeads[0]];
     if (selectedInterviewer !== "no_partner") {
-      const partnerJSON : {UID: string; name: string} = JSON.parse(selectedInterviewer);
+      const partnerJSON : Lead = JSON.parse(selectedInterviewer);
       newSelectedLeads[1] = {
-          leadUID: partnerJSON.UID,
-          leadName: partnerJSON.name,
-          bookingCount: 0,
-          confirmed: 0,
-          pending: 0
+          leadUID: partnerJSON.leadUID,
+          leadName: partnerJSON.leadName,
+          bookingCount: partnerJSON.bookingCount,
+          confirmed: partnerJSON.confirmed,
+          pending: partnerJSON.pending
         };
     }
     setSelectedLeads(newSelectedLeads);
@@ -134,9 +136,9 @@ export default function CreateLinkPage() {
             {
               leadUID: lead.leadUID,
               leadName: lead.leadName,
-              bookingCount: 0,
-              pending: 0,
-              confirmed: 0
+              bookingCount: lead.bookingCount,
+              pending: lead.pending,
+              confirmed: lead.confirmed
             },
           ]);
           break;
@@ -255,6 +257,9 @@ export default function CreateLinkPage() {
             </pre>
           </div>
           <div className="right-side">
+            <div className="show-event-count">
+              {showEventCount(selectedLeads)}
+            </div>
             <Calendar
               selectable
               localizer={localizer}
@@ -280,8 +285,8 @@ export default function CreateLinkPage() {
 }
 
 function createRow(interviewer: Lead) : JSX.Element {
-  return <option value={`{"UID": "${interviewer.leadUID}", "name": "${interviewer.leadName}"}`} key={interviewer.leadUID}>
-  {`  ${interviewer.leadName} : ${interviewer.confirmed} confirmed, ${interviewer.pending} pending  `}
+  return <option value={JSON.stringify(interviewer)} key={interviewer.leadUID}>
+  {`  ${interviewer.leadName} : ${interviewer.bookingCount}`}
 </option>
 }
 
@@ -454,3 +459,12 @@ function ConvertAPICalEventsToCalEvents(
   });
   return convertedEvents;
 }
+function showEventCount(selectedLeads: Lead[]): React.ReactNode {
+  if (selectedLeads.length === 1) {
+    return `confirmed: ${selectedLeads[0].confirmed} pending: ${selectedLeads[0].pending}`;
+  }
+  else if (selectedLeads.length === 2) {
+    return `confirmed: ${selectedLeads[1].confirmed} pending: ${selectedLeads[1].pending}`;
+  }
+}
+
