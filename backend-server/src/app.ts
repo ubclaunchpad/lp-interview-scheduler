@@ -3,7 +3,7 @@ import * as dotenv from "dotenv";
 import { v1Router } from "./api/versions/v1";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
-import { insertTest } from "./api/controllers/googleCalendarController";
+import { initModule } from "./api/controllers/googleCalendarController";
 
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1-minute window
@@ -30,6 +30,5 @@ app.get("/", (req, res) => res.status(200).send("hello world!"));
 app.get("/ping", (req, res) => res.status(200).send("pong"));
 
 app.use("/v1", v1Router);
-console.log("testing event");
-insertTest();
-console.log("making event");
+
+initModule();

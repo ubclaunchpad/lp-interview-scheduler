@@ -1,49 +1,61 @@
-import { oauth2 } from "googleapis/build/src/apis/oauth2";
+import { dataAccess } from "../data/dataAccess";
 
 const { google } = require("googleapis");
 const { OAuth2 } = google.auth;
 
-const oAuth2Client = new OAuth2(
-  "683209822932-3v58hpbtm5nm6g6k0burfo7mqcm6jlor.apps.googleusercontent.com",
-  "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"
-);
+var oAuth2Client = null;
+var calendar = null;
 
-oAuth2Client.setCredentials({
-  refresh_token:
-    "1//04llkE1qE_S0qCgYIARAAGAQSNwF-L9IrMGbIe-TSRtcdNIBefrklbA2vUOzqznFt4Tua54IJraXDMUlxGswsJ1i1zHpijGmMnbg",
-});
+export async function initModule() {
+  if (calendar != null || oAuth2Client != null) {
+    return;
+  }
+  const org_fields = await dataAccess.getOrganizationFields("launchpad").then();
+  oAuth2Client = new OAuth2(
+    org_fields["client_id"],
+    org_fields["client_secret"]
+  );
 
-const CALENDAR_ID = "si32mh0s0b5k32oipldq05hsq0@group.calendar.google.com";
-const calendar = google.calendar({ version: "v3", oAuth2Client });
+  oAuth2Client.setCredentials({
+    refresh_token: org_fields["refresh_token"],
+  });
+  calendar = google.calendar({ version: "v3", oAuth2Client });
+}
 
-const eventStartTime = new Date();
-eventStartTime.setDate(eventStartTime.getDay() + 25);
+async function checkInit() {
+  if (calendar == null || oAuth2Client == null) {
+    await initModule();
+  }
+}
 
-const eventEndTime = new Date();
-eventEndTime.setDate(eventEndTime.getDay() + 25);
-eventEndTime.setMinutes(eventEndTime.getMinutes() + 45);
+export async function createGoogleCalendarEvent(body: CreateCalendarEventBody) {
+  await checkInit;
 
-const calendarEvent = {
-  summary: "Meet with jimmy",
-  location: "Some location",
-  description: "Meeting",
-  start: {
-    dateTime: eventStartTime,
-    timeZone: "Canada/Pacific",
-  },
-  end: {
-    dateTime: eventEndTime,
-    timeZone: "Canada/Pacific",
-  },
-  colorId: 1,
-  attendees: [
-    {
-      email: "jink8036@gmail.com",
+  var attendees = [];
+  for (let email of body.participantEmails) {
+    attendees.push({
+      email: email,
+    });
+  }
+
+  var startDate = Date.parse(body.startTime);
+  var endDate = Date.parse(body.endTime);
+
+  const calendarEvent = {
+    summary: "UBC Launchpad Interview",
+    description: "Intake interview placeholder description",
+    start: {
+      dateTime: startDate,
+      timeZone: "Canada/Pacific",
     },
-  ],
-};
+    end: {
+      dateTime: endDate,
+      timeZone: "Canada/Pacific",
+    },
+    colorId: 1,
+    attendees: attendees,
+  };
 
-export function insertTest() {
   calendar.events.insert(
     {
       auth: oAuth2Client,
@@ -54,9 +66,15 @@ export function insertTest() {
     function (err, event) {
       if (err) {
         console.log("ERROR: " + err);
-        return;
+        return err;
       }
-      console.log(event);
+      return null;
     }
   );
+}
+
+export interface CreateCalendarEventBody {
+  startTime: string;
+  endTime: string;
+  participantEmails: string[];
 }
