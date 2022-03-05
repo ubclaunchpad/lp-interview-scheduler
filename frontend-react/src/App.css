@@ -7,6 +7,16 @@
   font-size: 100%;
   color: white;
   background-color: #0c0634;
+  background-image: radial-gradient(
+    circle at 100%,
+    rgba(73, 34, 149, 0.6),
+    rgba(88, 32, 245, 0.6),
+    rgba(122, 41, 182, 0.6),
+    rgba(117, 39, 229, 0.6),
+    rgba(108, 37, 245, 0.6),
+    rgba(85, 99, 235, 0.6),
+    #0c0634 80%
+  );
 }
 
 *,
@@ -34,13 +44,14 @@
   justify-content: space-evenly;
   list-style: none;
   padding: 0;
+  align-items: baseline;
 }
 
 .App .top-navbar .navbar-tabs .navbar-links {
   text-decoration: none;
   color: white;
-  padding-right: 40px;
-  padding-left: 40px;
+  padding-right: 20px;
+  padding-left: 20px;
 }
 
 .App .body {
@@ -48,6 +59,27 @@
   top: 60px;
   margin: 60px;
   padding: 0;
+}
+
+button {
+  background-color: #0d0739;
+  color: white;
+  font-family: inherit;
+  border-radius: 20px;
+  width: 130px;
+  height: 30px;
+  border-color: white;
+  border-width: 1px;
+}
+
+.account-dropdown {
+  margin-left: 20px;
+}
+
+.landing-buttons {
+  padding-top: 40px;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .rbc-allday-cell {

@@ -4,7 +4,7 @@ import Login from "./Login";
 export default function UnauthenticatedApp() {
   return (
     <div className="App">
-      unauthenticated app, you can haz login tho
+      <h2>hey, it seems that you're not logged in right now</h2>
       <Login />
     </div>
   );
