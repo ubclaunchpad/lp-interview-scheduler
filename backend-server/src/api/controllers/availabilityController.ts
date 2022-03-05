@@ -34,6 +34,11 @@ export interface GetMergedRoutesParams {
   interviewerUID2: string;
 }
 
+export interface GetMultipleMergedRoutesParams {
+  organization: string;
+  interviewerUIDs: string[];
+}
+
 export async function addAvailability(body: AddAvailabilityBody) {
   const availability: Availability = {
     interviewerUID: body.interviewerUID,

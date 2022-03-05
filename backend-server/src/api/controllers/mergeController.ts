@@ -1,5 +1,6 @@
 import { Availability, CalendarAvailability } from "../data/models";
 
+// find overlapping availabilities of interviewer pair
 export function findOverlapping(
   availabilities1: Availability[],
   availabilities2: Availability[]
@@ -14,6 +15,38 @@ export function findOverlapping(
       output.push(commonTime);
     }
   });
+
+  return output;
+}
+
+// find overlapping availabilities of arbitrary number of interviewers
+export function findAllOverlapping(
+  availabilities: Availability[][]
+): Availability[] {
+  const output: Availability[] = [];
+  if (availabilities.length == 1) {
+    return availabilities[0];
+  } 
+
+  availabilities[0].forEach((timeSlot) => {
+    let i = 1;
+    let commonTime = timeSlot;
+    while (i < availabilities.length) {
+      commonTime = availabilities[i].find(
+        (element) => element.startTime == timeSlot.startTime
+      );
+      if (!commonTime) {
+        commonTime = null;
+        break;
+      } else {
+        i++;
+      }
+    }
+    
+    if (commonTime) {
+      output.push(commonTime);
+    }
+  })
 
   return output;
 }

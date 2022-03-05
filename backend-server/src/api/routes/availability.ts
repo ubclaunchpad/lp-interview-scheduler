@@ -9,8 +9,9 @@ import {
   replaceAllAvailabilities,
   GetMergedRoutesParams,
   makeMultipleCalendarAvailabilities,
+  GetMultipleMergedRoutesParams,
 } from "../controllers/availabilityController";
-import { findOverlapping } from "../controllers/mergeController";
+import { findAllOverlapping, findOverlapping } from "../controllers/mergeController";
 import { Availability, CalendarAvailability } from "../data/models";
 
 export const availabilityRouter = express.Router();
@@ -116,6 +117,40 @@ availabilityRouter.get("/mergedTimes", async (req, res) => {
     )) as Availability[];
 
     const merged = findOverlapping(allAvailabilities1, allAvailabilities2);
+
+    if (!req.query.inCalendarAvailability || req.query.inCalendarAvailability as string === "false") {
+      res.json(merged);
+    } else if (req.query.inCalendarAvailability as string === "true") {
+      const mergedCalendar: CalendarAvailability[] = await makeMultipleCalendarAvailabilities(merged, body.organization);
+      res.json(mergedCalendar);
+    } else {
+      throw new Error(`Incompatible Query Key: inCalendarAvailability=${req.query.inCalendarAvailability}`);
+    }
+  } catch (err) {
+    res.send(`error processing request: ${err}`);
+  }
+});
+
+availabilityRouter.get("/mergeMultiple", async (req, res) => {
+  const body: GetMultipleMergedRoutesParams = {
+    organization: req.query.organization as string,
+    interviewerUIDs: req.query.interviewerUID as string[],
+  };
+
+  try {
+    if (!Object.values(body).every((field) => field != null))
+      throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
+
+    const allAvailabilites: Availability[][] = [];
+    for await ( const interviewerUID of body.interviewerUIDs) {
+      const availability = await getInterviewerAvailabilities(
+        body.organization,
+        interviewerUID
+      );
+      allAvailabilites.push(availability);
+    };
+
+    const merged = findAllOverlapping(allAvailabilites);
 
     if (!req.query.inCalendarAvailability || req.query.inCalendarAvailability as string === "false") {
       res.json(merged);
