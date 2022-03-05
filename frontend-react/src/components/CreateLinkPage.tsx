@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
-import "../App.css";
+import styles from "./styles/CreateLinkPage.module.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, startOfWeek } from "date-fns";
@@ -51,6 +51,16 @@ export default function CreateLinkPage() {
   );
   const [event, setEvent] = React.useState({ event: "not created yet" });
 
+  React.useEffect(() => {
+    // set the background image of the entire page upon render
+    document.body.style.backgroundImage = "url('/page-2.svg')";
+
+    // remove the background image when the component unmounts
+    return () => {
+      document.body.style.backgroundImage = "";
+    };
+  }, []);
+
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     const submitEvent = async () => {
       try {
@@ -68,7 +78,7 @@ export default function CreateLinkPage() {
         setBookingLink(path);
         setEvent(eventResponse);
       } catch (err) {
-        console.log(err);
+        console.log({ err });
       }
     };
     event.preventDefault();
@@ -86,18 +96,6 @@ export default function CreateLinkPage() {
       ...eventData,
       [event.target.name]: value,
     });
-  };
-
-  const handleSelect = ({
-    start,
-    end,
-  }: {
-    // component passes in Dates
-    start: string | Date;
-    end: string | Date;
-  }): any => {
-    console.log("start: " + start);
-    console.log("end: " + end);
   };
 
   const handleDropdownSelect = (
@@ -147,105 +145,129 @@ export default function CreateLinkPage() {
           eventData.partnerUID
         );
         setCalendarEvent(response);
-        console.log(JSON.stringify(response));
       } catch (e) {
         console.log(JSON.stringify(e));
       }
     };
     loadMergedLeadTimes();
   }, [eventData.organization, eventData.userUID, eventData.partnerUID]);
-
   return (
-    <div className="Create-Link">
+    <div className={styles.createLinkPage}>
       <Link to="/app">
         <button>goto interviewer availabilities</button>
       </Link>
-      <form>
-        <div className="event-info-form">
-          <div className="left-side">
-            <div>
+      <form className={styles.form}>
+        <div className={styles.left}>
+          <div className={styles.calendarInfoRow}>
+            <div className={styles.choosePartner}>
               <label>
-                Choose your partner:
-                <select
-                  name="partnerUID"
-                  // value={eventData.partnerUID}
-                  onChange={handleDropdownSelect}
-                >
-                  {/* {populateDropdown()} */}
-                  {leadsList.map((lead) => (
-                    <option value={lead.leadUID} key={lead.leadUID}>
-                      {" "}
-                      {lead.leadName}{" "}
-                    </option>
-                  ))}
-                </select>
+                <div className={styles.labelText}>Choose your partner:</div>
               </label>
+              <select
+                name="partnerUID"
+                onChange={handleDropdownSelect}
+                className={styles.select}
+              >
+                {leadsList.map((lead) => (
+                  <option value={lead.leadUID} key={lead.leadUID}>
+                    {" "}
+                    {lead.leadName}{" "}
+                  </option>
+                ))}
+              </select>
             </div>
-            <div>
-              <label>
-                Interviewee Email:
-                <textarea
-                  name="intervieweeEmail"
-                  value={eventData.intervieweeEmail}
-                  onChange={handleChange}
-                />
-              </label>
+            <div className={styles.labelText}>dummytext</div>
+            <div className={styles.labelText}>dummytext</div>
+          </div>
+          <div className={styles.mergedCalendar}>
+            <Calendar
+              // className={styles.mergedCalendar}
+              localizer={localizer}
+              events={calendarEvent}
+              defaultView="week"
+              defaultDate={moment().toDate()}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: 500, width: "100%" }}
+              min={startOfWeek(new Date())}
+              max={endOfWeek(new Date())}
+            />
+          </div>
+        </div>
+        <div className={styles.right}>
+          <div className={styles.inputArea}>
+            <div className={styles.intervieweeEmailContainer}>
+              <label className={styles.labelText}>Interviewee Email:</label>
+              <input
+                type="text"
+                className={styles.emailInput}
+                name="intervieweeEmail"
+                value={eventData.intervieweeEmail}
+                onChange={handleChange}
+              />
             </div>
-            <div>
-              <label>
+            <div className={styles.selectLength}>
+              <label className={styles.labelText}>
                 Select Interview Length:
-                <div>
+              </label>
+              <div className={styles.radioRow}>
+                <label className={styles.radioLabel}>
                   <input
+                    className={styles.radioInput}
                     type="radio"
                     value={30}
                     name="length"
                     onChange={handleChange}
-                  />{" "}
+                  />
                   30 mins
+                </label>
+                <label className={styles.radioLabel}>
                   <input
+                    className={styles.radioInput}
                     type="radio"
                     value={60}
                     name="length"
                     onChange={handleChange}
                   />{" "}
                   60 mins
+                </label>
+                <label className={styles.radioLabel}>
                   <input
+                    className={styles.radioInput}
                     type="radio"
                     value={90}
                     name="length"
                     onChange={handleChange}
                   />{" "}
                   90 mins
-                </div>
-              </label>
+                </label>
+              </div>
             </div>
-            <button onClick={(e) => handleSubmit(e)}>
+            <button
+              className={`${styles.createBooking} ${styles.button}`}
+              onClick={(e) => handleSubmit(e)}
+            >
               Create Booking Link
             </button>
-            {/* <p>[dummy unique url]</p> */}
-            <p className="unique-url">unique url: {bookingLink}</p>
-            <pre className="event-info">
-              event info: {JSON.stringify(event, null, "\t")}
-            </pre>
-          </div>
-          <div className="right-side">
-            <Calendar
-              selectable
-              localizer={localizer}
-              events={calendarEvent}
-              defaultView="week"
-              defaultDate={moment().toDate()}
-              onSelectEvent={(event) => handleSelect(event)}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ height: 500 }}
-              min={startOfWeek(new Date())}
-              max={endOfWeek(new Date())}
-              // uncomment this for custom rendering of events
-              // components={{
-              //   event: existingEvents,
-              // }}
-            />
+            <div className={styles.eventInfo}>
+              <div>
+                <p className="">unique url: {bookingLink}</p>
+              </div>
+              <button
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (bookingLink) {
+                    await navigator.clipboard.writeText(bookingLink);
+                  }
+                }}
+                className={styles.button}
+              >
+                copy link!
+              </button>
+            </div>
+            <p className={styles.eventJSON}>
+              {JSON.stringify(event, null, "\t")}
+            </p>
           </div>
         </div>
       </form>
@@ -303,10 +325,12 @@ async function addEvent(
       },
       body: JSON.stringify(addEventBody),
     });
-    if (!eventRes.ok)
+    if (!eventRes.ok) {
+      console.log(eventRes);
       throw new Error(
         `error adding event ${JSON.stringify(addEventBody, null, "\t")}`
       );
+    }
     return Promise.resolve(await eventRes.json());
   } catch (err) {
     return Promise.reject(err);

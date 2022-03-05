@@ -49,6 +49,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-big-calendar": "^0.36.1"
+    "@types/react-big-calendar": "^0.36.1",
+    "typescript-plugin-css-modules": "^3.4.0"
   }
 }
