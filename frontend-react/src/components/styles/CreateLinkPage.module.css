@@ -125,8 +125,10 @@
     font-family: Montserrat;
     font-size: 16px;
     color: white;
+    vertical-align: middle;
 }
 
+/* this doesn't work rn but if we want to be fancy you can: https://moderncss.dev/pure-css-custom-styled-radio-buttons/*/
 .radioInput {
   width: 16px;
   height: 16px;
@@ -148,6 +150,21 @@
     word-break: break-word;
     margin-top: 128px;
 }
+
+.validFromContainer {
+    display: flex;
+    margin-top: 12px;
+    justify-content: flex-end;
+
+    font-family: Montserrat;
+    font-size: 12px;
+    color: white;
+}
+
+.timeDuration {
+    font-size: 24px;
+}
+
 
 @media only screen and (max-width: 1024px) {
     .form {

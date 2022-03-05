@@ -176,8 +176,8 @@ export default function CreateLinkPage() {
                 ))}
               </select>
             </div>
-            <div className={styles.labelText}>dummytext</div>
-            <div className={styles.labelText}>dummytext</div>
+            <div className={styles.labelText}>Pending interviews: 0</div>
+            <div className={styles.labelText}>Booked interviews: 0</div>
           </div>
           <div className={styles.mergedCalendar}>
             <Calendar
@@ -192,6 +192,12 @@ export default function CreateLinkPage() {
               min={startOfWeek(new Date())}
               max={endOfWeek(new Date())}
             />
+          </div>
+          <div className={styles.validFromContainer}>
+            <div>
+              Valid from
+              <div className={styles.timeDuration}>now to the end of time</div>
+            </div>
           </div>
         </div>
         <div className={styles.right}>

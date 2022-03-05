@@ -1,4 +1,24 @@
-html, body, .App, #root {
+html {
+  height: 100%;
+  width: 100%;
+  background-color: #0B0635;
+}
+
+body {
+  position:absolute;
+  padding:0;
+  margin:0;
+
+  top:0;
+  left:0;
+
+  width: 100%;
+  min-height: 100%;
+  background-color: white;
+  background-size: cover;
+}
+
+#root {
   height: 100%;
   width: 100%;
 }
