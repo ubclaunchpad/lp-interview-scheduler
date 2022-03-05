@@ -5,7 +5,6 @@ import moment from "moment";
 import "../App.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
-import { getLeadingCommentRanges } from "typescript";
 
 const localizer = momentLocalizer(moment);
 
@@ -90,7 +89,7 @@ export default function CreateLinkPage() {
     if (event.target.name === "partnerUID" && value !== "no_partner") {
       newEventData["partnerUID"] = JSON.parse(value).leadUID;
     }
-    console.log(newEventData);
+    // console.log(newEventData);
     setEventData(newEventData);
   };
 
@@ -172,10 +171,9 @@ export default function CreateLinkPage() {
           eventData.organization,
           eventData.userUID,
         );
-        console.log("here");
         console.log(response);
         setCalendarEvent(response);
-        console.log(JSON.stringify(response));
+        // console.log(JSON.stringify(response));
       } catch (e) {
         console.log(JSON.stringify(e));
       }
@@ -185,7 +183,7 @@ export default function CreateLinkPage() {
     } else {
       loadMergedLeadTimes();
     }
-  }, [eventData.organization, eventData.userUID, selectedLeads]);
+  }, [eventData.organization, eventData.userUID, selectedLeads, eventData.partnerUID]);
 
   return (
     <div className="Create-Link">
