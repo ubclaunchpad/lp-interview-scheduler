@@ -1,0 +1,60 @@
+.calendar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+}
+
+.calendarHead {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 40px;
+    width: 100%;
+}
+
+.calendarHead p {
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.calendarHead button {
+    background: none;
+    border: none;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+.calendarHead button:hover {
+    cursor: pointer;
+}
+
+.calendarGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    font-weight: bold;
+    width: 100%;
+}
+
+.arrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+}
+  
+.right {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
+.left {
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+}
+
+@media screen and (max-width: 760px) {
+    .calendar {
+        width: 100%;
+    }
+}

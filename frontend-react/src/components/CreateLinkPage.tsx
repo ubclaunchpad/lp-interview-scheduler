@@ -5,6 +5,7 @@ import moment from "moment";
 import "../App.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
+import { endOfWeek, startOfWeek } from "date-fns";
 
 const localizer = momentLocalizer(moment);
 
@@ -268,8 +269,8 @@ export default function CreateLinkPage() {
               startAccessor="start"
               endAccessor="end"
               style={{ height: 500 }}
-              min={new Date(2021, 11, 11, 7, 0)}
-              max={new Date(2021, 11, 11, 21, 0)}
+              min={startOfWeek(new Date())}
+              max={endOfWeek(new Date())}
               // uncomment this for custom rendering of events
               // components={{
               //   event: existingEvents,

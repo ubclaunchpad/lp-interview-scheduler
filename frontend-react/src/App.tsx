@@ -1,9 +1,8 @@
 import AdminApp from "./components/AdminApp";
-import BookingPage from "./components/BookingPage";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./App.css";
 import LandingPage from "./components/LandingPage";
-import PageThree from "./components/demo/PageThree";
+import BookingPage from "./components/BookingPage";
 
 function App() {
   return (
@@ -12,9 +11,8 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route exact path="/" component={LandingPage} />
-          <Route path="/booking" component={BookingPage} />
+          <Route path="/test" component={BookingPage} />
           <Route path="/app" component={AdminApp} />
-          <Route path="/test" component={PageThree} />
         </Switch>
       </BrowserRouter>
     </div>

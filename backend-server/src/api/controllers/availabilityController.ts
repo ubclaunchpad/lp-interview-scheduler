@@ -49,21 +49,30 @@ export async function addAvailability(body: AddAvailabilityBody) {
 export async function replaceAllAvailabilities(
   body: ReplaceAvailabilitiesBody
 ): Promise<Availability[]> {
-  const availabilities: Availability[] = await makeMultipleAvailabilities(
-    body.eventsAPI,
-    body.organization
+  const availabilitiesFromRequest: Availability[] =
+    await makeMultipleAvailabilities(body.eventsAPI, body.organization);
+
+  const availabilitiesFromDB = await getInterviewerAvailabilities(
+    body.organization,
+    body.interviewerUID
   );
+
+  if (doesExistConflict(availabilitiesFromRequest, availabilitiesFromDB)) {
+    throw new Error(
+      "One of your available slots is booked but is not yet reflected on the website. Please refresh the page to see the latest changes"
+    );
+  }
 
   await dataAccess.deleteAvailabilityCollection(
     body.organization,
     body.interviewerUID
   );
 
-  for (const availability of availabilities) {
+  for (const availability of availabilitiesFromRequest) {
     await dataAccess.setAvailability(availability, body.organization);
   }
 
-  return availabilities;
+  return availabilitiesFromRequest;
 }
 
 export async function getAvailability(
@@ -221,4 +230,36 @@ async function makeAvailabilitiesFromCalendarAvailability(
   }
 
   return availabilities;
+}
+
+function doesExistConflict(
+  availabilitiesFromRequest: Availability[],
+  availabilitiesFromDB: Availability[]
+) {
+  for (let i = 0; i < availabilitiesFromDB.length; i++) {
+    const databaseAvailability = availabilitiesFromDB[i];
+
+    if (databaseAvailability.isBooked) {
+      const found = availabilitiesFromRequest.find((requestAvailability) =>
+        equalAvailabilities(requestAvailability, databaseAvailability)
+      );
+
+      if (!found) {
+        // booked availability from DB is not present in the availabilities from the request
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function equalAvailabilities(a: Availability, b: Availability) {
+  return (
+    a.bookedByEmail === b.bookedByEmail &&
+    a.durationMins === b.durationMins &&
+    a.interviewerUID === b.interviewerUID &&
+    a.isBooked === b.isBooked &&
+    a.startTime === b.startTime
+  );
 }
