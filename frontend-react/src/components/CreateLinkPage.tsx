@@ -156,99 +156,98 @@ export default function CreateLinkPage() {
   }, [eventData.organization, eventData.userUID, eventData.partnerUID]);
 
   return (
-    <div className="Create-Link">
-      <Link to="/app">
-        <button>goto interviewer availabilities</button>
-      </Link>
-      <form>
-        <div className="event-info-form">
-          <div className="left-side">
-            <div>
-              <label>
-                Choose your partner:
-                <select
-                  name="partnerUID"
-                  // value={eventData.partnerUID}
-                  onChange={handleDropdownSelect}
-                >
-                  {/* {populateDropdown()} */}
-                  {leadsList.map((lead) => (
-                    <option value={lead.leadUID} key={lead.leadUID}>
-                      {" "}
-                      {lead.leadName}{" "}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <div>
-              <label>
-                Interviewee Email:
-                <textarea
-                  name="intervieweeEmail"
-                  value={eventData.intervieweeEmail}
-                  onChange={handleChange}
-                />
-              </label>
-            </div>
-            <div>
-              <label>
-                Select Interview Length:
-                <div>
-                  <input
-                    type="radio"
-                    value={30}
-                    name="length"
+    <div className="body">
+      <div className="Create-Link">
+        <form>
+          <div className="event-info-form">
+            <div className="left-side">
+              <div>
+                <label>
+                  Choose your partner:
+                  <select
+                    name="partnerUID"
+                    // value={eventData.partnerUID}
+                    onChange={handleDropdownSelect}
+                  >
+                    {/* {populateDropdown()} */}
+                    {leadsList.map((lead) => (
+                      <option value={lead.leadUID} key={lead.leadUID}>
+                        {" "}
+                        {lead.leadName}{" "}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <div>
+                <label>
+                  Interviewee Email:
+                  <textarea
+                    name="intervieweeEmail"
+                    value={eventData.intervieweeEmail}
                     onChange={handleChange}
-                  />{" "}
-                  30 mins
-                  <input
-                    type="radio"
-                    value={60}
-                    name="length"
-                    onChange={handleChange}
-                  />{" "}
-                  60 mins
-                  <input
-                    type="radio"
-                    value={90}
-                    name="length"
-                    onChange={handleChange}
-                  />{" "}
-                  90 mins
-                </div>
-              </label>
+                  />
+                </label>
+              </div>
+              <div>
+                <label>
+                  Select Interview Length:
+                  <div>
+                    <input
+                      type="radio"
+                      value={30}
+                      name="length"
+                      onChange={handleChange}
+                    />{" "}
+                    30 mins
+                    <input
+                      type="radio"
+                      value={60}
+                      name="length"
+                      onChange={handleChange}
+                    />{" "}
+                    60 mins
+                    <input
+                      type="radio"
+                      value={90}
+                      name="length"
+                      onChange={handleChange}
+                    />{" "}
+                    90 mins
+                  </div>
+                </label>
+              </div>
+              <button onClick={(e) => handleSubmit(e)}>
+                Create Booking Link
+              </button>
+              {/* <p>[dummy unique url]</p> */}
+              <p className="unique-url">unique url: {bookingLink}</p>
+              <pre className="event-info">
+                event info: {JSON.stringify(event, null, "\t")}
+              </pre>
             </div>
-            <button onClick={(e) => handleSubmit(e)}>
-              Create Booking Link
-            </button>
-            {/* <p>[dummy unique url]</p> */}
-            <p className="unique-url">unique url: {bookingLink}</p>
-            <pre className="event-info">
-              event info: {JSON.stringify(event, null, "\t")}
-            </pre>
+            <div className="right-side">
+              <Calendar
+                selectable
+                localizer={localizer}
+                events={calendarEvent}
+                defaultView="week"
+                defaultDate={moment().toDate()}
+                onSelectEvent={(event) => handleSelect(event)}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 500 }}
+                min={startOfWeek(new Date())}
+                max={endOfWeek(new Date())}
+                // uncomment this for custom rendering of events
+                // components={{
+                //   event: existingEvents,
+                // }}
+              />
+            </div>
           </div>
-          <div className="right-side">
-            <Calendar
-              selectable
-              localizer={localizer}
-              events={calendarEvent}
-              defaultView="week"
-              defaultDate={moment().toDate()}
-              onSelectEvent={(event) => handleSelect(event)}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ height: 500 }}
-              min={startOfWeek(new Date())}
-              max={endOfWeek(new Date())}
-              // uncomment this for custom rendering of events
-              // components={{
-              //   event: existingEvents,
-              // }}
-            />
-          </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

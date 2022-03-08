@@ -1,17 +1,22 @@
 import { Link } from "react-router-dom";
+import LaunchpadLogo from "../logo.svg";
 
 export default function LandingPage() {
   return (
-    <div>
-      <h1>Welcome to Launchpad's very own Interview Scheduler 🚀</h1>
-      <div className="landing-buttons">
-        <Link to="/booking">
-          <button>Bookings</button>
-        </Link>
-        <Link to="/app">
-          <button>Admin App</button>
-        </Link>
+    <>
+      <div className="top-navbar">
+        <div className="logo">
+          <img src={LaunchpadLogo} alt="Launchpad Logo" />
+        </div>
       </div>
-    </div>
+      <div className="body">
+        <h1>Welcome to Launchpad's very own Interview Scheduler 🚀</h1>
+        <div className="landing-buttons">
+          <Link to="/app">
+            <button className="cta-button">Admin App</button>
+          </Link>
+        </div>
+      </div>
+    </>
   );
 }

@@ -6,17 +6,9 @@
   text-align: center;
   font-size: 100%;
   color: white;
+  line-height: 1.5;
   background-color: #0c0634;
-  background-image: radial-gradient(
-    circle at 100%,
-    rgba(73, 34, 149, 0.6),
-    rgba(88, 32, 245, 0.6),
-    rgba(122, 41, 182, 0.6),
-    rgba(117, 39, 229, 0.6),
-    rgba(108, 37, 245, 0.6),
-    rgba(85, 99, 235, 0.6),
-    #0c0634 80%
-  );
+  background-image: url(http://localhost:3000/page-1.svg);
 }
 
 *,
@@ -38,13 +30,20 @@
   align-items: center;
 }
 
+.App .top-navbar .navbar-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding: 0;
+  align-items: baseline;
+}
+
 .App .top-navbar .navbar-tabs {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
   list-style: none;
-  padding: 0;
-  align-items: baseline;
+  align-items: inherit;
 }
 
 .App .top-navbar .navbar-tabs .navbar-links {
@@ -52,6 +51,16 @@
   color: white;
   padding-right: 20px;
   padding-left: 20px;
+}
+
+a {
+  text-decoration: none;
+}
+
+img {
+  max-width: 70%;
+  height: auto;
+  width: auto;
 }
 
 .App .body {
@@ -68,18 +77,66 @@ button {
   border-radius: 20px;
   width: 130px;
   height: 30px;
+  border-width: 0;
+  margin-top: 20px;
+}
+
+.cta-button {
+  background-color: #7a29ea;
+  border-radius: 10px;
+}
+
+.cta-button:hover {
+  border-width: 2px;
   border-color: white;
-  border-width: 1px;
 }
 
 .account-dropdown {
   margin-left: 20px;
 }
 
+.account-dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  /* min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1; */
+}
+
 .landing-buttons {
   padding-top: 40px;
   display: flex;
   justify-content: space-evenly;
+}
+
+.availabilities-heading {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.user-profile-pic {
+  width: 36px;
+  height: 36px;
+  border-radius: 50px;
+  margin-right: 30px;
+}
+
+.lead-calendar {
+  background-color: white;
+  padding: 16px;
+  color: #0d0739;
+  border-radius: 30px;
+  position: relative;
+  height: 400px;
+}
+
+.rbc-time-view {
+  max-height: inherit;
 }
 
 .rbc-allday-cell {
