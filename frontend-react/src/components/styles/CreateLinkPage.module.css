@@ -152,6 +152,7 @@
 }
 
 .validFromContainer {
+    /* height: 200px; */
     display: flex;
     margin-top: 12px;
     justify-content: flex-end;
@@ -163,6 +164,24 @@
 
 .timeDuration {
     font-size: 24px;
+}
+
+.selectDateSection {
+    margin-top: 16px;
+}
+
+.selectDateLabelGroup {
+    margin: 0px 8px;
+}
+
+.selectDateInput {
+    margin-left: 8px;
+    border-radius: 8px;
+    background: #7A29EA;
+    border: 2px solid #7A29EA;
+    font-family: Montserrat;
+    color: white;
+    padding: 4px;
 }
 
 
@@ -184,6 +203,11 @@
     .calendarInfoRow {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .selectDateLabelGroup {
+        display: flex;
+        flex-direction: column;
     }
 }
 

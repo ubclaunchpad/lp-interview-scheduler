@@ -5,7 +5,7 @@ import moment from "moment";
 import styles from "./styles/CreateLinkPage.module.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
-import { endOfWeek, startOfWeek } from "date-fns";
+import { endOfWeek, format, startOfWeek } from "date-fns";
 
 const localizer = momentLocalizer(moment);
 
@@ -50,8 +50,10 @@ export default function CreateLinkPage() {
     [] as CalendarEvent[]
   );
   const [event, setEvent] = React.useState({ event: "not created yet" });
+  const [startDate, setStartDate] = React.useState<Date>();
+  const [endDate, setEndDate] = React.useState<Date>();
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     // set the background image of the entire page upon render
     document.body.style.backgroundImage = "url('/page-2.svg')";
 
@@ -151,6 +153,7 @@ export default function CreateLinkPage() {
     };
     loadMergedLeadTimes();
   }, [eventData.organization, eventData.userUID, eventData.partnerUID]);
+
   return (
     <div className={styles.createLinkPage}>
       <Link to="/app">
@@ -181,7 +184,6 @@ export default function CreateLinkPage() {
           </div>
           <div className={styles.mergedCalendar}>
             <Calendar
-              // className={styles.mergedCalendar}
               localizer={localizer}
               events={calendarEvent}
               defaultView="week"
@@ -196,7 +198,38 @@ export default function CreateLinkPage() {
           <div className={styles.validFromContainer}>
             <div>
               Valid from
-              <div className={styles.timeDuration}>now to the end of time</div>
+              <div className={styles.timeDuration}>
+                {`${getFormattedDate(startDate)} to ${getFormattedDate(
+                  endDate
+                )}`}
+              </div>
+              <div className={styles.selectDateSection}>
+                <label className={styles.selectDateLabelGroup}>
+                  start date:
+                  <input
+                    className={styles.selectDateInput}
+                    type="date"
+                    onChange={(newDate) => {
+                      if (newDate.target.value) {
+                        console.log(newDate.target.value);
+                        setStartDate(new Date(newDate.target.value));
+                      }
+                    }}
+                  />
+                </label>
+                <label className={styles.selectDateLabelGroup}>
+                  end date:
+                  <input
+                    className={styles.selectDateInput}
+                    type="date"
+                    onChange={(newDate) => {
+                      if (newDate.target.value) {
+                        setEndDate(new Date(newDate.target.value));
+                      }
+                    }}
+                  />
+                </label>
+              </div>
             </div>
           </div>
         </div>
@@ -379,4 +412,8 @@ function ConvertAPICalEventsToCalEvents(
     convertedEvents.push(storedEvent);
   });
   return convertedEvents;
+}
+
+function getFormattedDate(date: Date | undefined) {
+  return date === undefined ? "no date selected" : format(date, "MMMM dd yyyy");
 }
