@@ -9,9 +9,11 @@ export const calendarRouter = express.Router();
 calendarRouter.post("/", async (req, res) => {
   try {
     const body: CreateCalendarEventBody = {
+      organization: req.body.organization,
       startTime: req.body.startTime,
       endTime: req.body.endTime,
-      participantEmails: req.body.participantEmails,
+      intervieweeEmail: req.body.intervieweeEmail,
+      interviewerUUIDs: req.body.interviewerUUIDs,
     };
     if (!Object.values(body).every((field) => field != null))
       throw new Error(`Incomplete Request Body:  ${JSON.stringify(body)}`);

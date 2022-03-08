@@ -1,4 +1,5 @@
 import { dataAccess } from "../data/dataAccess";
+import { getInterviewer } from "./interviewerController";
 
 const { google } = require("googleapis");
 const { OAuth2 } = google.auth;
@@ -32,9 +33,12 @@ export async function createGoogleCalendarEvent(body: CreateCalendarEventBody) {
   await checkInit;
 
   var attendees = [];
-  for (let email of body.participantEmails) {
+
+  attendees.push(body.intervieweeEmail);
+  for (let interviewer of body.interviewerUUIDs) {
+    var i = await getInterviewer(body.organization, interviewer);
     attendees.push({
-      email: email,
+      email: i.email,
     });
   }
 
@@ -74,7 +78,9 @@ export async function createGoogleCalendarEvent(body: CreateCalendarEventBody) {
 }
 
 export interface CreateCalendarEventBody {
+  organization: string;
   startTime: string;
   endTime: string;
-  participantEmails: string[];
+  intervieweeEmail: string;
+  interviewerUUIDs: string[];
 }

@@ -18,6 +18,7 @@ export default function PageThree() {
   );
   const [leadUIDs, setLeadUIDs] = useState([] as string[]);
   const [confirmedTime, setConfirmedTime] = useState("");
+  const [intervieweeEmail, setIntervieweeEmail] = useState("");
 
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -70,30 +71,65 @@ export default function PageThree() {
 
   React.useEffect(() => {
     if (params.has("eventUID") && params.has("organization")) {
-      handleGetEvent().then((data) => handleMergeAvailabilities(data));
+      handleGetEvent().then((data) => {
+        handleMergeAvailabilities(data);
+        setIntervieweeEmail(data.intervieweeEmail)
+      });
     }
   }, []);
 
-  const bookSlot = (slot: Moment) => {
-    fetch(linkPrefix + "events", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        organization: organization,
-        eventUID: eventUID,
-        leadUIDs: leadUIDs,
-        times: [slot.format("YYYY-MM-DDTHH:mm:ssZ")],
-      }),
-    }).then((res) => {
+  const bookSlot = async (slot: Moment) => {
+    try {
+      const res = await fetch(linkPrefix + "events", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          organization: organization,
+          eventUID: eventUID,
+          leadUIDs: leadUIDs,
+          times: [slot.format("YYYY-MM-DDTHH:mm:ssZ")],
+        }),
+      });
+
       if (res.status == 200) {
         setConfirmedTime(slot.toString());
         window.alert(
           "You have successfully booked an interview for " + slot.format("LLLL")
         );
       } else {
-        window.alert("Error booking interview.");
+        window.alert("Error booking interview: " + res.status);
       }
-    });
+    } catch (e) {
+      alert("Something went wrong with patch Event (booking) request");
+    }
+
+    try {
+      console.log("start and end times:\n");
+      console.log({startTime: slot.startOf("minutes").toISOString(),
+      endTime: slot.endOf("minutes").toISOString()});
+      const response = await fetch(linkPrefix + "googleCalendar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          organization: organization,
+          startTime: slot.startOf("minutes").toISOString(),
+          endTime: slot.endOf("minutes").toISOString(),
+          intervieweeEmail: intervieweeEmail,
+          interviewerUUIDs: leadUIDs,
+        }),
+      });
+
+      if (response.status == 200) {
+        setConfirmedTime(slot.toString());
+        window.alert(
+          "A confirmation has been sent for the interview for " + slot.format("LLLL")
+        );
+      } else {
+        window.alert("Error sending interview confirmation:" + response.status);
+      }
+    } catch (e) {
+      alert("Something went wrong with post google calendar (booking) request");
+    }
   };
 
   if (confirmedTime != null && confirmedTime.length > 0) {
