@@ -42,25 +42,34 @@
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  list-style: none;
   align-items: inherit;
 }
 
 .App .top-navbar .navbar-tabs .navbar-links {
   text-decoration: none;
   color: white;
-  padding-right: 20px;
-  padding-left: 20px;
+  margin-right: 20px;
+  margin-left: 20px;
+}
+
+.App .top-navbar .navbar-tabs .navbar-links-active {
+  text-decoration: none;
+  color: white;
+  margin-right: 20px;
+  margin-left: 20px;
+  border-bottom: 2px solid white;
+  padding-bottom: 4px;
 }
 
 a {
   text-decoration: none;
 }
 
+.logo {
+  transform: translateY(40%);
+}
 img {
   max-width: 70%;
-  height: auto;
-  width: auto;
 }
 
 .App .body {
@@ -91,6 +100,13 @@ button {
   border-color: white;
 }
 
+.account-button:hover,
+.account-button:active,
+.account-button:focus {
+  background-color: #7a29ea;
+  cursor: pointer;
+}
+
 .account-dropdown {
   margin-left: 20px;
 }
@@ -100,11 +116,31 @@ button {
 }
 
 .dropdown-content {
-  display: none;
+  display: flex;
+  flex-direction: column;
   position: absolute;
-  /* min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1; */
+  background-color: #0d0739;
+  top: 50px;
+  width: 130px;
+  font-size: 13px;
+  list-style: none;
+  border-radius: 10px;
+  padding: 8px;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 5px;
+  height: 30px;
+  border-radius: inherit;
+}
+
+.dropdown-item:hover {
+  background-color: #7a29ea;
+  cursor: pointer;
 }
 
 .landing-buttons {

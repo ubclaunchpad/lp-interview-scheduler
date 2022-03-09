@@ -19,7 +19,7 @@ export default function AdminApp() {
           <Route exact path="/app/authorized">
             {user ? <AuthenticatedApp /> : <Redirect to="/app/unauthorized" />}
           </Route>
-          <Route exact path="/app/authorized/createlink">
+          <Route exact path="/app/createlink">
             {user ? <CreateLinkPage /> : <Redirect to="/app/unauthorized" />}
           </Route>
           <Redirect from="/app" to="/app/unauthorized" />
