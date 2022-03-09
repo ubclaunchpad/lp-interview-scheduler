@@ -1,3 +1,14 @@
+html {
+  height: 100%;
+  width: 100%;
+  background-color: #0b0635;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
 .App {
   position: absolute;
   height: 100%;
@@ -16,6 +27,28 @@
 *::after {
   box-sizing: inherit;
 }
+
+.App .body {
+  position: relative;
+  top: 60px;
+  margin: 0;
+  padding: 36px;
+  background-size: cover;
+}
+
+/* body {
+  position:absolute;
+  padding:0;
+  margin:0;
+
+  top:0;
+  left:0;
+
+  width: 100%;
+  min-height: 100%;
+  background-color: white;
+  background-size: cover;
+} */
 
 .App .top-navbar {
   position: fixed;
@@ -70,13 +103,6 @@ a {
 }
 img {
   max-width: 70%;
-}
-
-.App .body {
-  position: relative;
-  top: 60px;
-  margin: 60px;
-  padding: 0;
 }
 
 button {
@@ -197,3 +223,18 @@ button {
 .unique-url {
   word-break: break-all;
 }
+
+/* custom scrollbar styles */
+
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #dbccf9;
+  border-radius: 12px;
+}
+
+/* Track ::-webkit-scrollbar-track */
