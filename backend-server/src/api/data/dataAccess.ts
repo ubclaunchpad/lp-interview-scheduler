@@ -49,6 +49,13 @@ class DataAccess {
     return !!org.exists();
   }
 
+  async getOrganizationExpiry(organization: string): Promise<number> {
+    const orgRef = await doc(this.rootCollection, organization);
+    const org = await getDoc(orgRef);
+
+    return org.data().availabilityExpiryDays;
+  }
+
   async checkInterviewerExists(interviewer: Interviewer): Promise<boolean> {
     const interviewerRef = await doc(
       this.rootCollection,
@@ -160,7 +167,7 @@ class DataAccess {
     organization: string,
     interviewerUID: string
   ): Promise<DocumentData[]> {
-    const docCollection = await getDocs(
+    let docCollection = await getDocs(
       collection(
         this.rootCollection,
         organization,
@@ -169,7 +176,36 @@ class DataAccess {
         this.availabilityCollectionName
       )
     );
+    
     return docCollection.docs.map((doc) => doc.data());
+  }
+  // filter docCOllection for availabilities that are older than NDAYSBEFORE then delete them
+  async deleteExpiredAvailabilities(organization: string, interviewerUID: string, availabilities: Availability[]): Promise<DocumentData[]> {
+    
+    const today: Date = new Date();
+    const availabilityExpiryDays = await this.getOrganizationExpiry(organization);
+
+    await Promise.all(availabilities.filter((avail) => {
+      const datestr: Date = new Date(avail.startTime);
+      let diff: number = today.getTime() - datestr.getTime();
+      diff = Math.ceil(diff/ ( 1000 * 3600 * 24));
+      return (diff > availabilityExpiryDays);
+    }).map((availDoc) => {
+      this.availabilityDocRef(
+        organization,
+        interviewerUID,
+        availDoc.startTime
+      ).then((availabilityRef) => {
+        return deleteDoc(availabilityRef);
+      });
+    }))
+
+    return availabilities.filter((avail) => {
+      const datestr: Date = new Date(avail.startTime);
+      let diff: number = today.getTime() - datestr.getTime();
+      diff = Math.ceil(diff/ ( 1000 * 3600 * 24));
+      return !(diff > availabilityExpiryDays);
+    });
   }
 
   async setAvailability(availability: Availability, organization: string) {

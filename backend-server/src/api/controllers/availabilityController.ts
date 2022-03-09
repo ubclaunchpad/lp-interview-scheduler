@@ -37,6 +37,7 @@ export interface GetMergedRoutesParams {
 export interface GetMultipleMergedRoutesParams {
   organization: string;
   interviewerUIDs: string[];
+  hoursBuffer: number
 }
 
 export async function addAvailability(body: AddAvailabilityBody) {
@@ -96,17 +97,19 @@ export async function getInterviewerAvailabilities(
   organization: string,
   interviewerUID: string
 ): Promise<Availability[]> {
-  return (await dataAccess.getAllAvailabilities(
+  const allAvailabilites =  await Promise.all(await dataAccess.getAllAvailabilities(
     organization,
     interviewerUID
-  )) as Availability[];
+  )).then((avails) => avails as Availability[]);
+
+  return (await dataAccess.deleteExpiredAvailabilities(organization, interviewerUID, allAvailabilites)) as Availability[];
 }
 
 export async function getInterviewerCalendarAvailabilities(
   organization: string,
   interviewerUID: string
 ): Promise<CalendarAvailability[]> {
-  const availabilities = (await dataAccess.getAllAvailabilities(
+  const availabilities = (await getInterviewerAvailabilities(
     organization,
     interviewerUID
   )) as Availability[];

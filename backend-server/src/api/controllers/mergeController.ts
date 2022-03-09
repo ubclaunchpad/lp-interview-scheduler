@@ -21,7 +21,8 @@ export function findOverlapping(
 
 // find overlapping availabilities of arbitrary number of interviewers
 export function findAllOverlapping(
-  availabilities: Availability[][]
+  availabilities: Availability[][],
+  hoursBuffer: number
 ): Availability[] {
   const output: Availability[] = [];
   if (availabilities.length == 1) {
@@ -31,15 +32,25 @@ export function findAllOverlapping(
   availabilities[0].forEach((timeSlot) => {
     let i = 1;
     let commonTime = timeSlot;
+    const today: Date = new Date()
     while (i < availabilities.length) {
       commonTime = availabilities[i].find(
         (element) => element.startTime == timeSlot.startTime
       );
-      if (!commonTime) {
+      //check if commonTime was found and verify it is not booked
+      if (!commonTime && !timeSlot.isBooked) {
         commonTime = null;
         break;
       } else {
-        i++;
+        const datestr: Date = new Date(timeSlot.startTime);
+        let diff: number = today.getTime() - datestr.getTime();
+        diff = Math.ceil(diff/ ( 1000 * 3600));
+        if (diff < hoursBuffer) {
+          commonTime = null;
+          break;
+        } else {
+          i++;
+        }        
       }
     }
     

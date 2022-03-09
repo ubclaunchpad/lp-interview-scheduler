@@ -135,6 +135,7 @@ availabilityRouter.get("/mergeMultiple", async (req, res) => {
   const body: GetMultipleMergedRoutesParams = {
     organization: req.query.organization as string,
     interviewerUIDs: req.query.interviewerUID as string[],
+    hoursBuffer: parseInt(req.query.hoursBuffer as string)
   };
 
   try {
@@ -150,7 +151,7 @@ availabilityRouter.get("/mergeMultiple", async (req, res) => {
       allAvailabilites.push(availability);
     };
 
-    const merged = findAllOverlapping(allAvailabilites);
+    const merged = findAllOverlapping(allAvailabilites, body.hoursBuffer);
 
     if (!req.query.inCalendarAvailability || req.query.inCalendarAvailability as string === "false") {
       res.json(merged);
