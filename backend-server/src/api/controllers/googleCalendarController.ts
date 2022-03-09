@@ -34,7 +34,10 @@ export async function createGoogleCalendarEvent(body: CreateCalendarEventBody) {
 
   var attendees = [];
 
-  attendees.push(body.intervieweeEmail);
+  attendees.push({
+    email: body.intervieweeEmail,
+  });
+
   for (let interviewer of body.interviewerUUIDs) {
     var i = await getInterviewer(body.organization, interviewer);
     attendees.push({
