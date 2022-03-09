@@ -22,12 +22,13 @@ export function findOverlapping(
 // find overlapping availabilities of arbitrary number of interviewers
 export function findAllOverlapping(
   availabilities: Availability[][],
-  hoursBuffer: number
 ): Availability[] {
   const output: Availability[] = [];
   if (availabilities.length == 1) {
     return availabilities[0];
   } 
+  
+  const hoursBuffer = 24;
 
   availabilities[0].forEach((timeSlot) => {
     let i = 1;

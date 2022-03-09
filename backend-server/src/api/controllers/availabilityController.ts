@@ -37,7 +37,6 @@ export interface GetMergedRoutesParams {
 export interface GetMultipleMergedRoutesParams {
   organization: string;
   interviewerUIDs: string[];
-  hoursBuffer: number
 }
 
 export async function addAvailability(body: AddAvailabilityBody) {
