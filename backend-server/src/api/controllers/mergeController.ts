@@ -32,30 +32,30 @@ export function findAllOverlapping(
   availabilities[0].forEach((timeSlot) => {
     let i = 1;
     let commonTime = timeSlot;
+
     const today: Date = new Date()
-    while (i < availabilities.length) {
-      commonTime = availabilities[i].find(
-        (element) => element.startTime == timeSlot.startTime
-      );
-      //check if commonTime was found and verify it is not booked
-      if (!commonTime && !timeSlot.isBooked) {
-        commonTime = null;
-        break;
-      } else {
-        const datestr: Date = new Date(timeSlot.startTime);
-        let diff: number = today.getTime() - datestr.getTime();
-        diff = Math.ceil(diff/ ( 1000 * 3600));
-        if (diff < hoursBuffer) {
+    const datestr: Date = new Date(timeSlot.startTime);
+    let diff: number = today.getTime() - datestr.getTime();
+    diff = Math.ceil(diff/ ( 1000 * 3600));
+    
+    // verify timeslot has not been booked and is not within hoursBuffer 
+    if (!timeSlot.isBooked && diff > hoursBuffer) {
+      while (i < availabilities.length) {
+        commonTime = availabilities[i].find(
+          (element) => element.startTime == timeSlot.startTime
+        );
+
+        //check if commonTime was found and verify it is not booked
+        if (!commonTime && !commonTime.isBooked) {
           commonTime = null;
           break;
         } else {
-          i++;
-        }        
+          i++       
+        }
+      } 
+      if (commonTime) {
+        output.push(commonTime);
       }
-    }
-    
-    if (commonTime) {
-      output.push(commonTime);
     }
   })
 
