@@ -15,6 +15,7 @@ interface CalendarEvent {
   end: Date;
 }
 
+
 interface AddEventBody {
   organization: string;
   leads: { leadUID: string; leadName: string }[];
@@ -29,6 +30,14 @@ interface APICalendarEvent {
   end: string;
 }
 
+interface Lead {
+  leadUID: string;
+  leadName: string;
+  bookingCount: number;
+  pending: Number;
+  confirmed: Number;
+}
+
 export default function CreateLinkPage() {
   const { user } = useAuth();
   const [eventData, setEventData] = React.useState({
@@ -40,17 +49,12 @@ export default function CreateLinkPage() {
     expires: "2022-04-23T18:25:43.511Z" as string,
   });
   const [bookingLink, setBookingLink] = React.useState("");
-  const [leadsList, setLeadsList] = React.useState(
-    [] as { leadUID: string; leadName: string }[]
-  );
-  const [selectedLeads, setSelectedLeads] = React.useState(
-    [] as { leadUID: string; leadName: string }[]
-  );
+  const [leadsList, setLeadsList] = React.useState([] as Lead[]);
+  const [selectedLeads, setSelectedLeads] = React.useState([] as Lead[]);
   const [calendarEvent, setCalendarEvent] = React.useState(
     [] as CalendarEvent[]
   );
   const [event, setEvent] = React.useState({ event: "not created yet" });
-
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     const submitEvent = async () => {
       try {
@@ -82,10 +86,12 @@ export default function CreateLinkPage() {
   ) => {
     // set lead state and set the chosen lead's availabilities to events
     const value = event.target.value;
-    setEventData({
-      ...eventData,
-      [event.target.name]: value,
-    });
+    let newEventData = {...eventData, [event.target.name]: value};
+    if (event.target.name === "partnerUID" && value !== "no_partner") {
+      newEventData["partnerUID"] = JSON.parse(value).leadUID;
+    }
+    // console.log(newEventData);
+    setEventData(newEventData);
   };
 
   const handleSelect = ({
@@ -103,17 +109,22 @@ export default function CreateLinkPage() {
   const handleDropdownSelect = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const newSelectedLeads = [
-      selectedLeads[0],
-      {
-        leadUID: event.target.value,
-        leadName: event.target.options[event.target.selectedIndex]
-          .text as string,
-      },
-    ];
+    const selectedInterviewer : string = event.target.value;
+    let newSelectedLeads : Lead[] = [selectedLeads[0]];
+    if (selectedInterviewer !== "no_partner") {
+      const partnerJSON : Lead = JSON.parse(selectedInterviewer);
+      newSelectedLeads[1] = {
+          leadUID: partnerJSON.leadUID,
+          leadName: partnerJSON.leadName,
+          bookingCount: partnerJSON.bookingCount,
+          confirmed: partnerJSON.confirmed,
+          pending: partnerJSON.pending
+        };
+    }
     setSelectedLeads(newSelectedLeads);
     handleChange(event);
   };
+
 
   // useEffect for populating dropdown menu of leads excluding user
   React.useEffect(() => {
@@ -125,6 +136,9 @@ export default function CreateLinkPage() {
             {
               leadUID: lead.leadUID,
               leadName: lead.leadName,
+              bookingCount: lead.bookingCount,
+              pending: lead.pending,
+              confirmed: lead.confirmed
             },
           ]);
           break;
@@ -152,8 +166,25 @@ export default function CreateLinkPage() {
         console.log(JSON.stringify(e));
       }
     };
-    loadMergedLeadTimes();
-  }, [eventData.organization, eventData.userUID, eventData.partnerUID]);
+    const loadSingleInterviewerTimes = async () => {
+      try {
+        const response = await getSingleAvailability(
+          eventData.organization,
+          eventData.userUID,
+        );
+        console.log(response);
+        setCalendarEvent(response);
+        // console.log(JSON.stringify(response));
+      } catch (e) {
+        console.log(JSON.stringify(e));
+      }
+    };
+    if (selectedLeads.length === 1) {
+      loadSingleInterviewerTimes();
+    } else {
+      loadMergedLeadTimes();
+    }
+  }, [eventData.organization, eventData.userUID, selectedLeads, eventData.partnerUID]);
 
   return (
     <div className="Create-Link">
@@ -172,12 +203,8 @@ export default function CreateLinkPage() {
                   onChange={handleDropdownSelect}
                 >
                   {/* {populateDropdown()} */}
-                  {leadsList.map((lead) => (
-                    <option value={lead.leadUID} key={lead.leadUID}>
-                      {" "}
-                      {lead.leadName}{" "}
-                    </option>
-                  ))}
+                  {leadsList.map((lead) => createRow(lead))}
+                  <option value={"no_partner"}>No Partner</option>
                 </select>
               </label>
             </div>
@@ -229,6 +256,9 @@ export default function CreateLinkPage() {
             </pre>
           </div>
           <div className="right-side">
+            <div className="show-event-count">
+              {showEventCount(selectedLeads)}
+            </div>
             <Calendar
               selectable
               localizer={localizer}
@@ -253,9 +283,13 @@ export default function CreateLinkPage() {
   );
 }
 
-async function getAllLeads(
-  organization: string
-): Promise<{ leadUID: string; leadName: string }[]> {
+function createRow(interviewer: Lead) : JSX.Element {
+  return <option value={JSON.stringify(interviewer)} key={interviewer.leadUID}>
+  {`  ${interviewer.leadName} : ${interviewer.bookingCount}`}
+</option>
+}
+
+async function getAllLeads(organization: string): Promise<Lead[]> {
   try {
     const interviewersRes: Response = await fetch(
       `http://localhost:8080/v1/interviewers/?organization=${organization}`
@@ -264,7 +298,7 @@ async function getAllLeads(
       throw new Error(
         `Error calling getAllLeads api with organization ${organization}`
       );
-    const interviewers: { leadUID: string; leadName: string }[] = [];
+    const interviewers: Lead[] = [];
     const interviewersJSON: { name: string; interviewerUID: string }[] =
       await interviewersRes.json();
     interviewersJSON.forEach(
@@ -272,10 +306,60 @@ async function getAllLeads(
         interviewers.push({
           leadName: element.name,
           leadUID: element.interviewerUID,
+          bookingCount: 0,
+          pending: 0,
+          confirmed: 0
         });
       }
     );
+    await updateInterviewersWithBookingCount(organization, interviewers);
+
+    //sort
+    interviewers.sort(compare);
     return Promise.resolve(interviewers);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
+
+
+function compare(leadA: Lead, leadB: Lead): number {
+  if (leadA.bookingCount < leadB.bookingCount) return -1;
+  if (leadA.bookingCount > leadB.bookingCount) return 1;
+  return 0;
+}
+
+async function updateInterviewersWithBookingCount(
+  organization: string,
+  leads: Lead[]
+) {
+  try {
+    const bookingCountRes: Response = await fetch(
+      `http://localhost:8080/v1/events/bookingCount/?organization=${organization}`
+    );
+    if (!bookingCountRes.ok)
+      throw new Error(
+        `Error calling getAllLeads api with organization ${organization}`
+      );
+    const bookingCountJSON: {
+      organization: string;
+      leads: {
+        [leadUID: string]: {
+          name: string;
+          confirmed: number;
+          pending: number;
+        };
+      };
+    } = await bookingCountRes.json();
+    for (let lead of leads) {
+      if (bookingCountJSON.leads[lead.leadUID]) {
+        let bookingInfo: { confirmed: number; pending: number } =
+          bookingCountJSON.leads[lead.leadUID];
+        lead.bookingCount = bookingInfo.confirmed + bookingInfo.pending;
+        lead.confirmed = bookingInfo.confirmed;
+        lead.pending = bookingInfo.pending;
+      }
+    }
   } catch (err) {
     return Promise.reject(err);
   }
@@ -283,14 +367,16 @@ async function getAllLeads(
 
 async function addEvent(
   organization: string,
-  leads: { leadUID: string; leadName: string }[],
+  leads: Lead[],
   intervieweeEmail: string,
   length: number,
   expires: string
 ): Promise<any> {
   const addEventBody: AddEventBody = {
     organization: organization,
-    leads: leads,
+    leads: leads.map((lead) => {
+      return { leadUID: lead.leadUID, leadName: lead.leadName };
+    }),
     intervieweeEmail: intervieweeEmail,
     length: length,
     expires: expires,
@@ -335,6 +421,28 @@ async function getMergedAvailabilities(
   }
 }
 
+async function getSingleAvailability(
+  organization: string,
+  leadUID: string | undefined,
+): Promise<CalendarEvent[]> {
+  try {
+    const singleRes: Response = await fetch(
+      `http://localhost:8080/v1/availabilities/calendarAvailabilities?organization=${organization}&interviewerUID=${leadUID}`
+    );
+    if (!singleRes.ok)
+      throw new Error(
+        `error calling api availabilities with organization=${organization}&interviewerUID=${leadUID}`
+      );
+    // console.log(await singleRes.json());
+    const calendarEvents: CalendarEvent[] = ConvertAPICalEventsToCalEvents(
+      (await singleRes.json()) as APICalendarEvent[]
+    );
+    return Promise.resolve(calendarEvents);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
+
 // converts eventsAPI received from GET request to renderable CalendarEvents
 function ConvertAPICalEventsToCalEvents(
   APICalEvents: APICalendarEvent[]
@@ -350,3 +458,12 @@ function ConvertAPICalEventsToCalEvents(
   });
   return convertedEvents;
 }
+function showEventCount(selectedLeads: Lead[]): React.ReactNode {
+  if (selectedLeads.length === 1) {
+    return `confirmed: ${selectedLeads[0].confirmed} pending: ${selectedLeads[0].pending}`;
+  }
+  else if (selectedLeads.length === 2) {
+    return `confirmed: ${selectedLeads[1].confirmed} pending: ${selectedLeads[1].pending}`;
+  }
+}
+
