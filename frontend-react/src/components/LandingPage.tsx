@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import LaunchpadLogo from "../logo.svg";
+import styles from "./styles/Navbar.module.css";
 
 export default function LandingPage() {
   return (
     <>
-      <div className="top-navbar">
+      <div className={styles.topNavbar}>
         <div className="logo">
           <img src={LaunchpadLogo} alt="Launchpad Logo" />
         </div>

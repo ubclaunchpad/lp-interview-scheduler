@@ -185,22 +185,23 @@ export default function InterviewerCalendar({ localizer }: Props) {
       {error ? (
         <div>Error occured.</div>
       ) : (
-        <div className="lead-calendar">
-          <Calendar
-            selectable
-            localizer={localizer}
-            events={events}
-            defaultView="week"
-            defaultDate={moment().toDate()}
-            onSelectEvent={(event) => handleSelect(event)}
-            onSelectSlot={(slotInfo) => handleCreate(slotInfo)}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ height: "inherit", width: "100%" }}
-            min={startOfWeek(new Date())}
-            max={endOfWeek(new Date())}
-            eventPropGetter={eventPropGetterHandler}
-          />
+        <>
+          <div className="lead-calendar">
+            <Calendar
+              selectable
+              localizer={localizer}
+              events={events}
+              defaultView="week"
+              defaultDate={moment().toDate()}
+              onSelectEvent={(event) => handleSelect(event)}
+              onSelectSlot={(slotInfo) => handleCreate(slotInfo)}
+              startAccessor="start"
+              endAccessor="end"
+              min={startOfWeek(new Date())}
+              max={endOfWeek(new Date())}
+              eventPropGetter={eventPropGetterHandler}
+            />
+          </div>
           <div>
             <button
               className="cta-button"
@@ -209,7 +210,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
               Save Changes
             </button>
           </div>
-        </div>
+        </>
       )}
     </>
   );

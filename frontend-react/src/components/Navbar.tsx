@@ -1,5 +1,6 @@
 import React from "react";
 import "../App.css";
+import styles from "./styles/Navbar.module.css";
 import LaunchpadLogo from "../logo.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { NavLink } from "react-router-dom";
@@ -13,18 +14,19 @@ export default function Navbar() {
     await logout();
     window.location.reload();
   };
+
   return (
-    <div className="top-navbar">
+    <div className={styles.topNavbar}>
       <div className="logo">
         <img src={LaunchpadLogo} alt="Launchpad Logo" />
       </div>
-      <nav className="navbar-items">
+      <nav className={styles.navbarItems}>
         {user && (
-          <div className="navbar-tabs">
+          <div className={styles.navbarTabs}>
             <NavLink
               to="/app/authorized"
               className={(isActive) =>
-                "navbar-links" + (!isActive ? "" : "-active")
+                !isActive ? styles.navbarLinks : styles.navbarLinksActive
               }
             >
               Availabilities
@@ -32,20 +34,23 @@ export default function Navbar() {
             <NavLink
               to="/app/createlink"
               className={(isActive) =>
-                "navbar-links" + (!isActive ? "" : "-active")
+                !isActive ? styles.navbarLinks : styles.navbarLinksActive
               }
             >
               Schedule
             </NavLink>
           </div>
         )}
-        <div className="account-dropdown">
-          <button className="account-button" onClick={() => setOpen(!open)}>
+        <div>
+          <button
+            className={styles.accountButton}
+            onClick={() => setOpen(!open)}
+          >
             Account
           </button>
           {open && (
-            <ul className="dropdown-content">
-              <li className="dropdown-item" onClick={onLogoutClick}>
+            <ul className={styles.dropdownContent}>
+              <li className={styles.dropdownItem} onClick={onLogoutClick}>
                 Logout
               </li>
             </ul>

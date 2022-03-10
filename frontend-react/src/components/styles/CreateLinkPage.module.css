@@ -1,221 +1,222 @@
 .createLinkPage {
-    height: 100%;
-    padding: 32px;
+  height: 100%;
+  padding: 32px;
 }
 
 .form {
-    display: flex;
-    justify-content: center;
-    margin-top: 32px;
-    padding-bottom: 40px;
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  padding-bottom: 40px;
 }
 
-
 .left {
-    display: flex;
-    flex-direction: column;
-    width: 75%;
-    margin: 0px 32px;
+  display: flex;
+  flex-direction: column;
+  width: 75%;
+  margin: 0px 32px;
 }
 
 .mergedCalendar {
-    background-color: white;
-    padding: 16px;
-    border-radius: 12px;
-    border: 8px solid #2EC0F9;
+  background-color: white;
+  padding: 16px;
+  border-radius: 12px;
+  border: 8px solid #2ec0f9;
+  color: #0d0739;
 }
 
 .calendarInfoRow {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 12px;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 12px;
 }
 
 .choosePartner {
-    display: flex;
+  display: flex;
 }
 
 .labelText {
-    font-family: Montserrat;
-    font-size: 18px;
-    color: white;
-    padding-right: 8px;
+  font-family: Montserrat;
+  font-size: 18px;
+  color: white;
+  padding-right: 8px;
 }
 
 .select {
-    background: #856DFF;
-    text-align: center;
-    border-radius: 8px;
-    font-family: Montserrat;
-    font-size: 12px;
-    padding: 4px;
-    height: 32px;
-    color: white
+  background: #856dff;
+  text-align: center;
+  border-radius: 8px;
+  font-family: Montserrat;
+  font-size: 12px;
+  padding: 4px;
+  height: 32px;
+  color: white;
 }
 
 .right {
-    margin: 0px 12px;
-    width: 25%;
-    color: white
+  margin: 0px 12px;
+  width: 25%;
+  color: white;
 }
 
 .eventInfo {
-    margin-top: 48px;
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    word-break: break-word;
+  margin-top: 48px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .button {
-    background: #7A29EA;
-    border: 2px solid #7A29EA;
-    padding: 8px;
-    font-family: Montserrat;
-    font-size: 12px;
-    color: white;
-    text-align: center;
-    border-radius: 8px;
-    margin-top: 12px;
+  background: #7a29ea;
+  border: 2px solid #7a29ea;
+  padding: 8px;
+  font-family: Montserrat;
+  font-size: 12px;
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  margin-top: 12px;
 }
 
-.button:hover, .button:focus {
-    background: #521D9B;
-    border: 2px solid #521D9B;
+.button:hover,
+.button:focus {
+  background: #521d9b;
+  border: 2px solid #521d9b;
 }
 
 .button:focus {
-    border: 2px solid white;
+  border: 2px solid white;
 }
 
 .intervieweeEmailContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
 }
 
 .emailInput {
-    margin-top: 12px;
-    background: #856DFF;
-    border-radius: 20px;
-    border: 0px;
-    padding: 12px;
-    font-family: Montserrat;
-    font-size: 16px;
-    color: white;
+  margin-top: 12px;
+  background: #856dff;
+  border-radius: 20px;
+  border: 0px;
+  padding: 12px;
+  font-family: Montserrat;
+  font-size: 16px;
+  color: white;
 }
 
 .inputArea {
-    margin-top: 40px;
-    height: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  margin-top: 40px;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .radioRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
 }
 
 .radioLabel {
-    display: flex;
-    font-family: Montserrat;
-    font-size: 16px;
-    color: white;
-    vertical-align: middle;
+  display: flex;
+  font-family: Montserrat;
+  font-size: 16px;
+  color: white;
+  vertical-align: middle;
 }
 
 /* this doesn't work rn but if we want to be fancy you can: https://moderncss.dev/pure-css-custom-styled-radio-buttons/*/
 .radioInput {
   width: 16px;
   height: 16px;
-  border: 6px solid #7A29EA;
+  border: 6px solid #7a29ea;
   border-radius: 50%;
 }
 
 .selectLength {
-    margin-top: 48px;
+  margin-top: 48px;
 }
 
 .createBooking {
-    margin-top: 24px;
+  margin-top: 24px;
 }
 
 .eventJSON {
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    word-break: break-word;
-    margin-top: 128px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-top: 128px;
 }
 
 .validFromContainer {
-    /* height: 200px; */
-    display: flex;
-    margin-top: 12px;
-    justify-content: flex-end;
+  /* height: 200px; */
+  display: flex;
+  margin-top: 12px;
+  justify-content: flex-end;
 
-    font-family: Montserrat;
-    font-size: 12px;
-    color: white;
+  font-family: Montserrat;
+  font-size: 12px;
+  color: white;
 }
 
 .timeDuration {
-    font-size: 24px;
+  font-size: 24px;
 }
 
 .selectDateSection {
-    margin-top: 16px;
+  margin-top: 16px;
 }
 
 .selectDateLabelGroup {
-    margin: 0px 8px;
+  margin: 0px 8px;
 }
 
 .selectDateInput {
-    margin-left: 8px;
-    border-radius: 8px;
-    background: #7A29EA;
-    border: 2px solid #7A29EA;
-    font-family: Montserrat;
-    color: white;
-    padding: 4px;
+  margin-left: 8px;
+  border-radius: 8px;
+  background: #7a29ea;
+  border: 2px solid #7a29ea;
+  font-family: Montserrat;
+  color: white;
+  padding: 4px;
 }
 
-
 @media only screen and (max-width: 1024px) {
-    .form {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-    .left, .right {
-        width: 100%
-    }
-    .labelText {
-        font-size: 16px;
-    }
-    .select {
-        font-size: 16px;
-    }
-    .calendarInfoRow {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .form {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .left,
+  .right {
+    width: 100%;
+  }
+  .labelText {
+    font-size: 16px;
+  }
+  .select {
+    font-size: 16px;
+  }
+  .calendarInfoRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    .selectDateLabelGroup {
-        display: flex;
-        flex-direction: column;
-    }
+  .selectDateLabelGroup {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 @media only screen and (max-width: 600px) {
-    .labelText {
-        font-size: 12px;
-    }
-    .select {
-        font-size: 12px;
-    }
+  .labelText {
+    font-size: 12px;
+  }
+  .select {
+    font-size: 12px;
+  }
 }

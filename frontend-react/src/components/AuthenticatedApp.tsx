@@ -1,4 +1,5 @@
 import "../App.css";
+import styles from "./styles/AuthenticatedApp.module.css";
 import { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import InterviewerCalendar from "./InterviewerCalendar";
@@ -9,9 +10,9 @@ export default function AuthenticatedApp() {
 
   return (
     <div className="body">
-      <div className="availabilities-heading">
+      <div className={styles.heading}>
         {user?.photoURL && (
-          <img className="user-profile-pic" src={user.photoURL} alt="" />
+          <img className={styles.userProfilePic} src={user.photoURL} alt="" />
         )}
         <h2>My Availabilities</h2>
       </div>
