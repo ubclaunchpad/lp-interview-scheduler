@@ -1,4 +1,5 @@
 import { Availability, CalendarAvailability } from "../data/models";
+import { dataAccess } from "../data/dataAccess";
 
 // find overlapping availabilities of interviewer pair
 export function findOverlapping(
@@ -20,15 +21,16 @@ export function findOverlapping(
 }
 
 // find overlapping availabilities of arbitrary number of interviewers
-export function findAllOverlapping(
+export async function findAllOverlapping(
   availabilities: Availability[][],
-): Availability[] {
+  organization: string
+): Promise<Availability[]> {
   const output: Availability[] = [];
   if (availabilities.length == 1) {
     return availabilities[0];
   } 
-  
-  const hoursBuffer = 24;
+
+  const hoursBuffer: number = await getHoursBuffer(organization);
 
   availabilities[0].forEach((timeSlot) => {
     let i = 1;
@@ -124,3 +126,9 @@ function findOverlappingGeneric(
   }
   return output;
 }
+async function getHoursBuffer(organization: string): Promise<number> {
+  const eventDoc = await dataAccess.getOrganizationFields(organization);
+  console.log(eventDoc);
+  return Promise.resolve(24);
+}
+

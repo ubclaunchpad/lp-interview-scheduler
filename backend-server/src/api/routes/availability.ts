@@ -150,7 +150,7 @@ availabilityRouter.get("/mergeMultiple", async (req, res) => {
       allAvailabilites.push(availability);
     };
 
-    const merged = findAllOverlapping(allAvailabilites);
+    const merged = await findAllOverlapping(allAvailabilites, body.organization);
 
     if (!req.query.inCalendarAvailability || req.query.inCalendarAvailability as string === "false") {
       res.json(merged);
