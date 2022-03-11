@@ -12,7 +12,7 @@ import {
 } from "@firebase/firestore";
 import { setDoc, getDocs } from "firebase/firestore";
 import { db } from "../../firebase/db";
-import { Availability, Interviewer, Event } from "./models";
+import { Availability, Interviewer, Event, OrganizationFields } from "./models";
 
 const DB_COLLECTION = "aymendb-destroylater";
 const INTERVIEWER_COLLECTION = "interviewers";
@@ -355,10 +355,10 @@ class DataAccess {
     }
   }
 
-  async getOrganizationFields(organization: string) {
+  async getOrganizationFields(organization: string) : Promise<OrganizationFields> {
     const organizationRef = await doc(this.rootCollection, organization);
     const organizationDoc = await getDoc(organizationRef);
-    return organizationDoc.data();
+    return organizationDoc.data() as OrganizationFields;
   }
 
   async listEvents(organization: string): Promise<DocumentData[]> {

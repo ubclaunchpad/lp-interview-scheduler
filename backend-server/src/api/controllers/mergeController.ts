@@ -1,4 +1,4 @@
-import { Availability, CalendarAvailability } from "../data/models";
+import { Availability, CalendarAvailability, OrganizationFields } from "../data/models";
 import { dataAccess } from "../data/dataAccess";
 
 // find overlapping availabilities of interviewer pair
@@ -127,8 +127,8 @@ function findOverlappingGeneric(
   return output;
 }
 async function getHoursBuffer(organization: string): Promise<number> {
-  const eventDoc = await dataAccess.getOrganizationFields(organization);
-  console.log(eventDoc);
-  return Promise.resolve(24);
+  const OrganazationFields: OrganizationFields = await dataAccess.getOrganizationFields(organization) as OrganizationFields;
+  
+  return Promise.resolve(OrganazationFields.hoursBuffer);
 }
 
