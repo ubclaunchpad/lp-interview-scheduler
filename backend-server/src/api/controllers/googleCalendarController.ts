@@ -31,7 +31,6 @@ async function checkInit() {
 
 export async function createGoogleCalendarEvent(body: CreateCalendarEventBody) {
   await checkInit;
-
   var attendees = [];
 
   attendees.push({
@@ -45,8 +44,8 @@ export async function createGoogleCalendarEvent(body: CreateCalendarEventBody) {
     });
   }
 
-  var startDate = Date.parse(body.startTime);
-  var endDate = Date.parse(body.endTime);
+  var startDate = new Date(body.startTime).toISOString();
+  var endDate = new Date(body.endTime).toISOString();
 
   const calendarEvent = {
     summary: "UBC Launchpad Interview",
