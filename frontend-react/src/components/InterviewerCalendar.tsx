@@ -197,6 +197,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
               onSelectSlot={(slotInfo) => handleCreate(slotInfo)}
               startAccessor="start"
               endAccessor="end"
+              style={{ height: 500, width: "100%" }}
               min={startOfWeek(new Date())}
               max={endOfWeek(new Date())}
               eventPropGetter={eventPropGetterHandler}

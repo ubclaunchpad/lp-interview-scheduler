@@ -95,13 +95,15 @@ button {
   max-width: 100%;
 }
 
-.rbc-toolbar {
+/* .rbc-toolbar {
   flex: auto;
   max-width: inherit;
-}
+} */
 
 .rbc-btn-group button {
-  max-width: 10vh;
+  max-width: 20vh;
+  width: auto;
+  height: auto;
 }
 
 .rbc-time-view {
@@ -130,3 +132,10 @@ button {
 }
 
 /* Track ::-webkit-scrollbar-track */
+
+@media only screen and (max-width: 768px) {
+  .rbc-toolbar {
+    display: flex;
+    flex-direction: column;
+  }
+}

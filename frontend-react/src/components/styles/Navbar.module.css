@@ -14,7 +14,6 @@
 
 .navbarItems {
   display: flex;
-  flex-direction: row;
   justify-content: flex-end;
   padding: 0;
   align-items: center;
@@ -74,4 +73,14 @@
 .dropdownItem:hover {
   background-color: #7a29ea;
   cursor: pointer;
+}
+
+@media only screen and (max-width: 600px) {
+  /* .navbarItems {
+    flex-direction: column-reverse;
+  }
+
+  .navbarTabs {
+    flex-direction: column;
+  } */
 }
