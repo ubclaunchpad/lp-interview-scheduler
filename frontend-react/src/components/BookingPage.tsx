@@ -53,7 +53,7 @@ export default function PageThree() {
       let queryString = linkPrefix + `availabilities/mergeMultiple/?organization=${organization}`;
       leads.forEach((interviewerUID) => {
         queryString += `&interviewerUID=${interviewerUID}`
-      })
+      });
 
 
       const response = await fetch(queryString);
