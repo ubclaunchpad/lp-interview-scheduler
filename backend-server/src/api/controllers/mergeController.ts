@@ -38,8 +38,8 @@ export async function findAllOverlapping(
 
     const today: Date = new Date()
     const datestr: Date = new Date(timeSlot.startTime);
-    let diff: number = today.getTime() - datestr.getTime();
-    diff = Math.ceil(diff/ ( 1000 * 3600));
+    let diff: number = datestr.getTime() - today.getTime();
+    diff = Math.ceil(diff/ ( 1000 * 3600)); 
     
     // verify timeslot has not been booked and is not within hoursBuffer 
     if (!timeSlot.isBooked && diff > hoursBuffer) {
@@ -49,7 +49,7 @@ export async function findAllOverlapping(
         );
 
         //check if commonTime was found and verify it is not booked
-        if (!commonTime && !commonTime.isBooked) {
+        if (!commonTime || commonTime.isBooked) {
           commonTime = null;
           break;
         } else {
