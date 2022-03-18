@@ -1,3 +1,4 @@
+import { sl } from "date-fns/locale";
 import express from "express";
 import {
   addAvailability,
@@ -134,12 +135,13 @@ availabilityRouter.get("/mergedTimes", async (req, res) => {
 availabilityRouter.get("/mergeMultiple", async (req, res) => {
   const body: GetMultipleMergedRoutesParams = {
     organization: req.query.organization as string,
-    interviewerUIDs: req.query.interviewerUID as string[],
+    interviewerUIDs: req.query.interviewerUID instanceof Array? req.query.interviewerUID as string[]: [req.query.interviewerUID] as string[],
   };
 
   try {
     if (!Object.values(body).every((field) => field != null))
       throw new Error(`Incomplete Request Body: ${JSON.stringify(body)}`);
+
 
     const allAvailabilites: Availability[][] = [];
     for await ( const interviewerUID of body.interviewerUIDs) {

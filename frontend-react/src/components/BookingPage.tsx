@@ -55,7 +55,6 @@ export default function PageThree() {
         queryString += `&interviewerUID=${interviewerUID}`
       });
 
-
       const response = await fetch(queryString);
 
       if (!response.ok) {
