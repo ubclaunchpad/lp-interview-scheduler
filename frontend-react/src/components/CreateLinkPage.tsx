@@ -1,11 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import styles from "./styles/CreateLinkPage.module.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, format, startOfWeek } from "date-fns";
+import { useSetBackground } from "../hooks/useSetBackground";
 
 const localizer = momentLocalizer(moment);
 
@@ -53,15 +53,7 @@ export default function CreateLinkPage() {
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
 
-  React.useLayoutEffect(() => {
-    // set the background image of the entire page upon render
-    document.body.style.backgroundImage = "url('/page-2.svg')";
-
-    // remove the background image when the component unmounts
-    return () => {
-      document.body.style.backgroundImage = "";
-    };
-  }, []);
+  useSetBackground("url('/page-2.svg'");
 
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     const submitEvent = async () => {
@@ -288,7 +280,7 @@ export default function CreateLinkPage() {
               </button>
               <div className={styles.eventInfo}>
                 <div>
-                  <p className="">unique url: {bookingLink}</p>
+                  <p>unique url: {bookingLink}</p>
                 </div>
                 <button
                   onClick={async (e) => {

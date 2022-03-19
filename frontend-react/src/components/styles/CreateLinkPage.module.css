@@ -20,7 +20,7 @@
 .mergedCalendar {
   background-color: white;
   padding: 16px;
-  border-radius: 12px;
+  border-radius: 30px;
   color: #0d0739;
 }
 
@@ -143,6 +143,8 @@
 
 .createBooking {
   margin-top: 24px;
+  display: flex;
+  align-self: center;
 }
 
 .eventJSON {

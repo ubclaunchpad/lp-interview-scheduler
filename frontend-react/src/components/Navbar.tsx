@@ -4,7 +4,6 @@ import styles from "./styles/Navbar.module.css";
 import LaunchpadLogo from "../logo.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { NavLink } from "react-router-dom";
-import Logout from "./Logout";
 
 export default function Navbar() {
   const { logout, user } = useAuth();
@@ -23,7 +22,9 @@ export default function Navbar() {
   return (
     <div className={styles.topNavbar}>
       <div className="logo">
-        <img src={LaunchpadLogo} alt="Launchpad Logo" />
+        <NavLink to="/" exact>
+          <img src={LaunchpadLogo} alt="Launchpad Logo" />
+        </NavLink>
       </div>
       <nav className={styles.navbarItems}>
         {user && (
