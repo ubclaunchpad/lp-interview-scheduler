@@ -1,6 +1,6 @@
 import React from "react";
 
-export function useSetBackground(image: string) {
+export function useSetBackgroundImage(image: string) {
   // image should be of the form "url('/(...).svg')"
   React.useLayoutEffect(() => {
     // set the background image of the entire page upon render

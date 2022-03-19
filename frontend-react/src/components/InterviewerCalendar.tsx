@@ -5,7 +5,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, formatISO, startOfWeek } from "date-fns";
-import { useSetBackground } from "../hooks/useSetBackground";
+import { useSetBackgroundImage } from "../hooks/useSetBackground";
 
 interface Props {
   localizer: DateLocalizer;
@@ -34,7 +34,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
   const interviewerUID = user?.uid;
   const organization = "launchpad";
 
-  useSetBackground("url('/page-1.svg'");
+  useSetBackgroundImage("url('/page-1.svg'");
 
   const handleSelect = (event: CalendarEvent): any => {
     // option to delete when event timeslot is clicked / selected

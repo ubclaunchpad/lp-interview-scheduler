@@ -5,7 +5,7 @@ import styles from "./styles/CreateLinkPage.module.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, format, startOfWeek } from "date-fns";
-import { useSetBackground } from "../hooks/useSetBackground";
+import { useSetBackgroundImage } from "../hooks/useSetBackground";
 
 const localizer = momentLocalizer(moment);
 
@@ -53,7 +53,7 @@ export default function CreateLinkPage() {
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
 
-  useSetBackground("url('/page-2.svg'");
+  useSetBackgroundImage("url('/page-2.svg'");
 
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     const submitEvent = async () => {
