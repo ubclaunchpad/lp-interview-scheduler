@@ -12,6 +12,7 @@ interface APIAvailability {
 }
 
 const linkPrefix = "http://localhost:8080/v1/";
+
 export default function PageThree() {
   const [mergedAvailabilities, setAvailabilities] = useState(
     [] as APIAvailability[]
@@ -20,13 +21,13 @@ export default function PageThree() {
   const [confirmedTime, setConfirmedTime] = useState("");
 
   const { search } = useLocation();
-  const params = new URLSearchParams(search);
+  const params = React.useMemo(() => new URLSearchParams(search), [search]);
 
   const organization = params.get("organization");
   const eventUID = params.get("eventUID");
 
   // Call get request with event ID and return event body
-  async function handleGetEvent() {
+  const handleGetEvent = React.useCallback(async () => {
     try {
       const response = await fetch(
         linkPrefix + `events/?organization=${organization}&eventUID=${eventUID}`
@@ -39,30 +40,33 @@ export default function PageThree() {
     } catch (e) {
       alert("Something went wrong with get Event request");
     }
-  }
+  }, [eventUID, organization]);
 
   // Call get request with lead IDs from event body and return merged availabilities
-  async function handleMergeAvailabilities(eventBody: any) {
-    try {
-      const lead1_UID = eventBody["leads"][0]["leadUID"];
-      const lead2_UID = eventBody["leads"][1]["leadUID"];
-      setLeadUIDs([lead1_UID, lead2_UID]);
-      setConfirmedTime(eventBody["confirmedTime"]);
-      const response = await fetch(
-        linkPrefix +
-          `availabilities/mergedTimes/?organization=${organization}&interviewerUID1=${lead1_UID}&interviewerUID2=${lead2_UID}`
-      );
-      if (!response.ok) {
-        alert("Merged availability request failed");
+  const handleMergeAvailabilities = React.useCallback(
+    async (eventBody: any) => {
+      try {
+        const lead1_UID = eventBody["leads"][0]["leadUID"];
+        const lead2_UID = eventBody["leads"][1]["leadUID"];
+        setLeadUIDs([lead1_UID, lead2_UID]);
+        setConfirmedTime(eventBody["confirmedTime"]);
+        const response = await fetch(
+          linkPrefix +
+            `availabilities/mergedTimes/?organization=${organization}&interviewerUID1=${lead1_UID}&interviewerUID2=${lead2_UID}`
+        );
+        if (!response.ok) {
+          alert("Merged availability request failed");
+        }
+        const data = await response.json();
+        setAvailabilities(data);
+        console.log(data);
+      } catch (e) {
+        console.log(e);
+        alert("Something went wrong with merged availability request");
       }
-      const data = await response.json();
-      setAvailabilities(data);
-      console.log(data);
-    } catch (e) {
-      console.log(e);
-      alert("Something went wrong with merged availability request");
-    }
-  }
+    },
+    [organization]
+  );
 
   const apiAvailsToMoments = (avails: APIAvailability[]) => {
     return avails.map((a) => moment(a.startTime));
@@ -72,7 +76,7 @@ export default function PageThree() {
     if (params.has("eventUID") && params.has("organization")) {
       handleGetEvent().then((data) => handleMergeAvailabilities(data));
     }
-  }, []);
+  }, [handleGetEvent, handleMergeAvailabilities, params]);
 
   const bookSlot = (slot: Moment) => {
     fetch(linkPrefix + "events", {
@@ -85,7 +89,7 @@ export default function PageThree() {
         times: [slot.format("YYYY-MM-DDTHH:mm:ssZ")],
       }),
     }).then((res) => {
-      if (res.status == 200) {
+      if (res.status === 200) {
         setConfirmedTime(slot.toString());
         window.alert(
           "You have successfully booked an interview for " + slot.format("LLLL")

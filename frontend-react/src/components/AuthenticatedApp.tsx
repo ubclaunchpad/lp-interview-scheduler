@@ -1,18 +1,21 @@
 import "../App.css";
-import { Link } from "react-router-dom";
-import Logout from "./Logout";
+import styles from "./styles/AuthenticatedApp.module.css";
 import { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import InterviewerCalendar from "./InterviewerCalendar";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function AuthenticatedApp() {
+  const { user } = useAuth();
+
   return (
-    <div className="App">
-      woo hoo, you're authenticated now !
-      <Logout />
-      <Link to="/app/authorized/createlink">
-        <button>goto create interview link</button>
-      </Link>
+    <div className="body">
+      <div className={styles.heading}>
+        {user?.photoURL && (
+          <img className={styles.userProfilePic} src={user.photoURL} alt="" />
+        )}
+        <h2 className={styles.headingText}>My Availabilities</h2>
+      </div>
       <InterviewerCalendar localizer={momentLocalizer(moment)} />
     </div>
   );

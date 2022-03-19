@@ -1,0 +1,18 @@
+.heading {
+  display: flex;
+  align-items: center;
+}
+
+.userProfilePic {
+  width: 36px;
+  height: 36px;
+  border-radius: 50px;
+  margin-right: 30px;
+}
+
+@media only screen and (max-width: 350px) {
+  .headingText {
+    white-space: nowrap;
+    font-size: 1.2rem;
+  }
+}
