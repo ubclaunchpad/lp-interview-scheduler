@@ -1,4 +1,5 @@
 import { useAuth } from "../contexts/AuthContext";
+import "../App.css";
 
 export default function Login() {
   const { login } = useAuth();
@@ -9,7 +10,9 @@ export default function Login() {
 
   return (
     <div>
-      <button onClick={onLoginClick}>login</button>
+      <button className="cta-button" onClick={onLoginClick}>
+        login
+      </button>
     </div>
   );
 }

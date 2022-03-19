@@ -133,6 +133,18 @@ button {
 
 /* Track ::-webkit-scrollbar-track */
 
+@media only screen and (max-width: 430px) {
+  .rbc-btn-group {
+    width: auto;
+    margin-right: auto;
+  }
+
+  .rbc-btn-group button {
+    max-width: 10vh;
+    font-size: 0.6rem;
+  }
+}
+
 @media only screen and (max-width: 768px) {
   .rbc-toolbar {
     display: flex;

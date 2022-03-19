@@ -9,10 +9,15 @@ import Logout from "./Logout";
 export default function Navbar() {
   const { logout, user } = useAuth();
   const [open, setOpen] = React.useState(false);
+  const [hamburgerOpen, setHamburgerOpen] = React.useState(false);
 
   const onLogoutClick = async () => {
     await logout();
     window.location.reload();
+  };
+
+  const toggleHamburger = () => {
+    setHamburgerOpen(!hamburgerOpen);
   };
 
   return (
@@ -57,6 +62,50 @@ export default function Navbar() {
           )}
         </div>
       </nav>
+      <div className={styles.hamburger} onClick={toggleHamburger}>
+        <div className={styles.burger} />
+        <div className={styles.burger} />
+        <div className={styles.burger} />
+        {hamburgerOpen && (
+          <nav className={styles.navbarItemsMobile}>
+            {user && (
+              <div className={styles.navbarTabsMobile}>
+                <NavLink
+                  to="/app/authorized"
+                  className={(isActive) =>
+                    !isActive ? styles.navbarLinks : styles.navbarLinksActive
+                  }
+                >
+                  Availabilities
+                </NavLink>
+                <NavLink
+                  to="/app/createlink"
+                  className={(isActive) =>
+                    !isActive ? styles.navbarLinks : styles.navbarLinksActive
+                  }
+                >
+                  Schedule
+                </NavLink>
+              </div>
+            )}
+            <div>
+              <button
+                className={styles.accountButtonMobile}
+                onClick={() => setOpen(!open)}
+              >
+                Account
+              </button>
+              {open && (
+                <ul className={styles.dropdownContent}>
+                  <li className={styles.dropdownItem} onClick={onLogoutClick}>
+                    Logout
+                  </li>
+                </ul>
+              )}
+            </div>
+          </nav>
+        )}
+      </div>
     </div>
   );
 }

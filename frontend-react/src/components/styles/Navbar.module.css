@@ -75,12 +75,53 @@
   cursor: pointer;
 }
 
-@media only screen and (max-width: 600px) {
-  /* .navbarItems {
-    flex-direction: column-reverse;
+.hamburger {
+  display: none;
+}
+
+.burger {
+  width: 2rem;
+  height: 0.25rem;
+  border-radius: 10px;
+  background-color: white;
+  transform-origin: 1px;
+  transition: all 0.3s linear;
+}
+
+@media only screen and (max-width: 510px) {
+  .hamburger {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    justify-content: space-around;
+    flex-flow: column nowrap;
+    z-index: 10;
   }
 
-  .navbarTabs {
+  .navbarItems {
+    display: none;
+  }
+
+  .navbarItemsMobile {
     flex-direction: column;
-  } */
+    position: absolute;
+    right: 10%;
+    top: 90%;
+    z-index: 9999;
+    background-color: #0d0739;
+    border-radius: 10px;
+  }
+
+  .navbarTabsMobile {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 15vh;
+    margin: 0;
+  }
+
+  .accountButtonMobile {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
 }

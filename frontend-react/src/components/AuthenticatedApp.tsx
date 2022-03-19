@@ -14,7 +14,7 @@ export default function AuthenticatedApp() {
         {user?.photoURL && (
           <img className={styles.userProfilePic} src={user.photoURL} alt="" />
         )}
-        <h2>My Availabilities</h2>
+        <h2 className={styles.headingText}>My Availabilities</h2>
       </div>
       <InterviewerCalendar localizer={momentLocalizer(moment)} />
     </div>
