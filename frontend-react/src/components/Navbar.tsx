@@ -88,21 +88,16 @@ export default function Navbar() {
                 </NavLink>
               </div>
             )}
-            <div>
-              <button
-                className={styles.accountButtonMobile}
-                onClick={() => setOpen(!open)}
-              >
-                Account
-              </button>
-              {open && (
-                <ul className={styles.dropdownContent}>
-                  <li className={styles.dropdownItem} onClick={onLogoutClick}>
-                    Logout
-                  </li>
-                </ul>
-              )}
-            </div>
+            {/* <ul className={styles.dropdownContent}>
+              <li className={styles.dropdownItem} onClick={onLogoutClick}>
+                Logout
+              </li>
+            </ul> */}
+            <ul>
+              <li className={styles.dropdownItem} onClick={onLogoutClick}>
+                Logout
+              </li>
+            </ul>
           </nav>
         )}
       </div>

@@ -21,7 +21,6 @@
   background-color: white;
   padding: 16px;
   border-radius: 12px;
-  border: 8px solid #2ec0f9;
   color: #0d0739;
 }
 
@@ -43,9 +42,10 @@
 }
 
 .select {
-  background: #856dff;
+  background: var(--periwinkle);
   text-align: center;
   border-radius: 8px;
+  border-width: 0;
   font-family: Montserrat;
   font-size: 12px;
   padding: 4px;
@@ -67,8 +67,8 @@
 }
 
 .button {
-  background: #7a29ea;
-  border: 2px solid #7a29ea;
+  background: var(--ctaButtonColor);
+  border: 2px solid var(--ctaButtonColor);
   padding: 8px;
   font-family: Montserrat;
   font-size: 12px;
@@ -80,8 +80,8 @@
 
 .button:hover,
 .button:focus {
-  background: #521d9b;
-  border: 2px solid #521d9b;
+  background: var(--ctaButtonColorHover);
+  border: 2px solid var(--ctaButtonColorHover);
 }
 
 .button:focus {
@@ -97,7 +97,7 @@
 
 .emailInput {
   margin-top: 12px;
-  background: #856dff;
+  background: var(--periwinkle);
   border-radius: 20px;
   border: 0px;
   padding: 12px;
@@ -133,7 +133,7 @@
 .radioInput {
   width: 16px;
   height: 16px;
-  border: 6px solid #7a29ea;
+  border: 6px solid var(--periwinkle);
   border-radius: 50%;
 }
 
@@ -178,8 +178,8 @@
 .selectDateInput {
   margin-left: 8px;
   border-radius: 8px;
-  background: #7a29ea;
-  border: 2px solid #7a29ea;
+  background: var(--periwinkle);
+  border: 2px solid var(--periwinkle);
   font-family: Montserrat;
   color: white;
   padding: 4px;

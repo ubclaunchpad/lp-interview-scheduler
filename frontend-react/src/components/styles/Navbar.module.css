@@ -46,14 +46,14 @@
 .accountButton:hover,
 .accountButton:active,
 .accountButton:focus {
-  background-color: #7a29ea;
+  background-color: var(--ctaButtonColor);
   cursor: pointer;
 }
 
 .dropdownContent {
   position: absolute;
   z-index: 9999; /* this is for the account menu to overlap over body */
-  background-color: #0d0739;
+  background-color: var(--purpleBlack);
   top: 7vh;
   width: 8rem;
   list-style: none;
@@ -71,7 +71,7 @@
 }
 
 .dropdownItem:hover {
-  background-color: #7a29ea;
+  background-color: var(--ctaButtonColor);
   cursor: pointer;
 }
 
@@ -108,7 +108,7 @@
     right: 10%;
     top: 90%;
     z-index: 9999;
-    background-color: #0d0739;
+    background-color: var(--purpleBlack);
     border-radius: 10px;
   }
 
@@ -123,5 +123,9 @@
   .accountButtonMobile {
     margin-top: 0.5rem;
     margin-bottom: 1rem;
+  }
+
+  ul {
+    padding: 0 1rem 0 1rem;
   }
 }

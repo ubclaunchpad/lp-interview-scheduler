@@ -2,6 +2,12 @@ html,
 #root {
   height: 100%;
   width: 100%;
+  --ctaButtonColor: #8a77db;
+  --ctaButtonColorHover: #51497e;
+  --purpleBlack: #0a052e;
+  --lightPeriwinkle: #b0c2ff;
+  --periwinkle: #809cff;
+  --violet: #3f3356;
 }
 
 *,
@@ -55,7 +61,7 @@ img {
 }
 
 button {
-  background-color: #0d0739;
+  background-color: var(--purpleBlack);
   color: white;
   font-family: inherit;
   border-radius: 20px;
@@ -66,16 +72,17 @@ button {
 }
 
 .cta-button {
-  background-color: #7a29ea;
+  background-color: var(--ctaButtonColor);
   border-radius: 10px;
   width: 30vh;
   max-width: 100%;
   margin-top: 20px;
 }
 
-.cta-button:hover {
-  border-width: 2px;
-  border-color: white;
+.cta-button:hover,
+.cta-button:focus {
+  background-color: var(--ctaButtonColorHover);
+  border: 2px solid var(--ctaButtonColorHover);
 }
 
 .landing-buttons {
@@ -94,11 +101,6 @@ button {
   height: 100%;
   max-width: 100%;
 }
-
-/* .rbc-toolbar {
-  flex: auto;
-  max-width: inherit;
-} */
 
 .rbc-btn-group button {
   max-width: 20vh;
@@ -127,7 +129,7 @@ button {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #dbccf9;
+  background: var(--lightPeriwinkle);
   border-radius: 12px;
 }
 
