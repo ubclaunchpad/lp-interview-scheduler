@@ -25,7 +25,9 @@ export default function InterviewTimePicker(props: Props) {
   }
 
   const handleDaySelect = function (year: number, month: number, day: number) {
-    setDisplaySlots(props.availabilities.filter(a => sameDay(a, moment(new Date(year, month, day)))) as Moment[]);
+    if (moment().isBefore(new Date(year, month, day))) {
+      setDisplaySlots(props.availabilities.filter(a => sameDay(a, moment(new Date(year, month, day)))) as Moment[]);
+    }
   }
 
   const displaySlotTimes = displaySlots.length === 0 ? "No availability" : displaySlots.map((avail) =>
