@@ -29,3 +29,12 @@ export interface Event {
   expires: string;
   eventUID: string;
 }
+
+export interface OrganizationFields {
+  availabilityBlockLength: number;
+  client_id: string;
+  client_secret: string;
+  availabilityExpiryDays: number;
+  hoursBuffer: number;
+  refresh_token: string;
+}

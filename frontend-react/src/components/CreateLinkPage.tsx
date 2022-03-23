@@ -9,6 +9,8 @@ import { endOfWeek, startOfWeek } from "date-fns";
 
 const localizer = momentLocalizer(moment);
 
+const linkPrefix = "http://localhost:8080/v1/";
+
 interface CalendarEvent {
   interviewerUID: string | undefined;
   start: Date;
@@ -398,15 +400,24 @@ async function addEvent(
     return Promise.reject(err);
   }
 }
-
+// 
+function mergedAPIString(organization: string, leads: string[]) : string {
+  // return `http://localhost:8080/v1/availabilities/mergedTimes?organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}&inCalendarAvailability=true`;
+  let queryString = linkPrefix + `availabilities/mergeMultiple/?organization=${organization}`;
+  leads.forEach((interviewerUID) => {
+    queryString += `&interviewerUID=${interviewerUID}`
+  });
+  queryString += "&inCalendarAvailability=true"
+  return queryString;
+}
 async function getMergedAvailabilities(
   organization: string,
-  leadUID1: string | undefined,
+  leadUID1: string,
   leadUID2: string
 ): Promise<CalendarEvent[]> {
   try {
     const mergedRes: Response = await fetch(
-      `http://localhost:8080/v1/availabilities/mergedTimes?organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}&inCalendarAvailability=true`
+      mergedAPIString(organization, [leadUID1, leadUID2])
     );
     if (!mergedRes.ok)
       throw new Error(
@@ -447,6 +458,7 @@ async function getSingleAvailability(
 function ConvertAPICalEventsToCalEvents(
   APICalEvents: APICalendarEvent[]
 ): CalendarEvent[] {
+  console.log(APICalEvents);
   const convertedEvents: CalendarEvent[] = [];
   APICalEvents.forEach(function (event) {
     const storedEvent: CalendarEvent = {
@@ -456,6 +468,7 @@ function ConvertAPICalEventsToCalEvents(
     };
     convertedEvents.push(storedEvent);
   });
+  console.log(convertedEvents);
   return convertedEvents;
 }
 function showEventCount(selectedLeads: Lead[]): React.ReactNode {

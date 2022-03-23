@@ -44,20 +44,25 @@ export default function PageThree() {
   // Call get request with lead IDs from event body and return merged availabilities
   async function handleMergeAvailabilities(eventBody: any) {
     try {
-      const lead1_UID = eventBody["leads"][0]["leadUID"];
-      const lead2_UID = eventBody["leads"][1]["leadUID"];
-      setLeadUIDs([lead1_UID, lead2_UID]);
-      setConfirmedTime(eventBody["confirmedTime"]);
-      const response = await fetch(
-        linkPrefix +
-          `availabilities/mergedTimes/?organization=${organization}&interviewerUID1=${lead1_UID}&interviewerUID2=${lead2_UID}`
-      );
+      const leads: string[] = eventBody.leads.map((interviewer: any) => {
+        return interviewer.leadUID;
+      });
+
+      setLeadUIDs(leads);
+
+      let queryString = linkPrefix + `availabilities/mergeMultiple/?organization=${organization}`;
+      leads.forEach((interviewerUID) => {
+        queryString += `&interviewerUID=${interviewerUID}`
+      });
+
+      const response = await fetch(queryString);
+
       if (!response.ok) {
         alert("Merged availability request failed");
       }
       const data = await response.json();
       setAvailabilities(data);
-      console.log(data);
+
     } catch (e) {
       console.log(e);
       alert("Something went wrong with merged availability request");
