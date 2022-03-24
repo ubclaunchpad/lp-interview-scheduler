@@ -1,6 +1,5 @@
 .createLinkPage {
   height: 100%;
-  padding: 32px;
 }
 
 .form {
@@ -21,7 +20,7 @@
   background-color: white;
   padding: 16px;
   border-radius: 30px;
-  color: #0d0739;
+  color: var(--purpleBlack);
 }
 
 .calendarInfoRow {
@@ -42,7 +41,7 @@
 }
 
 .select {
-  background: var(--periwinkle);
+  background: var(--lightViolet);
   text-align: center;
   border-radius: 8px;
   border-width: 0;
@@ -97,7 +96,7 @@
 
 .emailInput {
   margin-top: 12px;
-  background: var(--periwinkle);
+  background: var(--lightViolet);
   border-radius: 20px;
   border: 0px;
   padding: 12px;
@@ -133,7 +132,7 @@
 .radioInput {
   width: 16px;
   height: 16px;
-  border: 6px solid var(--periwinkle);
+  border: 6px solid var(--lightViolet);
   border-radius: 50%;
 }
 
@@ -180,8 +179,8 @@
 .selectDateInput {
   margin-left: 8px;
   border-radius: 8px;
-  background: var(--periwinkle);
-  border: 2px solid var(--periwinkle);
+  background: var(--lightViolet);
+  border: 2px solid var(--lightViolet);
   font-family: Montserrat;
   color: white;
   padding: 4px;

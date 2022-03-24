@@ -88,7 +88,7 @@
   transition: all 0.3s linear;
 }
 
-@media only screen and (max-width: 510px) {
+@media only screen and (max-width: 500px) {
   .hamburger {
     width: 2rem;
     height: 2rem;

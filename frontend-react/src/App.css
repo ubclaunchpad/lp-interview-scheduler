@@ -2,12 +2,14 @@ html,
 #root {
   height: 100%;
   width: 100%;
-  --ctaButtonColor: #8a77db;
-  --ctaButtonColorHover: #51497e;
-  --purpleBlack: #0a052e;
-  --lightPeriwinkle: #b0c2ff;
-  --periwinkle: #809cff;
-  --violet: #3f3356;
+
+  --purpleBlack: rgb(9, 5, 44);
+  --lightPeriwinkle: rgb(179, 193, 250);
+  --periwinkle: rgb(133, 155, 248);
+  --violet: rgb(77, 51, 210);
+  --lightViolet: rgb(135, 120, 213);
+  --ctaButtonColor: var(--violet);
+  --ctaButtonColorHover: var(--lightViolet);
 }
 
 *,
@@ -27,7 +29,7 @@ body {
   width: 100%;
   min-height: 100%;
   height: 100%;
-  background-color: #0d0739;
+  background-color: var(--purpleBlack);
 }
 
 .App {
@@ -94,7 +96,7 @@ button {
 .lead-calendar {
   background-color: white;
   padding: 1rem;
-  color: #0d0739;
+  color: var(--purpleBlack);
   border-radius: 30px;
   position: relative;
   height: 100%;
@@ -129,17 +131,24 @@ button {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--lightPeriwinkle);
+  background: var(--periwinkle);
   border-radius: 12px;
 }
 
 ::-webkit-scrollbar-track {
-    background-color: none;
-    box-shadow: none;
-    -webkit-box-shadow: none;
+  background-color: none;
+  box-shadow: none;
+  -webkit-box-shadow: none;
 }
 
 /* Track ::-webkit-scrollbar-track */
+
+@media only screen and (max-width: 640px) {
+  .rbc-toolbar {
+    display: flex;
+    flex-direction: column;
+  }
+}
 
 @media only screen and (max-width: 430px) {
   .rbc-btn-group {
@@ -150,12 +159,5 @@ button {
   .rbc-btn-group button {
     max-width: 10vh;
     font-size: 0.6rem;
-  }
-}
-
-@media only screen and (max-width: 768px) {
-  .rbc-toolbar {
-    display: flex;
-    flex-direction: column;
   }
 }
