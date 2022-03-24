@@ -6,9 +6,13 @@ import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, formatISO, startOfWeek } from "date-fns";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
+import { isPropertySignature } from "typescript";
 
 interface Props {
   localizer: DateLocalizer;
+  isLoading: boolean;
+  onLoadingStart: ()=>void;
+  onLoadingEnd: ()=>void;
 }
 
 interface CalendarEvent {
@@ -26,7 +30,7 @@ interface EventAPI {
   bookedByEmail: string;
 }
 
-export default function InterviewerCalendar({ localizer }: Props) {
+export default function InterviewerCalendar(props: Props) {
   const [events, setEvents] = React.useState([] as CalendarEvent[]);
   const [eventsAPI, setEventsAPI] = React.useState([] as EventAPI[]);
   const [error, setError] = React.useState(false);
@@ -38,6 +42,12 @@ export default function InterviewerCalendar({ localizer }: Props) {
 
   const handleSelect = (event: CalendarEvent): any => {
     // option to delete when event timeslot is clicked / selected
+    if (props.isLoading) {
+      window.alert(
+        "you cannot make adjustment while your schedule is being saved"
+        );
+        return;
+    }
     if (!event.resource.isBooked) {
       const shouldDelete = window.confirm(
         "Would you like to remove this event?"
@@ -109,7 +119,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
     };
 
     console.log(submitCalendarEvents);
-
+    props.onLoadingStart();
     const response = await fetch(
       "http://localhost:8080/v1/availabilities/",
       submitCalendarEvents
@@ -130,7 +140,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
       console.log("response causing error");
       console.log(response);
     }
-
+    props.onLoadingEnd();
     alert(JSON.stringify(eventsAPI));
   };
 
@@ -189,10 +199,13 @@ export default function InterviewerCalendar({ localizer }: Props) {
         <div>Error occured.</div>
       ) : (
         <>
+          {props.isLoading && (
+            <div className="loadingIndicator">saving changes...</div>
+          )}
           <div className="lead-calendar">
             <Calendar
-              selectable
-              localizer={localizer}
+              selectable={!props.isLoading}
+              localizer={props.localizer}
               events={events}
               defaultView="week"
               defaultDate={moment().toDate()}
@@ -208,6 +221,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
           </div>
           <div>
             <button
+              disabled={props.isLoading}
               className="cta-button"
               onClick={(e) => handleClick(e, events)}
             >

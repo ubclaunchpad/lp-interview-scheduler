@@ -5,12 +5,22 @@ import LaunchpadLogo from "../logo.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { NavLink } from "react-router-dom";
 
-export default function Navbar() {
+interface Props {
+  isLoading: boolean;
+}
+
+export default function Navbar(props: Props) {
   const { logout, user } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [hamburgerOpen, setHamburgerOpen] = React.useState(false);
 
   const onLogoutClick = async () => {
+    if(props.isLoading) {
+      const shouldLogOut: boolean = window.confirm(
+        "your schedule is being saved. Do you still want to log out?"
+        );
+      if (!shouldLogOut) return;
+    }
     await logout();
     window.location.reload();
   };
@@ -37,14 +47,16 @@ export default function Navbar() {
             >
               Availabilities
             </NavLink>
-            <NavLink
+            {!props.isLoading &&
+            (<NavLink
               to="/app/createlink"
               className={(isActive) =>
                 !isActive ? styles.navbarLinks : styles.navbarLinksActive
               }
             >
-              Schedule
-            </NavLink>
+              Schedule 
+            </NavLink>)
+          }
           </div>
         )}
         <div>
@@ -79,17 +91,19 @@ export default function Navbar() {
                 >
                   Availabilities
                 </NavLink>
-                <NavLink
-                  to="/app/createlink"
-                  className={(isActive) =>
-                    !isActive ? styles.navbarLinks : styles.navbarLinksActive
-                  }
-                >
-                  Schedule
-                </NavLink>
+                {!props.isLoading && (
+                  <NavLink
+                    to="/app/createlink"
+                    className={(isActive) =>
+                      !isActive ? styles.navbarLinks : styles.navbarLinksActive
+                    }
+                  >
+                    Schedule 
+                  </NavLink>
+                )}
               </div>
             )}
-            {/* <ul className={styles.dropdownContent}>
+            {/* <ul className={styles.dropƒdownContent}>
               <li className={styles.dropdownItem} onClick={onLogoutClick}>
                 Logout
               </li>
