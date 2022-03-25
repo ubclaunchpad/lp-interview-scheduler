@@ -5,13 +5,34 @@ import styles from './InterviewTimePicker.module.css';
 import { isToday } from "date-fns/esm";
 
 interface Props {
-  availabilities: Moment[],
-  onBook: Function
+  allAvailabilities: Moment[],
+  validAvailabilities: Moment[],
+  onBook: Function,
+  eventDuration: number,
+  blockLength: number
 }
 
 export default function InterviewTimePicker(props: Props) {
   const [selectedSlot, setSelectedSlot] = React.useState<Moment>();
-  const [displaySlots, setDisplaySlots] = React.useState(props.availabilities.filter(s => isToday(s.toDate())) as Moment[]);
+  const [displaySlots, setDisplaySlots] = React.useState(props.validAvailabilities.filter(s => isToday(s.toDate())) as Moment[]);
+
+  // React.useEffect(() => {
+  //   const blocks = props.eventDuration/props.blockLength;
+  //   let valid = props.allAvailabilities.slice(0, props.allAvailabilities.length - blocks + 1).filter((moment, index) => {
+  //     for (let i = 1; i < blocks; i++) {
+  //       if (props.allAvailabilities[index + i].diff(moment, 'minutes') > props.eventDuration) {
+  //         return false;
+  //       }
+  //     }
+  //     return true;
+  //   });
+
+  //   setValidSlots(valid);
+
+  //   setDisplaySlots(validSlots.filter(s => isToday(s.toDate())));
+  // }, []);
+
+  
 
   const sameDay = (a: Moment, b: Moment) => {
     return a.year() === b.year() && a.month() === b.month() && a.date() === b.date();
@@ -26,7 +47,7 @@ export default function InterviewTimePicker(props: Props) {
 
   const handleDaySelect = function (year: number, month: number, day: number) {
     if (moment().isBefore(new Date(year, month, day))) {
-      setDisplaySlots(props.availabilities.filter(a => sameDay(a, moment(new Date(year, month, day)))) as Moment[]);
+      setDisplaySlots(props.validAvailabilities.filter(a => sameDay(a, moment(new Date(year, month, day)))) as Moment[]);
     }
   }
 
@@ -51,13 +72,16 @@ export default function InterviewTimePicker(props: Props) {
   const bookSlot = () => {
     // TODO: actually book interview
     if (!disableBooking()) {
-      props.onBook(selectedSlot);
+      const blocks = props.eventDuration / props.blockLength;
+      const selectedIndex = props.allAvailabilities.findIndex(availability => availability.isSame(selectedSlot));
+      const slotsToBook = props.allAvailabilities.slice(selectedIndex, selectedIndex + blocks);
+      props.onBook(slotsToBook);
     }
   }
 
   return (
     <div className={styles.slotPickerContainer}>
-      <Calendar onDayClick={handleDaySelect} highlightDays={props.availabilities} />
+      <Calendar onDayClick={handleDaySelect} highlightDays={props.validAvailabilities} />
       <div className={styles.timePicker}>
         <ul className={styles.timeList}>
           {displaySlotTimes}

@@ -18,6 +18,8 @@ export default function PageThree() {
   );
   const [leadUIDs, setLeadUIDs] = useState([] as string[]);
   const [confirmedTime, setConfirmedTime] = useState("");
+  const [blockLength, setBlockLength] = useState(0);
+  const [eventDuration, setEventDuration] = useState(0 as number);
 
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -42,12 +44,13 @@ export default function PageThree() {
   }
 
   // Call get request with lead IDs from event body and return merged availabilities
-  async function handleMergeAvailabilities(eventBody: any) {
+  async function handleEventData(eventBody: any) {
     try {
       const leads: string[] = eventBody.leads.map((interviewer: any) => {
         return interviewer.leadUID;
       });
-
+      
+      setEventDuration(parseInt(eventBody.eventLengthInMinutes));
       setLeadUIDs(leads);
 
       let queryString = linkPrefix + `availabilities/mergeMultiple/?organization=${organization}`;
@@ -62,6 +65,7 @@ export default function PageThree() {
       }
       const data = await response.json();
       setAvailabilities(data);
+      setBlockLength(data[0].durationMins);
 
     } catch (e) {
       console.log(e);
@@ -73,13 +77,30 @@ export default function PageThree() {
     return avails.map((a) => moment(a.startTime));
   };
 
+  const filterAvails = (avails: APIAvailability[]) => {
+    let allMoments: Moment[] = avails.map((a) => moment(a.startTime));
+    const blocks = eventDuration / blockLength;
+
+    // sort moments, exclude end, then filter for start times that have enough subsequent slots to fill duration 
+    return allMoments.sort((first,second) => {
+      return first.diff(second);
+    }).slice(0, allMoments.length - blocks + 1).filter((moment, index) => {
+      for (let i = 1; i < blocks; i++) {
+        if (allMoments[index + i].diff(moment, 'minutes') > eventDuration) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
   React.useEffect(() => {
     if (params.has("eventUID") && params.has("organization")) {
-      handleGetEvent().then((data) => handleMergeAvailabilities(data));
+      handleGetEvent().then((data) => handleEventData(data));
     }
   }, []);
 
-  const bookSlot = (slot: Moment) => {
+  const bookSlot = (slots: Moment[]) => {
     fetch(linkPrefix + "events", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -87,13 +108,13 @@ export default function PageThree() {
         organization: organization,
         eventUID: eventUID,
         leadUIDs: leadUIDs,
-        times: [slot.format("YYYY-MM-DDTHH:mm:ssZ")],
+        times: slots.map(slot => slot.format("YYYY-MM-DDTHH:mm:ssZ"))
       }),
     }).then((res) => {
       if (res.status == 200) {
-        setConfirmedTime(slot.toString());
+        setConfirmedTime(slots[0].toString());
         window.alert(
-          "You have successfully booked an interview for " + slot.format("LLLL")
+          "You have successfully booked an interview for " + slots[0].format("LLLL")
         );
       } else {
         window.alert("Error booking interview.");
@@ -113,8 +134,11 @@ export default function PageThree() {
     return (
       <div>
         <InterviewTimePicker
-          availabilities={apiAvailsToMoments(mergedAvailabilities)}
+          allAvailabilities={apiAvailsToMoments(mergedAvailabilities)}
+          validAvailabilities={filterAvails(mergedAvailabilities)}
           onBook={bookSlot}
+          eventDuration = {eventDuration}
+          blockLength = {blockLength}
         ></InterviewTimePicker>
       </div>
     );
