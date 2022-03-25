@@ -55,7 +55,6 @@ export default function CreateLinkPage() {
   const [calendarEvent, setCalendarEvent] = React.useState(
     [] as CalendarEvent[]
   );
-  const [event, setEvent] = React.useState({ event: "not created yet" });
 
   const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
@@ -77,7 +76,6 @@ export default function CreateLinkPage() {
         // create unique url
         const path: string = `localhost:3000/test?eventUID=${eventResponse.eventUID}&organization=${eventData.organization}`;
         setBookingLink(path);
-        setEvent(eventResponse);
       } catch (err) {
         console.log({ err });
       }
@@ -97,7 +95,6 @@ export default function CreateLinkPage() {
     if (event.target.name === "partnerUID" && value !== "no_partner") {
       newEventData["partnerUID"] = JSON.parse(value).leadUID;
     }
-    // console.log(newEventData);
     setEventData(newEventData);
   };
 
@@ -329,9 +326,6 @@ export default function CreateLinkPage() {
                   copy link!
                 </button>
               </div>
-              <p className={styles.eventJSON}>
-                {JSON.stringify(event, null, "\t")}
-              </p>
             </div>
           </div>
         </form>
@@ -458,14 +452,15 @@ async function addEvent(
     return Promise.reject(err);
   }
 }
-// 
-function mergedAPIString(organization: string, leads: string[]) : string {
+//
+function mergedAPIString(organization: string, leads: string[]): string {
   // return `http://localhost:8080/v1/availabilities/mergedTimes?organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}&inCalendarAvailability=true`;
-  let queryString = linkPrefix + `availabilities/mergeMultiple/?organization=${organization}`;
+  let queryString =
+    linkPrefix + `availabilities/mergeMultiple/?organization=${organization}`;
   leads.forEach((interviewerUID) => {
-    queryString += `&interviewerUID=${interviewerUID}`
+    queryString += `&interviewerUID=${interviewerUID}`;
   });
-  queryString += "&inCalendarAvailability=true"
+  queryString += "&inCalendarAvailability=true";
   return queryString;
 }
 async function getMergedAvailabilities(
