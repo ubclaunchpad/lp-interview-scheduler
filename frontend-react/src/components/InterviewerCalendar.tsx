@@ -6,6 +6,7 @@ import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, formatISO, startOfWeek } from "date-fns";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
+import "./styles/LoadingIcon.css";
 import { isPropertySignature } from "typescript";
 
 interface Props {
@@ -123,7 +124,11 @@ export default function InterviewerCalendar(props: Props) {
     const response = await fetch(
       "http://localhost:8080/v1/availabilities/",
       submitCalendarEvents
-    );
+    ).then((res) => {
+      props.onLoadingEnd();
+      return res;
+    });
+    
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -139,8 +144,7 @@ export default function InterviewerCalendar(props: Props) {
       console.log(err);
       console.log("response causing error");
       console.log(response);
-    }
-    props.onLoadingEnd();
+    } 
     alert(JSON.stringify(eventsAPI));
   };
 
@@ -199,9 +203,6 @@ export default function InterviewerCalendar(props: Props) {
         <div>Error occured.</div>
       ) : (
         <>
-          {props.isLoading && (
-            <div className="loadingIndicator">saving changes...</div>
-          )}
           <div className="lead-calendar">
             <Calendar
               selectable={!props.isLoading}
@@ -220,16 +221,22 @@ export default function InterviewerCalendar(props: Props) {
             />
           </div>
           <div>
-            <button
+            {props.isLoading ? 
+              loadingIcon() : 
+              <button
               disabled={props.isLoading}
               className="cta-button"
               onClick={(e) => handleClick(e, events)}
             >
-              Save Changes
-            </button>
+              Save changes
+            </button>}
           </div>
         </>
       )}
     </>
   );
 }
+function loadingIcon() : JSX.Element {
+  return <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>;
+}
+

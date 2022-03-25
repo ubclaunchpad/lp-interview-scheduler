@@ -15,12 +15,6 @@ export default function Navbar(props: Props) {
   const [hamburgerOpen, setHamburgerOpen] = React.useState(false);
 
   const onLogoutClick = async () => {
-    if(props.isLoading) {
-      const shouldLogOut: boolean = window.confirm(
-        "your schedule is being saved. Do you still want to log out?"
-        );
-      if (!shouldLogOut) return;
-    }
     await logout();
     window.location.reload();
   };
@@ -29,7 +23,7 @@ export default function Navbar(props: Props) {
     setHamburgerOpen(!hamburgerOpen);
   };
 
-  return (
+  return props.isLoading ? (<></>) : (
     <div className={styles.topNavbar}>
       <div className="logo">
         <NavLink to="/" exact>
@@ -47,16 +41,14 @@ export default function Navbar(props: Props) {
             >
               Availabilities
             </NavLink>
-            {!props.isLoading &&
-            (<NavLink
+            <NavLink
               to="/app/createlink"
               className={(isActive) =>
                 !isActive ? styles.navbarLinks : styles.navbarLinksActive
               }
             >
               Schedule 
-            </NavLink>)
-          }
+            </NavLink>
           </div>
         )}
         <div>
@@ -91,7 +83,6 @@ export default function Navbar(props: Props) {
                 >
                   Availabilities
                 </NavLink>
-                {!props.isLoading && (
                   <NavLink
                     to="/app/createlink"
                     className={(isActive) =>
@@ -100,7 +91,6 @@ export default function Navbar(props: Props) {
                   >
                     Schedule 
                   </NavLink>
-                )}
               </div>
             )}
             {/* <ul className={styles.dropƒdownContent}>
