@@ -27,7 +27,7 @@ export async function findAllOverlapping(
 ): Promise<Availability[]> {
   const output: Availability[] = [];
   if (availabilities.length == 1) {
-    return availabilities[0];
+    return availabilities[0].filter((availability) => !availability.isBooked);
   } 
 
   const hoursBuffer: number = await getHoursBuffer(organization);
