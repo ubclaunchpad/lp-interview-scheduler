@@ -6,7 +6,7 @@ import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, formatISO, startOfWeek } from "date-fns";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
-import "./styles/LoadingIcon.css";
+import LoadingIndicator from "./loadingIndicator/LoadingIndicator";
 import { isPropertySignature } from "typescript";
 
 interface Props {
@@ -120,32 +120,24 @@ export default function InterviewerCalendar(props: Props) {
     };
 
     console.log(submitCalendarEvents);
-    props.onLoadingStart();
-    const response = await fetch(
-      "http://localhost:8080/v1/availabilities/",
-      submitCalendarEvents
-    ).then((res) => {
-      props.onLoadingEnd();
-      return res;
-    });
     
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      alert(errorText);
-      return;
-    }
-
     try {
-      const data = await response.json();
-      console.log("data");
-      console.log(data);
-    } catch (err) {
+      props.onLoadingStart();
+      const response = await fetch(
+        "http://localhost:8080/v1/availabilities/",
+        submitCalendarEvents
+      );
+      if (!response.ok) {
+        throw await response.text();
+      }
+      alert("schedule changes successfully saved!");
+      console.log(await response.text());
+    } catch(err){
       console.log(err);
-      console.log("response causing error");
-      console.log(response);
-    } 
-    alert(JSON.stringify(eventsAPI));
+      alert("an error occured while saving your schedule");
+    } finally {
+      props.onLoadingEnd();
+    }
   };
 
   // converts eventsAPI received from GET request to renderable CalendarEvents
@@ -222,7 +214,7 @@ export default function InterviewerCalendar(props: Props) {
           </div>
           <div>
             {props.isLoading ? 
-              loadingIcon() : 
+              <LoadingIndicator/> : 
               <button
               disabled={props.isLoading}
               className="cta-button"
@@ -236,7 +228,5 @@ export default function InterviewerCalendar(props: Props) {
     </>
   );
 }
-function loadingIcon() : JSX.Element {
-  return <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>;
-}
+
 
