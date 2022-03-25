@@ -52,6 +52,7 @@ export default function PageThree() {
       
       setEventDuration(parseInt(eventBody.eventLengthInMinutes));
       setLeadUIDs(leads);
+      setConfirmedTime(eventBody.confirmedTime)
 
       let queryString = linkPrefix + `availabilities/mergeMultiple/?organization=${organization}`;
       leads.forEach((interviewerUID) => {

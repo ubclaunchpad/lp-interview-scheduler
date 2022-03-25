@@ -16,24 +16,6 @@ export default function InterviewTimePicker(props: Props) {
   const [selectedSlot, setSelectedSlot] = React.useState<Moment>();
   const [displaySlots, setDisplaySlots] = React.useState(props.validAvailabilities.filter(s => isToday(s.toDate())) as Moment[]);
 
-  // React.useEffect(() => {
-  //   const blocks = props.eventDuration/props.blockLength;
-  //   let valid = props.allAvailabilities.slice(0, props.allAvailabilities.length - blocks + 1).filter((moment, index) => {
-  //     for (let i = 1; i < blocks; i++) {
-  //       if (props.allAvailabilities[index + i].diff(moment, 'minutes') > props.eventDuration) {
-  //         return false;
-  //       }
-  //     }
-  //     return true;
-  //   });
-
-  //   setValidSlots(valid);
-
-  //   setDisplaySlots(validSlots.filter(s => isToday(s.toDate())));
-  // }, []);
-
-  
-
   const sameDay = (a: Moment, b: Moment) => {
     return a.year() === b.year() && a.month() === b.month() && a.date() === b.date();
   }
