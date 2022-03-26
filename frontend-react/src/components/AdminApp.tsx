@@ -1,7 +1,7 @@
 import AuthenticatedApp from "./AuthenticatedApp";
 import UnauthenticatedApp from "./UnauthenticatedApp";
 import { useAuth } from "../contexts/AuthContext";
-import { Redirect, Route } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import CreateLinkPage from "./CreateLinkPage";
 import Navbar from "./Navbar";
 import React from "react";
@@ -22,6 +22,7 @@ export default function AdminApp() {
   return (
     <div>
       <Navbar isLoading={isLoading}/>
+      <Switch>
       <Route exact path="/app/unauthorized">
         {user ? <Redirect to="/app/authorized" /> : <UnauthenticatedApp />}
       </Route>
@@ -37,6 +38,7 @@ export default function AdminApp() {
         {user ? <CreateLinkPage /> : <Redirect to="/app/unauthorized" />}
       </Route>
       <Redirect from="/app" to="/app/unauthorized" />
+      </Switch>
     </div>
   );
 }

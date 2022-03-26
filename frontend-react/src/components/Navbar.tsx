@@ -83,17 +83,17 @@ export default function Navbar(props: Props) {
                 >
                   Availabilities
                 </NavLink>
-                  <NavLink
-                    to="/app/createlink"
-                    className={(isActive) =>
-                      !isActive ? styles.navbarLinks : styles.navbarLinksActive
-                    }
-                  >
-                    Schedule 
-                  </NavLink>
+                <NavLink
+                  to="/app/createlink"
+                  className={(isActive) =>
+                    !isActive ? styles.navbarLinks : styles.navbarLinksActive
+                  }
+                >
+                  Schedule
+                </NavLink>
               </div>
             )}
-            {/* <ul className={styles.dropƒdownContent}>
+            {/* <ul className={styles.dropdownContent}>
               <li className={styles.dropdownItem} onClick={onLogoutClick}>
                 Logout
               </li>
