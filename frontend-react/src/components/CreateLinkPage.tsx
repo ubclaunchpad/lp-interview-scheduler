@@ -1,11 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
-import "../App.css";
+import styles from "./styles/CreateLinkPage.module.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
-import { endOfWeek, startOfWeek } from "date-fns";
+import { endOfWeek, format, startOfWeek } from "date-fns";
+import { useSetBackgroundImage } from "../hooks/useSetBackground";
 
 const localizer = momentLocalizer(moment);
 
@@ -16,7 +16,6 @@ interface CalendarEvent {
   start: Date;
   end: Date;
 }
-
 
 interface AddEventBody {
   organization: string;
@@ -48,7 +47,7 @@ export default function CreateLinkPage() {
     userUID: user?.uid as string,
     partnerUID: "" as string,
     length: 0,
-    expires: "2022-04-23T18:25:43.511Z" as string,
+    expires: "2022-04-23T18:25:43.511Z" as string, // TODO: change this
   });
   const [bookingLink, setBookingLink] = React.useState("");
   const [leadsList, setLeadsList] = React.useState([] as Lead[]);
@@ -56,7 +55,12 @@ export default function CreateLinkPage() {
   const [calendarEvent, setCalendarEvent] = React.useState(
     [] as CalendarEvent[]
   );
-  const [event, setEvent] = React.useState({ event: "not created yet" });
+
+  const [startDate, setStartDate] = React.useState<Date>();
+  const [endDate, setEndDate] = React.useState<Date>();
+
+  useSetBackgroundImage("url('/page-2.svg'");
+
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     const submitEvent = async () => {
       try {
@@ -72,9 +76,8 @@ export default function CreateLinkPage() {
         // create unique url
         const path: string = `localhost:3000/test?eventUID=${eventResponse.eventUID}&organization=${eventData.organization}`;
         setBookingLink(path);
-        setEvent(eventResponse);
       } catch (err) {
-        console.log(err);
+        console.log({ err });
       }
     };
     event.preventDefault();
@@ -88,45 +91,31 @@ export default function CreateLinkPage() {
   ) => {
     // set lead state and set the chosen lead's availabilities to events
     const value = event.target.value;
-    let newEventData = {...eventData, [event.target.name]: value};
+    let newEventData = { ...eventData, [event.target.name]: value };
     if (event.target.name === "partnerUID" && value !== "no_partner") {
       newEventData["partnerUID"] = JSON.parse(value).leadUID;
     }
-    // console.log(newEventData);
     setEventData(newEventData);
-  };
-
-  const handleSelect = ({
-    start,
-    end,
-  }: {
-    // component passes in Dates
-    start: string | Date;
-    end: string | Date;
-  }): any => {
-    console.log("start: " + start);
-    console.log("end: " + end);
   };
 
   const handleDropdownSelect = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const selectedInterviewer : string = event.target.value;
-    let newSelectedLeads : Lead[] = [selectedLeads[0]];
+    const selectedInterviewer: string = event.target.value;
+    let newSelectedLeads: Lead[] = [selectedLeads[0]];
     if (selectedInterviewer !== "no_partner") {
-      const partnerJSON : Lead = JSON.parse(selectedInterviewer);
+      const partnerJSON: Lead = JSON.parse(selectedInterviewer);
       newSelectedLeads[1] = {
-          leadUID: partnerJSON.leadUID,
-          leadName: partnerJSON.leadName,
-          bookingCount: partnerJSON.bookingCount,
-          confirmed: partnerJSON.confirmed,
-          pending: partnerJSON.pending
-        };
+        leadUID: partnerJSON.leadUID,
+        leadName: partnerJSON.leadName,
+        bookingCount: partnerJSON.bookingCount,
+        confirmed: partnerJSON.confirmed,
+        pending: partnerJSON.pending,
+      };
     }
     setSelectedLeads(newSelectedLeads);
     handleChange(event);
   };
-
 
   // useEffect for populating dropdown menu of leads excluding user
   React.useEffect(() => {
@@ -140,7 +129,7 @@ export default function CreateLinkPage() {
               leadName: lead.leadName,
               bookingCount: lead.bookingCount,
               pending: lead.pending,
-              confirmed: lead.confirmed
+              confirmed: lead.confirmed,
             },
           ]);
           break;
@@ -163,7 +152,6 @@ export default function CreateLinkPage() {
           eventData.partnerUID
         );
         setCalendarEvent(response);
-        console.log(JSON.stringify(response));
       } catch (e) {
         console.log(JSON.stringify(e));
       }
@@ -172,7 +160,7 @@ export default function CreateLinkPage() {
       try {
         const response = await getSingleAvailability(
           eventData.organization,
-          eventData.userUID,
+          eventData.userUID
         );
         console.log(response);
         setCalendarEvent(response);
@@ -186,109 +174,172 @@ export default function CreateLinkPage() {
     } else {
       loadMergedLeadTimes();
     }
-  }, [eventData.organization, eventData.userUID, selectedLeads, eventData.partnerUID]);
+  }, [
+    eventData.organization,
+    eventData.userUID,
+    selectedLeads,
+    eventData.partnerUID,
+  ]);
 
   return (
-    <div className="Create-Link">
-      <Link to="/app">
-        <button>goto interviewer availabilities</button>
-      </Link>
-      <form>
-        <div className="event-info-form">
-          <div className="left-side">
-            <div>
-              <label>
-                Choose your partner:
+    <div className="body">
+      <div className={styles.createLinkPage}>
+        <form className={styles.form}>
+          <div className={styles.left}>
+            <div className={styles.calendarInfoRow}>
+              <div className={styles.choosePartner}>
+                <label>
+                  <div className={styles.labelText}>Choose your partner:</div>
+                </label>
                 <select
                   name="partnerUID"
-                  // value={eventData.partnerUID}
                   onChange={handleDropdownSelect}
+                  className={styles.select}
                 >
-                  {/* {populateDropdown()} */}
                   {leadsList.map((lead) => createRow(lead))}
                   <option value={"no_partner"}>No Partner</option>
                 </select>
-              </label>
+              </div>
+              <div className={styles.labelText}>
+                {showEventCount(selectedLeads)}
+              </div>
             </div>
-            <div>
-              <label>
-                Interviewee Email:
-                <textarea
+            <div className={styles.mergedCalendar}>
+              <Calendar
+                localizer={localizer}
+                events={calendarEvent}
+                defaultView="week"
+                defaultDate={moment().toDate()}
+                startAccessor="start"
+                endAccessor="end"
+                style={{ height: 500, width: "100%" }}
+                min={startOfWeek(new Date())}
+                max={endOfWeek(new Date())}
+              />
+            </div>
+            <div className={styles.validFromContainer}>
+              <div>
+                Valid from
+                <div className={styles.timeDuration}>
+                  {`${getFormattedDate(startDate)} to ${getFormattedDate(
+                    endDate
+                  )}`}
+                </div>
+                <div className={styles.selectDateSection}>
+                  <label className={styles.selectDateLabelGroup}>
+                    start date:
+                    <input
+                      className={styles.selectDateInput}
+                      type="date"
+                      onChange={(newDate) => {
+                        if (newDate.target.value) {
+                          console.log(newDate.target.value);
+                          setStartDate(new Date(newDate.target.value));
+                        }
+                      }}
+                    />
+                  </label>
+                  <label className={styles.selectDateLabelGroup}>
+                    end date:
+                    <input
+                      className={styles.selectDateInput}
+                      type="date"
+                      onChange={(newDate) => {
+                        if (newDate.target.value) {
+                          setEndDate(new Date(newDate.target.value));
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles.right}>
+            <div className={styles.inputArea}>
+              <div className={styles.intervieweeEmailContainer}>
+                <label className={styles.labelText}>Interviewee Email:</label>
+                <input
+                  type="text"
+                  className={styles.emailInput}
                   name="intervieweeEmail"
                   value={eventData.intervieweeEmail}
                   onChange={handleChange}
                 />
-              </label>
-            </div>
-            <div>
-              <label>
-                Select Interview Length:
-                <div>
-                  <input
-                    type="radio"
-                    value={30}
-                    name="length"
-                    onChange={handleChange}
-                  />{" "}
-                  30 mins
-                  <input
-                    type="radio"
-                    value={60}
-                    name="length"
-                    onChange={handleChange}
-                  />{" "}
-                  60 mins
-                  <input
-                    type="radio"
-                    value={90}
-                    name="length"
-                    onChange={handleChange}
-                  />{" "}
-                  90 mins
+              </div>
+              <div className={styles.selectLength}>
+                <label className={styles.labelText}>
+                  Select Interview Length:
+                </label>
+                <div className={styles.radioRow}>
+                  <label className={styles.radioLabel}>
+                    <input
+                      className={styles.radioInput}
+                      type="radio"
+                      value={30}
+                      name="length"
+                      onChange={handleChange}
+                    />
+                    30 mins
+                  </label>
+                  <label className={styles.radioLabel}>
+                    <input
+                      className={styles.radioInput}
+                      type="radio"
+                      value={60}
+                      name="length"
+                      onChange={handleChange}
+                    />{" "}
+                    60 mins
+                  </label>
+                  <label className={styles.radioLabel}>
+                    <input
+                      className={styles.radioInput}
+                      type="radio"
+                      value={90}
+                      name="length"
+                      onChange={handleChange}
+                    />{" "}
+                    90 mins
+                  </label>
                 </div>
-              </label>
+              </div>
+              <button
+                className={`${styles.createBooking} ${styles.button}`}
+                onClick={(e) => handleSubmit(e)}
+              >
+                Create Booking Link
+              </button>
+              <div className={styles.eventInfo}>
+                <div>
+                  <p>unique url: {bookingLink}</p>
+                </div>
+                <button
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    if (bookingLink) {
+                      await navigator.clipboard.writeText(bookingLink);
+                    }
+                  }}
+                  className={styles.button}
+                >
+                  copy link!
+                </button>
+              </div>
             </div>
-            <button onClick={(e) => handleSubmit(e)}>
-              Create Booking Link
-            </button>
-            {/* <p>[dummy unique url]</p> */}
-            <p className="unique-url">unique url: {bookingLink}</p>
-            <pre className="event-info">
-              event info: {JSON.stringify(event, null, "\t")}
-            </pre>
           </div>
-          <div className="right-side">
-            <div className="show-event-count">
-              {showEventCount(selectedLeads)}
-            </div>
-            <Calendar
-              selectable
-              localizer={localizer}
-              events={calendarEvent}
-              defaultView="week"
-              defaultDate={moment().toDate()}
-              onSelectEvent={(event) => handleSelect(event)}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ height: 500 }}
-              min={startOfWeek(new Date())}
-              max={endOfWeek(new Date())}
-              // uncomment this for custom rendering of events
-              // components={{
-              //   event: existingEvents,
-              // }}
-            />
-          </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }
 
-function createRow(interviewer: Lead) : JSX.Element {
-  return <option value={JSON.stringify(interviewer)} key={interviewer.leadUID}>
-  {`  ${interviewer.leadName} : ${interviewer.bookingCount}`}
-</option>
+function createRow(interviewer: Lead): JSX.Element {
+  return (
+    <option value={JSON.stringify(interviewer)} key={interviewer.leadUID}>
+      {`  ${interviewer.leadName} : ${interviewer.bookingCount}`}
+    </option>
+  );
 }
 
 async function getAllLeads(organization: string): Promise<Lead[]> {
@@ -310,7 +361,7 @@ async function getAllLeads(organization: string): Promise<Lead[]> {
           leadUID: element.interviewerUID,
           bookingCount: 0,
           pending: 0,
-          confirmed: 0
+          confirmed: 0,
         });
       }
     );
@@ -323,7 +374,6 @@ async function getAllLeads(organization: string): Promise<Lead[]> {
     return Promise.reject(err);
   }
 }
-
 
 function compare(leadA: Lead, leadB: Lead): number {
   if (leadA.bookingCount < leadB.bookingCount) return -1;
@@ -391,23 +441,26 @@ async function addEvent(
       },
       body: JSON.stringify(addEventBody),
     });
-    if (!eventRes.ok)
+    if (!eventRes.ok) {
+      console.log(eventRes);
       throw new Error(
         `error adding event ${JSON.stringify(addEventBody, null, "\t")}`
       );
+    }
     return Promise.resolve(await eventRes.json());
   } catch (err) {
     return Promise.reject(err);
   }
 }
-// 
-function mergedAPIString(organization: string, leads: string[]) : string {
+//
+function mergedAPIString(organization: string, leads: string[]): string {
   // return `http://localhost:8080/v1/availabilities/mergedTimes?organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}&inCalendarAvailability=true`;
-  let queryString = linkPrefix + `availabilities/mergeMultiple/?organization=${organization}`;
+  let queryString =
+    linkPrefix + `availabilities/mergeMultiple/?organization=${organization}`;
   leads.forEach((interviewerUID) => {
-    queryString += `&interviewerUID=${interviewerUID}`
+    queryString += `&interviewerUID=${interviewerUID}`;
   });
-  queryString += "&inCalendarAvailability=true"
+  queryString += "&inCalendarAvailability=true";
   return queryString;
 }
 async function getMergedAvailabilities(
@@ -434,7 +487,7 @@ async function getMergedAvailabilities(
 
 async function getSingleAvailability(
   organization: string,
-  leadUID: string | undefined,
+  leadUID: string | undefined
 ): Promise<CalendarEvent[]> {
   try {
     const singleRes: Response = await fetch(
@@ -471,12 +524,15 @@ function ConvertAPICalEventsToCalEvents(
   console.log(convertedEvents);
   return convertedEvents;
 }
+
 function showEventCount(selectedLeads: Lead[]): React.ReactNode {
   if (selectedLeads.length === 1) {
-    return `confirmed: ${selectedLeads[0].confirmed} pending: ${selectedLeads[0].pending}`;
-  }
-  else if (selectedLeads.length === 2) {
-    return `confirmed: ${selectedLeads[1].confirmed} pending: ${selectedLeads[1].pending}`;
+    return `Confirmed: ${selectedLeads[0].confirmed}, Pending: ${selectedLeads[0].pending}`;
+  } else if (selectedLeads.length === 2) {
+    return `Confirmed: ${selectedLeads[1].confirmed}, Pending: ${selectedLeads[1].pending}`;
   }
 }
 
+function getFormattedDate(date: Date | undefined) {
+  return date === undefined ? "no date selected" : format(date, "MMMM dd yyyy");
+}
