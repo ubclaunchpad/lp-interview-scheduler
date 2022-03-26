@@ -6,6 +6,7 @@
     align-content: center;
     border-radius: 50%;
     margin: 25px;
+    min-width: 50px;
 }
 
 .day:hover {
@@ -62,7 +63,7 @@ p {
     }
 }
 
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 1200px) {
     .day {
         padding: 0;
         margin: 5px;

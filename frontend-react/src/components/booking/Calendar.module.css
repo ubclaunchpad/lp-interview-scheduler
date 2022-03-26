@@ -3,7 +3,10 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 60%;
+    background-color: #eaecf7;
+    border-radius: 30px;
+    padding: 12px;
+    color: var(--purpleBlack);
 }
 
 .calendarHead {
@@ -53,8 +56,8 @@
     -webkit-transform: rotate(135deg);
 }
 
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 1200px) {
     .calendar {
-        width: 100%;
+        margin-bottom: 40px;
     }
 }
