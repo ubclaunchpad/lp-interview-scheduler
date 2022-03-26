@@ -26,8 +26,8 @@ export default function Navbar() {
           <img src={LaunchpadLogo} alt="Launchpad Logo" />
         </NavLink>
       </div>
-      <nav className={styles.navbarItems}>
-        {user && (
+      {user && (
+        <nav className={styles.navbarItems}>
           <div className={styles.navbarTabs}>
             <NavLink
               to="/app/authorized"
@@ -46,23 +46,24 @@ export default function Navbar() {
               Schedule
             </NavLink>
           </div>
-        )}
-        <div>
-          <button
-            className={styles.accountButton}
-            onClick={() => setOpen(!open)}
-          >
-            Account
-          </button>
-          {open && (
-            <ul className={styles.dropdownContent}>
-              <li className={styles.dropdownItem} onClick={onLogoutClick}>
-                Logout
-              </li>
-            </ul>
-          )}
-        </div>
-      </nav>
+
+          <div>
+            <button
+              className={styles.accountButton}
+              onClick={() => setOpen(!open)}
+            >
+              Account
+            </button>
+            {open && (
+              <ul className={styles.dropdownContent}>
+                <li className={styles.dropdownItem} onClick={onLogoutClick}>
+                  Logout
+                </li>
+              </ul>
+            )}
+          </div>
+        </nav>
+      )}
       <div className={styles.hamburger} onClick={toggleHamburger}>
         <div className={styles.burger} />
         <div className={styles.burger} />

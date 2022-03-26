@@ -2,6 +2,7 @@ html,
 #root {
   height: 100%;
   width: 100%;
+  overflow-x: hidden;
 
   --purpleBlack: rgb(9, 5, 44);
   --lightPeriwinkle: rgb(179, 193, 250);
@@ -84,12 +85,6 @@ button {
 .cta-button:focus {
   background-color: var(--ctaButtonColorHover);
   border: 2px solid var(--ctaButtonColorHover);
-}
-
-.landing-buttons {
-  padding-top: 2.5rem;
-  display: flex;
-  justify-content: space-evenly;
 }
 
 /* react-big-calendar component custom styling */
