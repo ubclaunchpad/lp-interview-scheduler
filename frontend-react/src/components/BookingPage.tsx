@@ -131,7 +131,7 @@ export default function PageThree() {
     );
   } else {
     return (
-      <>
+      <div className={styles.bookingPageWithNav}>
         <div className={styles.userNav}>
           <img
             className={styles.logo}
@@ -152,7 +152,7 @@ export default function PageThree() {
             onBook={bookSlot}
           />
         </div>
-      </>
+      </div>
     );
   }
 }

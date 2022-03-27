@@ -36,6 +36,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     font-weight: bold;
+    font-size: 16px;
     width: 100%;
 }
 
@@ -56,8 +57,12 @@
     -webkit-transform: rotate(135deg);
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1000px) {
     .calendar {
         margin-bottom: 40px;
+    }
+
+    .calendarHead p {
+        font-size: 20px;
     }
 }
