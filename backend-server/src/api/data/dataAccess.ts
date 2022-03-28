@@ -338,7 +338,6 @@ class DataAccess {
           }
         }
 
-
         const availabilitiesToBook = [];
         for (var id of leadUIDs) {
           for (var time of timesToBook) {

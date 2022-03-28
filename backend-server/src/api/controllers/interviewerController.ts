@@ -1,4 +1,4 @@
-import { dataAccess } from "../data/dataAccess";
+import * as Database from "../data/database";
 import { Interviewer } from "../data/models";
 
 export interface GetInterviewerParams {
@@ -19,30 +19,18 @@ export async function addInterviewer(
     name,
   };
 
-  await dataAccess.setInterviewer(interviewer);
+  await Database.setInterviewer(interviewer);
 }
 
 export async function getInterviewer(
   organization: string,
   interviewerUID: string
 ) {
-  return await dataAccess.getInterviewer(organization, interviewerUID);
+  return Database.getInterviewer(interviewerUID);
 }
 
 export async function getAllInterviewers(
   organization: string
 ): Promise<Interviewer[]> {
-  const interviewerDocs: any[] = await dataAccess.listInterviewers(
-    organization
-  );
-  const interviewers: Interviewer[] = [];
-  interviewerDocs.forEach((val) => {
-    interviewers.push({
-      interviewerUID: val.interviewerUID,
-      name: val.name,
-      email: val.email,
-      organization: val.organization,
-    });
-  });
-  return Promise.resolve(interviewers);
+  return Database.listInterviewers(organization);
 }

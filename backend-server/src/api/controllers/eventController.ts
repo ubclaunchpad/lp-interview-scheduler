@@ -1,5 +1,5 @@
 import { createHash } from "../../util/createHash";
-import { dataAccess } from "../data/dataAccess";
+import * as Database from "../data/database";
 import { Event } from "../data/models";
 
 export async function addEvent(body: AddEventBody) {
@@ -22,44 +22,38 @@ export async function addEvent(body: AddEventBody) {
     eventUID: eventUID,
   };
 
-  const allEvents = await dataAccess.listEvents(body.organization);
-  const duplicateHash = allEvents.find(event => event.eventUID === eventUID);
+  const allEvents = await Database.listEvents(body.organization);
+  const duplicateHash = allEvents.find((event) => event.eventUID === eventUID);
 
   if (duplicateHash) {
-    throw new Error(
-      `Duplicate event`
-    );
+    throw new Error(`Duplicate event`);
   }
 
-  await dataAccess.setEvent(event, body.organization);
+  await Database.setEvent(event, body.organization);
 
   return event;
 }
 
-export async function getEvent(organization: string, eventUID: string) {
-  return await dataAccess.getEvent(organization, eventUID);
+export async function getEvent(eventUID: string) {
+  return Database.getEvent(eventUID);
 }
 
 export async function bookEvent(
-  organization: string,
   eventUID: string,
-  leadUIDs: string[],
-  times: string[]
+  interviewerUIDs: string[],
+  timesToBook: string[]
 ) {
-  const transactionResult = await dataAccess.bookInterview(
-    organization,
-    leadUIDs,
-    times,
+  return Database.bookInterview(
+    interviewerUIDs,
+    timesToBook,
     eventUID,
-    times[0]
+    timesToBook[0]
   );
-  if (!transactionResult) throw `Booking event ${eventUID} transaction failed`;
-  return transactionResult;
 }
 
 export async function getBookingCount(organization: string) {
   // get list of all documents under event collection for given organization
-  const allEvents = await dataAccess.listEvents(organization);
+  const allEvents = await Database.listEvents(organization);
 
   const bookingCounts: BookingCounts = {
     organization: organization,
@@ -68,9 +62,9 @@ export async function getBookingCount(organization: string) {
 
   // iterate through all the documents, map each event to two associated leads
   // for each event in allEvents
-  Object.entries(allEvents).forEach(([eventUID, eventDocument]) => {
-    const leads: Array<{ leadUID: string; name: string }> = eventDocument.leads;
-    const confirmedTime: string = eventDocument.confirmedTime;
+  Object.entries(allEvents).forEach(([eventUID, event]) => {
+    const leads: Array<{ leadUID: string; name: string }> = event.leads;
+    const confirmedTime: string = event.confirmedTime;
 
     //iterate over all leads in event
     Object.entries(leads).forEach(([index, lead]) => {

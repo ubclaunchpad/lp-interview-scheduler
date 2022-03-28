@@ -2,11 +2,12 @@ import {
   add,
   closestTo,
   formatISO,
+  isAfter,
   isBefore,
   isSameMinute,
   startOfDay,
 } from "date-fns";
-import { dataAccess } from "../data/dataAccess";
+import * as Database from "../data/database";
 import { Availability, CalendarAvailability } from "../data/models";
 
 export interface AddAvailabilityBody {
@@ -48,7 +49,7 @@ export async function addAvailability(body: AddAvailabilityBody) {
     durationMins: body.durationMins,
   };
 
-  await dataAccess.setAvailability(availability, body.organization);
+  await Database.setAvailability(availability);
 }
 
 export async function replaceAllAvailabilities(
@@ -68,43 +69,28 @@ export async function replaceAllAvailabilities(
     );
   }
 
-  await dataAccess.deleteAvailabilityCollection(
-    body.organization,
-    body.interviewerUID
-  );
+  await Database.deleteAvailabilityCollection(body.interviewerUID);
 
   for (const availability of availabilitiesFromRequest) {
-    await dataAccess.setAvailability(availability, body.organization);
+    await Database.setAvailability(availability);
   }
 
   return availabilitiesFromRequest;
 }
 
 export async function getAvailability(
-  organization: string,
   interviewerUID: string,
   startTime: string
 ): Promise<Availability> {
-  return (await dataAccess.getAvailability(
-    organization,
-    interviewerUID,
-    startTime
-  )) as Availability;
+  return Database.getAvailability(interviewerUID, startTime);
 }
 
 export async function getInterviewerAvailabilities(
   organization: string,
   interviewerUID: string
 ): Promise<Availability[]> {
-  const allAvailabilites = await Promise.all(
-    await dataAccess.getAllAvailabilities(organization, interviewerUID)
-  ).then((avails) => avails as Availability[]);
-
-  return (await dataAccess.deleteExpiredAvailabilities(
-    organization,
-    interviewerUID,
-    allAvailabilites
-  )) as Availability[];
+  await Database.deleteExpiredAvailabilities(organization, interviewerUID);
+  return Database.getAllAvailabilities(interviewerUID);
 }
 
 export async function getInterviewerCalendarAvailabilities(
@@ -141,8 +127,9 @@ export async function makeMultipleCalendarAvailabilities(
   organization: string
 ): Promise<CalendarAvailability[]> {
   const availabilityBlockLength = (
-    (await dataAccess.getOrganizationFields(organization)) as any
-  ).availabilityBlockLength as number;
+    await Database.getOrganizationFields(organization)
+  ).availabilityBlockLength;
+
   const calendarAvailabilities: CalendarAvailability[] = [];
 
   for (let i = 0; i < availabilities.length; i++) {
@@ -190,8 +177,8 @@ async function makeAvailabilitiesFromCalendarAvailability(
   const endDate: Date = new Date(calendarAvailability.end);
 
   const availabilityBlockLength = (
-    (await dataAccess.getOrganizationFields(organization)) as any
-  ).availabilityBlockLength as number;
+    await Database.getOrganizationFields(organization)
+  ).availabilityBlockLength;
 
   const minsIn24Hours = 24 * 60;
   const numAvailabilityBlocksIn24Hours =
@@ -225,7 +212,7 @@ async function makeAvailabilitiesFromCalendarAvailability(
   const availabilities: Availability[] = [];
 
   // populate the availabilities array
-  while (isBefore(newEnd, endDate) || isSameMinute(newEnd, endDate)) {
+  while (!isAfter(newEnd, endDate)) {
     const newAvailability: Availability = {
       interviewerUID: calendarAvailability.interviewerUID,
       startTime: formatISO(newStart),
