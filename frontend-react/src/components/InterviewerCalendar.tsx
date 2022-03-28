@@ -141,13 +141,13 @@ export default function InterviewerCalendar(props: Props) {
         submitCalendarEvents
       );
       if (!response.ok) {
-        throw await response.text();
+        throw new Error(await response.text());
       }
       alert("schedule changes successfully saved!");
       console.log(await response.text());
     } catch(err){
       console.log(err);
-      alert("an error occured while saving your schedule");
+      alert("an error occured while saving your schedule: \n" + err);
     } finally {
       props.onLoadingEnd();
     }
@@ -229,7 +229,6 @@ export default function InterviewerCalendar(props: Props) {
             {props.isLoading ? 
               <LoadingIndicator/> : 
               <button
-              disabled={props.isLoading}
               className="cta-button"
               onClick={(e) => handleClick(e, events)}
             >
