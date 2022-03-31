@@ -443,6 +443,9 @@ async function addEvent(
     });
     if (!eventRes.ok) {
       console.log(eventRes);
+      if (eventRes.status === 400) {
+        alert("Event has already been created");
+      }
       throw new Error(
         `error adding event ${JSON.stringify(addEventBody, null, "\t")}`
       );
