@@ -73,6 +73,10 @@ button {
   font-size: inherit;
 }
 
+button:hover {
+  background-color: var(--violet);
+}
+
 .cta-button {
   background-color: var(--ctaButtonColor);
   border-radius: 10px;

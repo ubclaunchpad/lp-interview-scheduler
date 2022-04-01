@@ -8,9 +8,9 @@ import SocialIcons from "../social-icons.svg";
 
 export default function LandingPage() {
   const [contactInfo, setContactInfo] = React.useState({
-    firstName: "" as string,
-    lastName: "" as string,
+    name: "" as string,
     email: "" as string,
+    message: "" as string,
   });
 
   useSetBackgroundImage("url('/landing-page.svg'");
@@ -21,9 +21,16 @@ export default function LandingPage() {
     setContactInfo(contactInfoData);
   };
 
-  const handleSubscribe = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("user wants to subscribe");
+  const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log(contactInfo);
+    event.preventDefault();
   };
+
+  // const renderTeamInfo = () => {
+  //   const value = event.target.value;
+  //   let contactInfoData = { ...contactInfo, [event.target.name]: value };
+  //   setContactInfo(contactInfoData);
+  // };
 
   return (
     <>
@@ -35,42 +42,102 @@ export default function LandingPage() {
               Launch Pad <br />
               Scheduler
             </h1>
+            <h3>schedule your team interviews with ease</h3>
+            <div className={styles.landingButtons}>
+              <Link to="/app">
+                <button className="cta-button">Log In</button>
+              </Link>
+            </div>
           </section>
-          <section className={styles.subHero}>
-            <h2>subheading</h2>
+          <section className={styles.valueProposition}>
+            <h2>
+              Schedule Your Virtual Interview <br /> In Just 3 Steps
+            </h2>
+            <div className={styles.valuePropSteps}>
+              <p>1. add your availabilities to your profile's calendar</p>
+              <p>2. choose an interview partner or go solo</p>
+              <p>3. create and send a booking link to your candidate</p>
+            </div>
+            <div className={styles.demoVideo}>
+              <iframe
+                width="853"
+                height="480"
+                // src={`https://www.youtube.com/embed/${embedId}`}
+                src={"https://www.youtube.com/embed/AqLkJreFwLU"}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="Embedded youtube"
+              />
+            </div>
           </section>
-          <section className={styles.landingButtons}>
-            <Link to="/app">
-              <button id={styles.firstLandingButton} className="cta-button">
-                Sign In
-              </button>
-            </Link>
-            <Link to="/app">
-              <button className="cta-button">Log In</button>
-            </Link>
-          </section>
-          <section className={styles.whatWeDo}>
-            <h1>What We Do</h1>
-          </section>
-          <section className={styles.ourPartners}>
-            <h1>Our Partners</h1>
+          <section className={styles.builtBy}>
+            <h1>Built By</h1>
             {/* replace with function */}
             <div className={styles.partnerInfo}>
-              <div>
-                <span className={styles.partnerIcon}></span>
-                <p>partner name</p>
+              <div className={styles.teamMembers}>
+                <div className={styles.member}>
+                  <span className={styles.memberIcon}></span>
+                  <p>
+                    Wren Liang <br /> Team Lead
+                  </p>
+                </div>
+                <div className={styles.member}>
+                  <span className={styles.memberIcon}></span>
+                  <p>
+                    Sarah Bornais <br /> Team Lead
+                  </p>
+                </div>
+                <div className={styles.member}>
+                  <span className={styles.memberIcon}></span>
+                  <p>
+                    Aymen Dirar <br /> Software Dev
+                  </p>
+                </div>
+                <div className={styles.member}>
+                  <span className={styles.memberIcon}></span>
+                  <p>
+                    Emily Chen <br /> Software Dev
+                  </p>
+                </div>
+                <div className={styles.member}>
+                  <span className={styles.memberIcon}></span>
+                  <p>
+                    Jin Kim <br /> Software Dev
+                  </p>
+                </div>
               </div>
-              <div>
-                <span className={styles.partnerIcon}></span>
-                <p>partner name</p>
-              </div>
-              <div>
-                <span className={styles.partnerIcon}></span>
-                <p>partner name</p>
-              </div>
-              <div>
-                <span className={styles.partnerIcon}></span>
-                <p>partner name</p>
+              <div className={styles.teamMembers}>
+                <div className={styles.member}>
+                  <span className={styles.memberIcon}></span>
+                  <p>
+                    Ryan Moon <br /> Software Dev
+                  </p>
+                </div>
+                <div className={styles.member}>
+                  <span className={styles.memberIcon}></span>
+                  <p>
+                    Ray Han <br /> Software Dev
+                  </p>
+                </div>
+                <div className={styles.member}>
+                  <span className={styles.memberIcon}></span>
+                  <p>
+                    Tricia Cu <br /> Software Dev
+                  </p>
+                </div>
+                <div className={styles.member}>
+                  <span className={styles.memberIcon}></span>
+                  <p>
+                    Aryan Gandhi <br /> Software Dev
+                  </p>
+                </div>
+                <div className={styles.member}>
+                  <span className={styles.memberIcon}></span>
+                  <p>
+                    Rissa Chua <br /> Designer
+                  </p>
+                </div>
               </div>
             </div>
           </section>
@@ -78,20 +145,12 @@ export default function LandingPage() {
             <h1>Contact Us</h1>
             <form>
               <div className={styles.contactDetailsContainer}>
-                <label className={styles.labelText}>FIRST NAME</label>
+                <label className={styles.labelText}>NAME</label>
                 <input
                   type="text"
                   className={styles.contactDetailsInput}
-                  name="firstName"
-                  value={contactInfo.firstName}
-                  onChange={handleChange}
-                />
-                <label className={styles.labelText}>LAST NAME</label>
-                <input
-                  type="text"
-                  className={styles.contactDetailsInput}
-                  name="lastName"
-                  value={contactInfo.lastName}
+                  name="name"
+                  value={contactInfo.name}
                   onChange={handleChange}
                 />
                 <label className={styles.labelText}>EMAIL</label>
@@ -102,20 +161,17 @@ export default function LandingPage() {
                   value={contactInfo.email}
                   onChange={handleChange}
                 />
+                <label className={styles.labelText}>MESSAGE</label>
+                <input
+                  type="text"
+                  className={styles.contactDetailsInput}
+                  name="message"
+                  value={contactInfo.message}
+                  onChange={handleChange}
+                />
               </div>
+              <button onClick={handleSubmit}>Send</button>
             </form>
-          </section>
-          <section className={styles.newsletterSubscription}>
-            <div className={styles.subscriptionCard}>
-              <h2>Subscribe to Our Newsletter</h2>
-              <p>dummy text</p>
-              <button
-                className={styles.subscribeButton}
-                onClick={(e) => handleSubscribe(e)}
-              >
-                Subscribe
-              </button>
-            </div>
           </section>
           <section className={styles.footer}>
             <hr />
