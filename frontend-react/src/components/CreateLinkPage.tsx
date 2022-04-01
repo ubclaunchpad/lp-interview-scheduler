@@ -6,6 +6,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, format, startOfWeek } from "date-fns";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
+import ModalContainer from "./modal/ModalContainer";
 
 const localizer = momentLocalizer(moment);
 
@@ -82,6 +83,11 @@ export default function CreateLinkPage() {
     };
     event.preventDefault();
     submitEvent();
+  };
+
+  const handleModalSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    alert("SUBMITTED");
   };
 
   const handleChange = (
@@ -330,6 +336,10 @@ export default function CreateLinkPage() {
           </div>
         </form>
       </div>
+      <ModalContainer
+        triggerText={"Send to Interviewee"}
+        onSubmit={handleModalSubmit}
+      />
     </div>
   );
 }
