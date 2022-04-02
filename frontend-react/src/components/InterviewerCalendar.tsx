@@ -6,6 +6,7 @@ import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, formatISO, startOfWeek } from "date-fns";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
+import ConfirmationMessage from "./ConfirmationMessage";
 
 interface Props {
   localizer: DateLocalizer;
@@ -30,9 +31,11 @@ export default function InterviewerCalendar({ localizer }: Props) {
   const [events, setEvents] = React.useState([] as CalendarEvent[]);
   const [eventsAPI, setEventsAPI] = React.useState([] as EventAPI[]);
   const [error, setError] = React.useState(false);
+  const [showConfirmation, setShowConfirmation] = React.useState("" as string);
   const { user } = useAuth();
   const interviewerUID = user?.uid;
   const organization = "launchpad";
+  let confirmationMessage = React.useRef("");
 
   useSetBackgroundImage("url('/page-1.svg'");
 
@@ -84,7 +87,7 @@ export default function InterviewerCalendar({ localizer }: Props) {
       start: formatISO(newEvent.start),
       end: formatISO(newEvent.end),
       isBooked: false,
-      bookedByEmail: "",
+      bookedByEmail: "Error Saving Events",
     };
 
     setEventsAPI([...eventsAPI, newEventAPI]);
@@ -117,7 +120,9 @@ export default function InterviewerCalendar({ localizer }: Props) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      alert(errorText);
+      // alert(errorText);
+      setShowConfirmation("error");
+      confirmationMessage.current = errorText;
       return;
     }
 
@@ -131,7 +136,18 @@ export default function InterviewerCalendar({ localizer }: Props) {
       console.log(response);
     }
 
-    alert(JSON.stringify(eventsAPI));
+    // alert(JSON.stringify(eventsAPI));
+    confirmationMessage.current =
+      "Successfully saved availabilities between the following dates: " +
+      formatISO(eventsToSave[0].start, { representation: "date" }) +
+      " to " +
+      formatISO(eventsToSave[eventsToSave.length - 1].end, {
+        representation: "date",
+      });
+    setShowConfirmation("success");
+
+    console.log(confirmationMessage.current);
+    console.log(showConfirmation);
   };
 
   // converts eventsAPI received from GET request to renderable CalendarEvents
@@ -189,6 +205,11 @@ export default function InterviewerCalendar({ localizer }: Props) {
         <div>Error occured.</div>
       ) : (
         <>
+          {showConfirmation !== "" && (
+            <ConfirmationMessage type={showConfirmation}>
+              <p style={{ fontSize: "20px" }}>{confirmationMessage.current}</p>
+            </ConfirmationMessage>
+          )}
           <div className="lead-calendar">
             <Calendar
               selectable

@@ -9,6 +9,9 @@ html,
   --periwinkle: rgb(133, 155, 248);
   --violet: rgb(77, 51, 210);
   --lightViolet: rgb(135, 120, 213);
+  --redTextColor: rgb(237, 110, 126);
+  --greenTextColor: rgb(88, 193, 144);
+
   --ctaButtonColor: var(--violet);
   --ctaButtonColorHover: var(--lightViolet);
 }
