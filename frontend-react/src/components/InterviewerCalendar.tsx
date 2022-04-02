@@ -39,6 +39,8 @@ export default function InterviewerCalendar({ localizer }: Props) {
 
   useSetBackgroundImage("url('/page-1.svg'");
 
+  useSetBackgroundImage("url('/page-1.svg'");
+
   const handleSelect = (event: CalendarEvent): any => {
     // option to delete when event timeslot is clicked / selected
     if (!event.resource.isBooked) {
