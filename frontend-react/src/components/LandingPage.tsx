@@ -4,7 +4,9 @@ import "../App.css";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
 import styles from "./styles/LandingPage.module.css";
 import Navbar from "./Navbar";
-import SocialIcons from "../social-icons.svg";
+import FacebookIcon from "../images/facebook.svg";
+import YoutubeIcon from "../images/instagram.svg";
+import InstagramIcon from "../images/youtube.svg";
 
 export default function LandingPage() {
   const [contactInfo, setContactInfo] = React.useState({
@@ -12,6 +14,11 @@ export default function LandingPage() {
     email: "" as string,
     message: "" as string,
   });
+  const socialMediaLinks = {
+    facebook: "https://www.facebook.com/ubclaunchpad/",
+    instagram: "https://www.instagram.com/ubclaunchpad/?hl=en",
+    youtube: "https://www.youtube.com/channel/UCS0ghlwqTOc1RH_nYENNT5A",
+  };
 
   useSetBackgroundImage("url('/landing-page.svg'");
 
@@ -63,7 +70,7 @@ export default function LandingPage() {
                 width="853"
                 height="480"
                 // src={`https://www.youtube.com/embed/${embedId}`}
-                src={"https://www.youtube.com/embed/AqLkJreFwLU"}
+                // src={"https://www.youtube.com/embed/AqLkJreFwLU"}
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -175,7 +182,17 @@ export default function LandingPage() {
           </section>
           <section className={styles.footer}>
             <hr />
-            <img src={SocialIcons} alt="Social Media Icons" />
+            <div className={styles.socialIcons}>
+              <a href={socialMediaLinks.facebook}>
+                <img src={FacebookIcon} alt="Facebook" />
+              </a>
+              <a href={socialMediaLinks.instagram}>
+                <img src={InstagramIcon} alt="Instagram" />
+              </a>
+              <a href={socialMediaLinks.youtube}>
+                <img src={YoutubeIcon} alt="Youtube" />
+              </a>
+            </div>
             <p>Copyright © 2020 UBC Launch Pad</p>
           </section>
         </div>

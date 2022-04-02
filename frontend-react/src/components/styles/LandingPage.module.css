@@ -1,12 +1,37 @@
 .landingBody {
   font-family: "Poppins", sans-serif;
-  height: 100%;
+  height: 5000px;
+}
+
+h1 {
+  font-size: 6vw;
+  margin-top: 0;
+  padding-top: 68px;
+  line-height: 1;
+  background: linear-gradient(45deg, rgb(192, 177, 244), rgb(61, 46, 220));
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+}
+
+h2 {
+  font-size: 4vw;
+}
+
+h3 {
+  font-family: "Lato", sans-serif;
+}
+
+p {
+  font-size: 1.5rem;
+  flex: 1;
+  padding: 0 1rem 0 1rem;
+  font-family: "Lato", sans-serif;
 }
 
 .hero {
-  height: 750px;
+  height: 20%;
   text-align: left;
-  width: 100vw;
+  width: 100%;
   position: relative;
   left: 5%;
   padding-top: 10%;
@@ -27,30 +52,7 @@
 }
 
 .valueProposition {
-  height: 1400px;
-}
-
-h1 {
-  font-size: 6vw;
-  margin-top: 0;
-  padding-top: 68px;
-  line-height: 1;
-  /* font-family: "Poppins", sans-serif; */
-}
-
-h2 {
-  font-size: 4vw;
-}
-
-h3 {
-  font-family: "Lato", sans-serif;
-}
-
-p {
-  font-size: 1.5rem;
-  flex: 1;
-  padding: 0 1rem 0 1rem;
-  font-family: "Lato", sans-serif;
+  height: 33%;
 }
 
 .valuePropSteps {
@@ -74,7 +76,7 @@ p {
 }
 
 .builtBy {
-  height: 72vh;
+  height: 15%;
 }
 
 .partnerInfo {
@@ -82,24 +84,23 @@ p {
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-}
-
-.teamLeads {
-  display: flex;
+  width: 100%;
 }
 
 .teamMembers {
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   font-size: 1rem;
+  width: 100%;
 }
 
 .member {
+  width: auto;
 }
 
 .memberIcon {
-  height: 7rem;
-  width: 7rem;
+  /* height: 7rem;
+  width: 7rem; */
   background-color: white;
   border-radius: 60px;
   display: inline-block;
@@ -107,7 +108,7 @@ p {
 }
 
 .contactUs {
-  /* height: 150vh; */
+  height: 25%;
   padding: 45vh 15vh 10vh 15vh;
   display: flex;
   flex-direction: column;
@@ -128,20 +129,72 @@ p {
   height: 40px;
   border-radius: 30px;
   border: 0;
+  padding: 12px 20px;
+  font-family: "Lato", sans-serif;
 }
 
 .contactDetailsInput:last-child {
-  height: 300px;
-}
-
-.footer {
-  /* height: 15vh; */
+  height: 200px;
 }
 
 .footer hr {
   border-top: 2px solid white;
 }
 
+.socialIcons {
+  display: flex;
+  justify-content: space-evenly;
+}
+
 .footer img {
   margin: 1.5rem 0 1.5rem 0;
+}
+
+@media screen and (max-width: 600px) {
+  /* .landingBody {
+    height: 800px;
+  }
+
+  .landingButtons {
+    margin-top: 1rem;
+  }
+
+  .landingButtons button {
+    width: 12vh;
+    margin: 0;
+  }
+
+  h3 {
+    width: 70%;
+    font-size: 1rem;
+  }
+
+  .valueProposition {
+    position: relative;
+    top: 10%;
+  }
+
+  .valuePropSteps {
+    display: flex;
+    flex-direction: column;
+  }
+
+  p {
+    font-size: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .demoVideo {
+    display: none;
+  }
+
+  .memberIcon {
+    height: 2rem;
+    width: 2rem;
+    background-color: white;
+    border-radius: 60px;
+    display: inline-block;
+    margin: 1rem 0 1rem 0;
+  } */
 }

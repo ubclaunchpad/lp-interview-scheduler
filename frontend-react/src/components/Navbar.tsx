@@ -1,7 +1,7 @@
 import React from "react";
 import "../App.css";
 import styles from "./styles/Navbar.module.css";
-import LaunchpadLogo from "../logo.svg";
+import LaunchpadLogo from "../images/logo.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { NavLink } from "react-router-dom";
 
