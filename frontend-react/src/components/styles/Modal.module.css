@@ -1,25 +1,12 @@
 body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  /* margin: 0;
+  padding: 0; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
 }
 
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-
-p.lorem-text {
-  text-align: justify;
-}
-
-.modal-cover {
+.modalCover {
   position: fixed;
   top: 0;
   left: 0;
@@ -30,7 +17,7 @@ p.lorem-text {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-.modal-area {
+.modalArea {
   position: fixed;
   top: 0;
   left: 0;
@@ -43,31 +30,24 @@ p.lorem-text {
   -webkit-overflow-scrolling: touch;
 }
 
-@media screen and (min-width: 500px) {
-  /* Center the Modal! */
-  .modal-area {
-    left: 50%;
-    top: 50%;
-    height: auto;
-    transform: translate(-50%, -50%);
-    max-width: 30em;
-    max-height: calc(100% - 1em);
-  }
-}
-
-._modal-close {
+.modalClose {
   position: absolute;
   top: 0;
   right: 0;
   padding: 0.5em;
   line-height: 1;
-  background: #f6f6f7;
+  background: white;
   border: 0;
   box-shadow: 0;
   cursor: pointer;
+  width: 10vh;
 }
 
-._modal-close-icon {
+.modalClose:hover {
+  background: #f6f6f7;
+}
+
+.modalCloseIcon {
   width: 25px;
   height: 25px;
   fill: transparent;
@@ -76,10 +56,11 @@ p.lorem-text {
   stroke-width: 2;
 }
 
-.modal-body {
+.modalBody {
   padding-top: 0.25em;
 }
-._hide-visual {
+
+.hideVisual {
   border: 0 !important;
   clip: rect(0 0 0 0) !important;
   height: 1px !important;
@@ -91,7 +72,29 @@ p.lorem-text {
   white-space: nowrap !important;
 }
 
-.scroll-lock {
-  overflow: hidden;
-  margin-right: 17px;
+.modalForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalMessageInput {
+  margin: 1rem 0 1rem 0;
+  min-height: 100px;
+  height: auto;
+  max-width: 100%;
+  font-family: sans-serif;
+  padding: 1rem;
+}
+
+@media screen and (min-width: 500px) {
+  /* Center the Modal! */
+  .modalArea {
+    left: 50%;
+    top: 50%;
+    height: auto;
+    transform: translate(-50%, -50%);
+    max-width: 30em;
+    max-height: calc(100% - 1em);
+    border-radius: 10px;
+  }
 }

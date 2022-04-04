@@ -1,19 +1,17 @@
 import React from "react";
+import styles from "../styles/CreateLinkPage.module.css";
+
 const Trigger = ({
   triggerText,
   buttonRef,
   showModal,
 }: {
-  triggerText: any;
+  triggerText: string;
   buttonRef: any;
   showModal: any;
 }) => {
   return (
-    <button
-      className="btn btn-lg btn-danger center modal-button"
-      ref={buttonRef}
-      onClick={showModal}
-    >
+    <button className={styles.button} ref={buttonRef} onClick={showModal}>
       {triggerText}
     </button>
   );

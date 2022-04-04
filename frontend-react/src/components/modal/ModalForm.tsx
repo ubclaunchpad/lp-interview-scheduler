@@ -1,22 +1,18 @@
 import React from "react";
+import styles from "../styles/Modal.module.css";
 
 export const ModalForm = ({ onSubmit }: { onSubmit: any }) => {
   return (
     <form onSubmit={onSubmit}>
-      <div className="form-group">
-        <label htmlFor="email">Email Template</label>
-        <input
-          type="email"
-          className="form-control"
+      <div className={styles.modalForm}>
+        <label htmlFor="email">Email Message</label>
+        <textarea
+          className={styles.modalMessageInput}
           id="email"
-          placeholder="PLACEHOLDER_TEXT"
+          placeholder="Write your email message template here"
         />
       </div>
-      <div className="form-group">
-        <button className="form-control btn btn-primary" type="submit">
-          Submit
-        </button>
-      </div>
+      <button type="submit">Submit</button>
     </form>
   );
 };

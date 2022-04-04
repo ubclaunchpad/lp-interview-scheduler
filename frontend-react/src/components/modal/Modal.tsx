@@ -2,7 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { ModalForm } from "./ModalForm";
 import FocusTrap from "focus-trap-react";
-import "./modal.css";
+import styles from "../styles/Modal.module.css";
+
 export const Modal = ({
   onClickOutside,
   onKeyDown,
@@ -24,26 +25,26 @@ export const Modal = ({
         role="dialog"
         tabIndex={-1}
         aria-modal="true"
-        className="modal-cover"
+        className={styles.modalCover}
         onClick={onClickOutside}
         onKeyDown={onKeyDown}
       >
-        <div className="modal-area" ref={modalRef}>
+        <div className={styles.modalArea} ref={modalRef}>
           <button
             ref={buttonRef}
             aria-label="Close Modal"
             aria-labelledby="close-modal"
-            className="_modal-close"
+            className={styles.modalClose}
             onClick={closeModal}
           >
-            <span id="close-modal" className="_hide-visual">
+            <span id="close-modal" className={styles.hideVisual}>
               Close
             </span>
-            <svg className="_modal-close-icon" viewBox="0 0 40 40">
+            <svg className={styles.modalCloseIcon} viewBox="0 0 40 40">
               <path d="M 10,10 L 30,30 M 30,10 L 10,30" />
             </svg>
           </button>
-          <div className="modal-body">
+          <div className={styles.modalBody}>
             <ModalForm onSubmit={onSubmit} />
           </div>
         </div>

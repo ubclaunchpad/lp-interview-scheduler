@@ -3,7 +3,7 @@ import { Modal } from "./Modal";
 import TriggerButton from "./TriggerButton";
 
 interface ModalContainerProps {
-  triggerText: any;
+  triggerText: string;
   onSubmit: any;
 }
 
@@ -19,7 +19,8 @@ export class ModalContainer extends Component<
   modal: any;
   closeButton: any;
 
-  showModal = () => {
+  showModal = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
     this.setState({ isShown: true }, () => {
       this.closeButton.focus();
       this.toggleScrollLock();

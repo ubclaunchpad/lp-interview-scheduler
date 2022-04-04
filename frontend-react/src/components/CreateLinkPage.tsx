@@ -331,15 +331,15 @@ export default function CreateLinkPage() {
                 >
                   copy link!
                 </button>
+                <ModalContainer
+                  triggerText={"Send to Interviewee"}
+                  onSubmit={handleModalSubmit}
+                />
               </div>
             </div>
           </div>
         </form>
       </div>
-      <ModalContainer
-        triggerText={"Send to Interviewee"}
-        onSubmit={handleModalSubmit}
-      />
     </div>
   );
 }
