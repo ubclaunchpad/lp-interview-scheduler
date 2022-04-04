@@ -1,5 +1,116 @@
+html,
+#root {
+  height: 100%;
+  width: 100%;
+
+  --purpleBlack: rgb(9, 5, 44);
+  --lightPeriwinkle: rgb(179, 193, 250);
+  --periwinkle: rgb(133, 155, 248);
+  --violet: rgb(77, 51, 210);
+  --lightViolet: rgb(135, 120, 213);
+  --ctaButtonColor: var(--violet);
+  --ctaButtonColorHover: var(--lightViolet);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+  position: absolute;
+  padding: 0;
+  margin: 0;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+  background-color: var(--purpleBlack);
+}
+
 .App {
+  position: absolute;
+  height: inherit;
+  width: inherit;
+  box-sizing: border-box;
   text-align: center;
+  font-size: 100%; /* default is 16px for most browsers */
+  color: white;
+  line-height: 1.5;
+}
+
+.App .body {
+  position: relative;
+  top: 10vh;
+  padding: 2.25rem; /* 36px */
+}
+
+.logo {
+  transform: translateY(10%);
+  max-width: 70%;
+  min-height: 50%;
+  max-height: auto;
+}
+
+img {
+  max-width: inherit;
+  height: auto;
+}
+
+button {
+  background-color: var(--purpleBlack);
+  color: white;
+  font-family: inherit;
+  border-radius: 20px;
+  width: 8rem; /* 128px */
+  height: 2.5rem; /* 40px */
+  border-width: 0;
+  font-size: inherit;
+}
+
+.cta-button {
+  background-color: var(--ctaButtonColor);
+  border-radius: 10px;
+  width: 30vh;
+  max-width: 100%;
+  margin-top: 20px;
+}
+
+.cta-button:hover,
+.cta-button:focus {
+  background-color: var(--ctaButtonColorHover);
+  border: 2px solid var(--ctaButtonColorHover);
+}
+
+.landing-buttons {
+  padding-top: 2.5rem;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+/* react-big-calendar component custom styling */
+.lead-calendar {
+  background-color: white;
+  padding: 1rem;
+  color: var(--purpleBlack);
+  border-radius: 30px;
+  position: relative;
+  height: 100%;
+  max-width: 100%;
+}
+
+.rbc-btn-group button {
+  max-width: 20vh;
+  width: auto;
+  height: auto;
+}
+
+.rbc-time-view {
+  max-height: inherit;
 }
 
 .rbc-allday-cell {
@@ -10,17 +121,43 @@
   border-bottom: none;
 }
 
-.event-info-form {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
+/* custom scrollbar styles */
+
+/* width */
+::-webkit-scrollbar {
+  background: none;
+  width: 8px;
 }
 
-.left-side {
-  width: 50%;
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--periwinkle);
+  border-radius: 12px;
 }
 
-.unique-url {
-  word-break: break-all;
+::-webkit-scrollbar-track {
+  background-color: none;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+/* Track ::-webkit-scrollbar-track */
+
+@media only screen and (max-width: 640px) {
+  .rbc-toolbar {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media only screen and (max-width: 430px) {
+  .rbc-btn-group {
+    width: auto;
+    margin-right: auto;
+  }
+
+  .rbc-btn-group button {
+    max-width: 10vh;
+    font-size: 0.6rem;
+  }
 }

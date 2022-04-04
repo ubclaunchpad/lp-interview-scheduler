@@ -5,12 +5,14 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1-minute window 
+  windowMs: 60 * 1000, // 1-minute window
   max: 30, // max 30 requests per minute
   message: `Exceeded API rate limit, please check your code and try again later.`,
   onLimitReached: (req, res, options) => {
-    console.log(`ERROR: Rate limit exceeded for request path ${req.originalUrl}`);
-  }
+    console.log(
+      `ERROR: Rate limit exceeded for request path ${req.originalUrl}`
+    );
+  },
 });
 dotenv.config();
 export const app = express();

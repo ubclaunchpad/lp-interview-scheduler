@@ -96,12 +96,15 @@ export async function getInterviewerAvailabilities(
   organization: string,
   interviewerUID: string
 ): Promise<Availability[]> {
-  const allAvailabilites =  await Promise.all(await dataAccess.getAllAvailabilities(
-    organization,
-    interviewerUID
-  )).then((avails) => avails as Availability[]);
+  const allAvailabilites = await Promise.all(
+    await dataAccess.getAllAvailabilities(organization, interviewerUID)
+  ).then((avails) => avails as Availability[]);
 
-  return (await dataAccess.deleteExpiredAvailabilities(organization, interviewerUID, allAvailabilites)) as Availability[];
+  return (await dataAccess.deleteExpiredAvailabilities(
+    organization,
+    interviewerUID,
+    allAvailabilites
+  )) as Availability[];
 }
 
 export async function getInterviewerCalendarAvailabilities(

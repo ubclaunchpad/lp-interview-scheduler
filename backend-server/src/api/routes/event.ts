@@ -6,7 +6,7 @@ import {
   GetEventBody,
   bookEvent,
   BookEventBody,
-  getBookingCount
+  getBookingCount,
 } from "../controllers/eventController";
 
 export const eventRouter = express.Router();

@@ -1,74 +1,70 @@
 .day {
-    aspect-ratio: 1;
-    padding: 5px;
-    display: grid;
-    justify-content: center;
-    align-content: center;
-    border-radius: 50%;
-    margin: 25px;
+  aspect-ratio: 1;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 50%;
+  margin: 25px;
+  min-width: 50px;
 }
 
 .day:hover {
-    cursor: pointer;
-    background-color: #eaecf7;
-    color: black;
+  cursor: pointer;
+  background-color: #eaecf7;
+  color: black;
 }
 
 p {
-    margin: 0;
+  margin: 0;
 }
 
 .disabled {
-    background-color: white;
-    color: #9b9b9b;
+  background-color: white;
+  color: #9b9b9b;
 }
 
 .disabled .colorBar {
-    background-color: #e0e0e0;
+  background-color: #e0e0e0;
 }
 
 .disabled:hover {
-    background-color: white;
-    color: #9b9b9b;
-    cursor: not-allowed;
-}    
+  background-color: white;
+  color: #9b9b9b;
+  cursor: not-allowed;
+}
 
 .highlighted .colorBar {
-    background-color: #1d2da5;
+  background-color: #1d2da5;
 }
 
 .selected {
-    background-color: #9ddadd;
-    color: white;
+  background-color: #9ddadd;
+  color: white;
 }
 
 .selected:hover {
-    background-color: #97c6c9;
-    color: white;
+  background-color: #97c6c9;
+  color: white;
 }
 
 .colorBar {
-    width: 20px;
-    height: 6px;
-    border-radius: 3px;
-    margin-top: 5px;
-    background-color: #e0e0e0;
+  width: 12px;
+  height: 6px;
+  border-radius: 3px;
+  margin-top: 5px;
+  background-color: #e0e0e0;
 }
 
-@media screen and (max-width: 1200px) {
-    .day {
-        padding: 5px;
-        margin: 15px;
-    }
-}
+@media screen and (max-width: 1000px) {
+  .day {
+    padding: 0px;
+    margin: 5px;
+    min-width: unset;
+  }
 
-@media screen and (max-width: 760px) {
-    .day {
-        padding: 0;
-        margin: 5px;
-    }
-
-    .colorBar {
-        margin-top: 0;
-    }
+  .colorBar {
+    margin-top: 0;
+  }
 }

@@ -5,6 +5,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, formatISO, startOfWeek } from "date-fns";
+import { useSetBackgroundImage } from "../hooks/useSetBackground";
 
 interface Props {
   localizer: DateLocalizer;
@@ -32,6 +33,8 @@ export default function InterviewerCalendar({ localizer }: Props) {
   const { user } = useAuth();
   const interviewerUID = user?.uid;
   const organization = "launchpad";
+
+  useSetBackgroundImage("url('/page-1.svg'");
 
   const handleSelect = (event: CalendarEvent): any => {
     // option to delete when event timeslot is clicked / selected
@@ -186,27 +189,28 @@ export default function InterviewerCalendar({ localizer }: Props) {
         <div>Error occured.</div>
       ) : (
         <>
-          <Calendar
-            selectable
-            localizer={localizer}
-            events={events}
-            defaultView="week"
-            defaultDate={moment().toDate()}
-            onSelectEvent={(event) => handleSelect(event)}
-            onSelectSlot={(slotInfo) => handleCreate(slotInfo)}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ height: 700 }}
-            min={startOfWeek(new Date())}
-            max={endOfWeek(new Date())}
-            eventPropGetter={eventPropGetterHandler}
-            // uncomment this for custom rendering of events
-            // components={{
-            //   event: existingEvents,
-            // }}
-          />
+          <div className="lead-calendar">
+            <Calendar
+              selectable
+              localizer={localizer}
+              events={events}
+              defaultView="week"
+              defaultDate={moment().toDate()}
+              onSelectEvent={(event) => handleSelect(event)}
+              onSelectSlot={(slotInfo) => handleCreate(slotInfo)}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: 500, width: "100%" }}
+              min={startOfWeek(new Date())}
+              max={endOfWeek(new Date())}
+              eventPropGetter={eventPropGetterHandler}
+            />
+          </div>
           <div>
-            <button onClick={(e) => handleClick(e, events)}>
+            <button
+              className="cta-button"
+              onClick={(e) => handleClick(e, events)}
+            >
               Save Changes
             </button>
           </div>
