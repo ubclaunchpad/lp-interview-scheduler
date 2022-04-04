@@ -1,7 +1,10 @@
 import { useLocation } from "react-router-dom";
+import LaunchpadLogo from "../logo.svg";
 import React, { useState } from "react";
 import InterviewTimePicker from "./booking/InterviewTimePicker";
 import moment, { Moment } from "moment";
+import styles from "./styles/BookingPage.module.css";
+import { useSetBackgroundImage } from "../hooks/useSetBackground";
 
 interface APIAvailability {
   durationMins: number;
@@ -18,6 +21,7 @@ export default function PageThree() {
     [] as APIAvailability[]
   );
   const [leadUIDs, setLeadUIDs] = useState([] as string[]);
+  const [leadNames, setLeadNames] = useState([] as string[]);
   const [confirmedTime, setConfirmedTime] = useState("");
 
   const { search } = useLocation();
@@ -25,6 +29,8 @@ export default function PageThree() {
 
   const organization = params.get("organization");
   const eventUID = params.get("eventUID");
+
+  useSetBackgroundImage("url('/page-3.svg'");
 
   // Call get request with event ID and return event body
   const handleGetEvent = React.useCallback(async () => {
@@ -50,12 +56,19 @@ export default function PageThree() {
           return interviewer.leadUID;
         });
 
+        const leadNames: string[] = eventBody.leads.map(
+          (interviewer: any) => interviewer.leadName
+        );
+
         setLeadUIDs(leads);
+        setLeadNames(leadNames);
         setConfirmedTime(eventBody["confirmedTime"]);
-        
-        let queryString = linkPrefix + `availabilities/mergeMultiple/?organization=${organization}`;
+
+        let queryString =
+          linkPrefix +
+          `availabilities/mergeMultiple/?organization=${organization}`;
         leads.forEach((interviewerUID) => {
-          queryString += `&interviewerUID=${interviewerUID}`
+          queryString += `&interviewerUID=${interviewerUID}`;
         });
 
         const response = await fetch(queryString);
@@ -113,15 +126,32 @@ export default function PageThree() {
         <p>
           Your interview is booked for {moment(confirmedTime).format("LLLL")}
         </p>
+        <p>You can close now this tab</p>
       </div>
     );
   } else {
     return (
-      <div>
-        <InterviewTimePicker
-          availabilities={apiAvailsToMoments(mergedAvailabilities)}
-          onBook={bookSlot}
-        ></InterviewTimePicker>
+      <div className={styles.bookingPageWithNav}>
+        <div className={styles.userNav}>
+          <img
+            className={styles.logo}
+            src={LaunchpadLogo}
+            alt="Launchpad Logo"
+          />
+          Launchpad Interview Scheduler
+        </div>
+        <div className={styles.bookingPage}>
+          <div className={styles.textContainer}>
+            <div className={styles.interviewerNames}>
+              Your Interviewer/s : {leadNames.join(", ")}
+            </div>
+            <div className={styles.bookSlot}>Book your interview slot!</div>
+          </div>
+          <InterviewTimePicker
+            availabilities={apiAvailsToMoments(mergedAvailabilities)}
+            onBook={bookSlot}
+          />
+        </div>
       </div>
     );
   }

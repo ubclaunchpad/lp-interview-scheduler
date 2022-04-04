@@ -4,7 +4,7 @@ import moment from "moment";
 import styles from "./styles/CreateLinkPage.module.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
-import { endOfWeek, format, startOfWeek } from "date-fns";
+import { endOfWeek, format, formatISO, startOfWeek } from "date-fns";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
 
 const localizer = momentLocalizer(moment);
@@ -56,7 +56,6 @@ export default function CreateLinkPage() {
     [] as CalendarEvent[]
   );
 
-  const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
 
   useSetBackgroundImage("url('/page-2.svg'");
@@ -181,6 +180,12 @@ export default function CreateLinkPage() {
     eventData.partnerUID,
   ]);
 
+  React.useEffect(() => {
+    if (endDate) {
+      setEventData({ ...eventData, expires: formatISO(endDate) });
+    }
+  }, [endDate, eventData]);
+
   return (
     <div className="body">
       <div className={styles.createLinkPage}>
@@ -219,28 +224,13 @@ export default function CreateLinkPage() {
             </div>
             <div className={styles.validFromContainer}>
               <div>
-                Valid from
+                Valid until
                 <div className={styles.timeDuration}>
-                  {`${getFormattedDate(startDate)} to ${getFormattedDate(
-                    endDate
-                  )}`}
+                  {getFormattedDate(endDate)}
                 </div>
                 <div className={styles.selectDateSection}>
                   <label className={styles.selectDateLabelGroup}>
-                    start date:
-                    <input
-                      className={styles.selectDateInput}
-                      type="date"
-                      onChange={(newDate) => {
-                        if (newDate.target.value) {
-                          console.log(newDate.target.value);
-                          setStartDate(new Date(newDate.target.value));
-                        }
-                      }}
-                    />
-                  </label>
-                  <label className={styles.selectDateLabelGroup}>
-                    end date:
+                    expiry date:
                     <input
                       className={styles.selectDateInput}
                       type="date"
@@ -452,7 +442,7 @@ async function addEvent(
     return Promise.reject(err);
   }
 }
-//
+
 function mergedAPIString(organization: string, leads: string[]): string {
   // return `http://localhost:8080/v1/availabilities/mergedTimes?organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}&inCalendarAvailability=true`;
   let queryString =
@@ -463,6 +453,7 @@ function mergedAPIString(organization: string, leads: string[]): string {
   queryString += "&inCalendarAvailability=true";
   return queryString;
 }
+
 async function getMergedAvailabilities(
   organization: string,
   leadUID1: string,

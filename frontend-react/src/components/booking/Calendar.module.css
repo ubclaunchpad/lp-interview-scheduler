@@ -3,7 +3,10 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 60%;
+    background-color: #eaecf7;
+    border-radius: 30px;
+    padding: 12px;
+    color: var(--purpleBlack);
 }
 
 .calendarHead {
@@ -33,6 +36,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     font-weight: bold;
+    font-size: 16px;
     width: 100%;
 }
 
@@ -53,8 +57,12 @@
     -webkit-transform: rotate(135deg);
 }
 
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 1000px) {
     .calendar {
-        width: 100%;
+        margin-bottom: 40px;
+    }
+
+    .calendarHead p {
+        font-size: 20px;
     }
 }

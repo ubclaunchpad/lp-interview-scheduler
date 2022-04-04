@@ -154,7 +154,6 @@
 }
 
 .validFromContainer {
-  /* height: 200px; */
   display: flex;
   margin-top: 12px;
   justify-content: flex-end;
@@ -165,7 +164,7 @@
 }
 
 .timeDuration {
-  font-size: 24px;
+  font-size: 16px;
 }
 
 .selectDateSection {
