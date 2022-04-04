@@ -22,6 +22,15 @@ export async function addEvent(body: AddEventBody) {
     eventUID: eventUID,
   };
 
+  const allEvents = await dataAccess.listEvents(body.organization);
+  const duplicateHash = allEvents.find(event => event.eventUID === eventUID);
+
+  if (duplicateHash) {
+    throw new Error(
+      `Duplicate event`
+    );
+  }
+
   await dataAccess.setEvent(event, body.organization);
 
   return event;

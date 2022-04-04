@@ -25,7 +25,11 @@ eventRouter.post("/", async (req, res) => {
     const ret = await addEvent(body);
     res.json(ret);
   } catch (err) {
-    res.status(500).send(`error processing request: ${err}`);
+    if (err.message === "Duplicate event") {
+      res.status(400).send(`error processing request: ${err}`);
+    } else {
+      res.status(500).send(`error processing request: ${err}`);
+    }
   }
 });
 
