@@ -22,16 +22,16 @@ function App() {
       <BrowserRouter>
           
         <Switch>
-          <Route exact path="/" render={(props) => 
+          <Route exact path="/" render={() => 
             <>
               <Navbar isLoading={isLoading}/>
               <LandingPage/>
             </>
           }/>
-          <Route path="/app" render={(props) => 
+          <Route path="/app" render={() => 
             <>
               <Navbar isLoading={isLoading}/>
-              <AdminApp {...props} isLoading={isLoading} onLoadingStart={onLoadingStart} onLoadingEnd={onLoadingEnd} />
+              <AdminApp isLoading={isLoading} onLoadingStart={onLoadingStart} onLoadingEnd={onLoadingEnd} />
             </>
           }/>
           <Route path="/test" component={BookingPage} />
