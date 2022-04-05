@@ -4,8 +4,8 @@ import "../App.css";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
 import styles from "./styles/LandingPage.module.css";
 import FacebookIcon from "../images/facebook.svg";
-import YoutubeIcon from "../images/instagram.svg";
-import InstagramIcon from "../images/youtube.svg";
+import YoutubeIcon from "../images/youtube.svg";
+import InstagramIcon from "../images/instagram.svg";
 
 export default function LandingPage() {
   const [contactInfo, setContactInfo] = React.useState({
