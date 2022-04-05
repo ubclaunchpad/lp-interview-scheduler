@@ -1,29 +1,31 @@
 .slotPickerContainer {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    padding: 5%;
-    margin: 0 10% 0 10%;
+    justify-content: center;
 }
 
 .timePicker {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: stretch;
-    min-width: 200px;
-    height: 100%;
+    align-items: center;
+    width: 200px;
+    max-height: 500px;
     background-color: #eaecf7;
+    color: var(--purpleBlack);
     padding: 16px;
     border-radius: 32px;
+    margin-left: 100px;
 }
 
     .timePicker button {
         background-color: #1d2da5;
         color: white;
         font-weight: bold;
+        font-size: 14px;
         border-radius: 32px;
-        padding: 16px;
+        width: 150px;
+        height: 50px;
         max-width: none;
         border: 3px solid #1d2da5;
     }
@@ -40,9 +42,13 @@
     margin: 0;
     flex-grow: 10;
     overflow: hidden scroll;
-    height: 423px;
+    width: 100%;
+    min-height: 200px;
     margin-top: 10px;
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
     .timeList::-webkit-scrollbar {
@@ -110,19 +116,13 @@
     border: 3px solid #d5d8e8;
 }
 
-@media screen and (max-width: 1200px) {
-    .slotPickerContainer {
-        margin: 0;
-    }
-}
-
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 1000px) {
     .slotPickerContainer {
         flex-direction: column;
-        justify-content: flex-start;
     }
 
-    .timeList {
-        height: 30vh;
+    .timePicker {
+        margin: 0px;
+        width: 100%;
     }
 }

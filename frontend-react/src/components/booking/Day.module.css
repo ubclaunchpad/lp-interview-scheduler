@@ -1,11 +1,13 @@
 .day {
     aspect-ratio: 1;
     padding: 5px;
-    display: grid;
+    display: flex;
     justify-content: center;
-    align-content: center;
+    flex-direction: column;
+    align-items: center;
     border-radius: 50%;
     margin: 25px;
+    min-width: 50px;
 }
 
 .day:hover {
@@ -48,24 +50,18 @@ p {
 }
 
 .colorBar {
-    width: 20px;
+    width: 12px;
     height: 6px;
     border-radius: 3px;
     margin-top: 5px;
     background-color: #e0e0e0;
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1000px) {
     .day {
-        padding: 5px;
-        margin: 15px;
-    }
-}
-
-@media screen and (max-width: 760px) {
-    .day {
-        padding: 0;
+        padding: 0px;
         margin: 5px;
+        min-width: unset;
     }
 
     .colorBar {
