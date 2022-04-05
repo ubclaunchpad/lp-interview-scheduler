@@ -312,7 +312,8 @@ class DataAccess {
           };
         }
 
-        async function setAvailabilityT(t: Transaction, avail) {
+        async function setAvailabilityT(t: Transaction, avail, email) {
+          avail["data"]["bookedByEmail"] = email;
           avail["data"]["isBooked"] = true;
           await t.update(avail["ref"], avail["data"]);
         }
@@ -337,6 +338,7 @@ class DataAccess {
           }
         }
 
+
         const availabilitiesToBook = [];
         for (var id of leadUIDs) {
           for (var time of timesToBook) {
@@ -346,15 +348,16 @@ class DataAccess {
         }
 
         // Book Everything
-        const bookedEvent = await bookEvent(
+        const bookedEvent: any = await bookEvent(
           t,
           organization,
           eventUID,
           startTime,
           this
         );
+
         for (var avail of availabilitiesToBook) {
-          await setAvailabilityT(t, avail);
+          await setAvailabilityT(t, avail, bookedEvent.intervieweeEmail);
         }
         return bookedEvent;
       });
