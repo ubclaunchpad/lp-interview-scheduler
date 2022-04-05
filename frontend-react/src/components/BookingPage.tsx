@@ -140,17 +140,17 @@ export default function PageThree() {
 
       if (res.status == 200) {
         setConfirmedTime(slots[0].toString());
-
+        const startTime = moment(slots[0]).startOf("minutes").toISOString();
+        const endTime = moment(slots[0]).startOf('minutes').add(eventDuration,'minutes').toISOString();
         console.log("start and end times:\n");
-        console.log({startTime: slots[0].startOf("minutes").toISOString(),
-        endTime: slots[0].endOf("minutes").toISOString()});
+        console.log({startTime: startTime, endTime: endTime});
         fetch(linkPrefix + "googleCalendar", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             organization: organization,
-            startTime: slots[0].startOf("minutes").toISOString(),
-            endTime: slots[0].endOf("minutes").toISOString(),
+            startTime: startTime,
+            endTime: endTime,
             intervieweeEmail: intervieweeEmail,
             interviewerUUIDs: leadUIDs,
           }),
@@ -163,6 +163,14 @@ export default function PageThree() {
           } else {
             window.alert("Error sending interview confirmation:" + gcalresponse.status);
           }
+  
+          window.alert(
+            "You have successfully booked an interview for " +
+              slots[0].format("LLLL")
+          );
+
+          console.log(slots[0]);
+          console.log(slots[0])
         })
       } else {
         window.alert("Error booking interview: " + res.status);
