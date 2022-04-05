@@ -1,4 +1,8 @@
-import { Availability, CalendarAvailability, OrganizationFields } from "../data/models";
+import {
+  Availability,
+  CalendarAvailability,
+  OrganizationFields,
+} from "../data/models";
 import { dataAccess } from "../data/dataAccess";
 
 // find overlapping availabilities of interviewer pair
@@ -27,7 +31,7 @@ export async function findAllOverlapping(
 ): Promise<Availability[]> {
   const output: Availability[] = [];
   if (availabilities.length == 1) {
-    return availabilities[0];
+    return availabilities[0].filter((availability) => !availability.isBooked);
   } 
 
   const hoursBuffer: number = await getHoursBuffer(organization);
@@ -36,12 +40,12 @@ export async function findAllOverlapping(
     let i = 1;
     let commonTime = timeSlot;
 
-    const today: Date = new Date()
+    const today: Date = new Date();
     const datestr: Date = new Date(timeSlot.startTime);
     let diff: number = datestr.getTime() - today.getTime();
-    diff = Math.ceil(diff/ ( 1000 * 3600)); 
-    
-    // verify timeslot has not been booked and is not within hoursBuffer 
+    diff = Math.ceil(diff / (1000 * 3600));
+
+    // verify timeslot has not been booked and is not within hoursBuffer
     if (!timeSlot.isBooked && diff > hoursBuffer) {
       while (i < availabilities.length) {
         commonTime = availabilities[i].find(
@@ -53,14 +57,14 @@ export async function findAllOverlapping(
           commonTime = null;
           break;
         } else {
-          i++       
+          i++;
         }
-      } 
+      }
       if (commonTime) {
         output.push(commonTime);
       }
     }
-  })
+  });
 
   return output;
 }
@@ -127,8 +131,10 @@ function findOverlappingGeneric(
   return output;
 }
 async function getHoursBuffer(organization: string): Promise<number> {
-  const OrganazationFields: OrganizationFields = await dataAccess.getOrganizationFields(organization) as OrganizationFields;
-  
+  const OrganazationFields: OrganizationFields =
+    (await dataAccess.getOrganizationFields(
+      organization
+    )) as OrganizationFields;
+
   return Promise.resolve(OrganazationFields.hoursBuffer);
 }
-

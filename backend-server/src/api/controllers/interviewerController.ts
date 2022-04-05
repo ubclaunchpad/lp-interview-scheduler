@@ -32,15 +32,17 @@ export async function getInterviewer(
 export async function getAllInterviewers(
   organization: string
 ): Promise<Interviewer[]> {
-  const interviewerDocs: any[] = await dataAccess.listInterviewers(organization);
+  const interviewerDocs: any[] = await dataAccess.listInterviewers(
+    organization
+  );
   const interviewers: Interviewer[] = [];
-  interviewerDocs.forEach(val => {
+  interviewerDocs.forEach((val) => {
     interviewers.push({
       interviewerUID: val.interviewerUID,
       name: val.name,
       email: val.email,
-      organization: val.organization
-    })
-  })
+      organization: val.organization,
+    });
+  });
   return Promise.resolve(interviewers);
 }

@@ -2,12 +2,16 @@ html,
 #root {
   height: 100%;
   width: 100%;
+  overflow-x: hidden;
 
   --purpleBlack: rgb(9, 5, 44);
   --lightPeriwinkle: rgb(179, 193, 250);
   --periwinkle: rgb(133, 155, 248);
   --violet: rgb(77, 51, 210);
   --lightViolet: rgb(135, 120, 213);
+  --redTextColor: rgb(237, 110, 126);
+  --greenTextColor: rgb(88, 193, 144);
+
   --ctaButtonColor: var(--violet);
   --ctaButtonColorHover: var(--lightViolet);
 }
@@ -72,6 +76,10 @@ button {
   font-size: inherit;
 }
 
+button:hover {
+  background-color: var(--violet);
+}
+
 .cta-button {
   background-color: var(--ctaButtonColor);
   border-radius: 10px;
@@ -84,12 +92,6 @@ button {
 .cta-button:focus {
   background-color: var(--ctaButtonColorHover);
   border: 2px solid var(--ctaButtonColorHover);
-}
-
-.landing-buttons {
-  padding-top: 2.5rem;
-  display: flex;
-  justify-content: space-evenly;
 }
 
 /* react-big-calendar component custom styling */

@@ -176,34 +176,43 @@ class DataAccess {
         this.availabilityCollectionName
       )
     );
-    
+
     return docCollection.docs.map((doc) => doc.data());
   }
   // filter docCOllection for availabilities that are older than NDAYSBEFORE then delete them
-  async deleteExpiredAvailabilities(organization: string, interviewerUID: string, availabilities: Availability[]): Promise<DocumentData[]> {
-    
+  async deleteExpiredAvailabilities(
+    organization: string,
+    interviewerUID: string,
+    availabilities: Availability[]
+  ): Promise<DocumentData[]> {
     const today: Date = new Date();
-    const availabilityExpiryDays = await this.getOrganizationExpiry(organization);
+    const availabilityExpiryDays = await this.getOrganizationExpiry(
+      organization
+    );
 
-    await Promise.all(availabilities.filter((avail) => {
-      const datestr: Date = new Date(avail.startTime);
-      let diff: number = today.getTime() - datestr.getTime();
-      diff = Math.ceil(diff/ ( 1000 * 3600 * 24));
-      return (diff > availabilityExpiryDays);
-    }).map((availDoc) => {
-      this.availabilityDocRef(
-        organization,
-        interviewerUID,
-        availDoc.startTime
-      ).then((availabilityRef) => {
-        return deleteDoc(availabilityRef);
-      });
-    }))
+    await Promise.all(
+      availabilities
+        .filter((avail) => {
+          const datestr: Date = new Date(avail.startTime);
+          let diff: number = today.getTime() - datestr.getTime();
+          diff = Math.ceil(diff / (1000 * 3600 * 24));
+          return diff > availabilityExpiryDays;
+        })
+        .map((availDoc) => {
+          this.availabilityDocRef(
+            organization,
+            interviewerUID,
+            availDoc.startTime
+          ).then((availabilityRef) => {
+            return deleteDoc(availabilityRef);
+          });
+        })
+    );
 
     return availabilities.filter((avail) => {
       const datestr: Date = new Date(avail.startTime);
       let diff: number = today.getTime() - datestr.getTime();
-      diff = Math.ceil(diff/ ( 1000 * 3600 * 24));
+      diff = Math.ceil(diff / (1000 * 3600 * 24));
       return !(diff > availabilityExpiryDays);
     });
   }
@@ -303,7 +312,8 @@ class DataAccess {
           };
         }
 
-        async function setAvailabilityT(t: Transaction, avail) {
+        async function setAvailabilityT(t: Transaction, avail, email) {
+          avail["data"]["bookedByEmail"] = email;
           avail["data"]["isBooked"] = true;
           await t.update(avail["ref"], avail["data"]);
         }
@@ -328,6 +338,7 @@ class DataAccess {
           }
         }
 
+
         const availabilitiesToBook = [];
         for (var id of leadUIDs) {
           for (var time of timesToBook) {
@@ -337,15 +348,16 @@ class DataAccess {
         }
 
         // Book Everything
-        const bookedEvent = await bookEvent(
+        const bookedEvent: any = await bookEvent(
           t,
           organization,
           eventUID,
           startTime,
           this
         );
+
         for (var avail of availabilitiesToBook) {
-          await setAvailabilityT(t, avail);
+          await setAvailabilityT(t, avail, bookedEvent.intervieweeEmail);
         }
         return bookedEvent;
       });
@@ -355,7 +367,9 @@ class DataAccess {
     }
   }
 
-  async getOrganizationFields(organization: string) : Promise<OrganizationFields> {
+  async getOrganizationFields(
+    organization: string
+  ): Promise<OrganizationFields> {
     const organizationRef = await doc(this.rootCollection, organization);
     const organizationDoc = await getDoc(organizationRef);
     return organizationDoc.data() as OrganizationFields;

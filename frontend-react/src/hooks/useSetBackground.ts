@@ -5,6 +5,8 @@ export function useSetBackgroundImage(image: string) {
   React.useLayoutEffect(() => {
     // set the background image of the entire page upon render
     document.body.style.backgroundImage = image;
+    document.body.style.backgroundSize = "100%";
+    document.body.style.backgroundRepeat = "no-repeat";
 
     // remove the background image when the component unmounts
     return () => {

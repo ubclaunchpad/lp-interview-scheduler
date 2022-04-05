@@ -4,7 +4,7 @@ import moment from "moment";
 import styles from "./styles/CreateLinkPage.module.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
-import { endOfWeek, format, startOfWeek } from "date-fns";
+import { endOfWeek, format, formatISO, startOfWeek } from "date-fns";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
 import ModalContainer from "./modal/ModalContainer";
 
@@ -63,7 +63,6 @@ export default function CreateLinkPage() {
     [] as CalendarEvent[]
   );
 
-  const [startDate, setStartDate] = React.useState<Date>();
   const [endDate, setEndDate] = React.useState<Date>();
 
   useSetBackgroundImage("url('/page-2.svg'");
@@ -208,6 +207,13 @@ export default function CreateLinkPage() {
     eventData.partnerUID,
   ]);
 
+  React.useEffect(() => {
+    if (endDate) {
+      setEventData({ ...eventData, expires: formatISO(endDate) });
+    }
+    // }, [endDate, eventData]); this one potentially fires reads endlessly if you choose an expiry date first
+  }, [endDate]);
+
   return (
     <div className="body">
       <div className={styles.createLinkPage}>
@@ -246,28 +252,13 @@ export default function CreateLinkPage() {
             </div>
             <div className={styles.validFromContainer}>
               <div>
-                Valid from
+                Valid until
                 <div className={styles.timeDuration}>
-                  {`${getFormattedDate(startDate)} to ${getFormattedDate(
-                    endDate
-                  )}`}
+                  {getFormattedDate(endDate)}
                 </div>
                 <div className={styles.selectDateSection}>
                   <label className={styles.selectDateLabelGroup}>
-                    start date:
-                    <input
-                      className={styles.selectDateInput}
-                      type="date"
-                      onChange={(newDate) => {
-                        if (newDate.target.value) {
-                          console.log(newDate.target.value);
-                          setStartDate(new Date(newDate.target.value));
-                        }
-                      }}
-                    />
-                  </label>
-                  <label className={styles.selectDateLabelGroup}>
-                    end date:
+                    expiry date:
                     <input
                       className={styles.selectDateInput}
                       type="date"
@@ -474,6 +465,9 @@ async function addEvent(
     });
     if (!eventRes.ok) {
       console.log(eventRes);
+      if (eventRes.status === 400) {
+        alert("Event has already been created");
+      }
       throw new Error(
         `error adding event ${JSON.stringify(addEventBody, null, "\t")}`
       );
