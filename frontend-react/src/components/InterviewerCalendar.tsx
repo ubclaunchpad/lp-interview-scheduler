@@ -4,7 +4,7 @@ import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../App.css";
 import { useAuth } from "../contexts/AuthContext";
-import { endOfWeek, formatISO, startOfWeek } from "date-fns";
+import { areIntervalsOverlapping, endOfWeek, formatISO, startOfWeek } from "date-fns";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
 import ConfirmationMessage from "./ConfirmationMessage";
 import LoadingIndicator from "./loadingIndicator/LoadingIndicator";
@@ -91,7 +91,20 @@ export default function InterviewerCalendar(props: Props) {
       end: new Date(end),
       resource: { isBooked: false, bookedByEmail: "" },
     };
-
+    
+    if (
+      events.find((event) => {
+        return areIntervalsOverlapping(
+          { start: event.start, end: event.end },
+          { start: newEvent.start, end: newEvent.end }
+        );
+      })
+    ) {
+      alert(
+        "Unable to create this availability because it overlaps with an existing one."
+      );
+      return;
+    }
     setEvents([...events, newEvent]);
 
     // create new EventAPI and add to eventsAPI state
@@ -125,7 +138,6 @@ export default function InterviewerCalendar(props: Props) {
     };
 
     console.log(submitCalendarEvents);
-
     try {
       props.onLoadingStart();
       const response = await fetch(
@@ -239,7 +251,6 @@ export default function InterviewerCalendar(props: Props) {
             {props.isLoading ? 
               <LoadingIndicator/> : 
               <button
-              disabled={props.isLoading}
               className="cta-button"
               onClick={(e) => handleClick(e, events)}
             >
