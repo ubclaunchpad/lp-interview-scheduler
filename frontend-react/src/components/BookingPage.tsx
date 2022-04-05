@@ -122,7 +122,7 @@ export default function PageThree() {
 
   if (confirmedTime != null && confirmedTime.length > 0) {
     return (
-      <div>
+      <div className={styles.bookingConfirm}>
         <p>
           Your interview is booked for {moment(confirmedTime).format("LLLL")}
         </p>
