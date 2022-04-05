@@ -20,10 +20,20 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-      <Navbar isLoading={isLoading}/>
+          
         <Switch>
-          <Route exact path="/" component={LandingPage} />
-          <Route path="/app" render={(props) => <AdminApp {...props} isLoading={isLoading} onLoadingStart={onLoadingStart} onLoadingEnd={onLoadingEnd} />}/>
+          <Route exact path="/" render={(props) => 
+            <>
+              <Navbar isLoading={isLoading}/>
+              <LandingPage/>
+            </>
+          }/>
+          <Route path="/app" render={(props) => 
+            <>
+              <Navbar isLoading={isLoading}/>
+              <AdminApp {...props} isLoading={isLoading} onLoadingStart={onLoadingStart} onLoadingEnd={onLoadingEnd} />
+            </>
+          }/>
           <Route path="/test" component={BookingPage} />
         </Switch>
       </BrowserRouter>
