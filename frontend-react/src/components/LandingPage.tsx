@@ -41,7 +41,7 @@ export default function LandingPage() {
 
   return (
     <>
-      <Navbar />
+      {/* <Nav/bar /> */}
       <div className="body">
         <div className={styles.landingBody}>
           <section className={styles.hero}>

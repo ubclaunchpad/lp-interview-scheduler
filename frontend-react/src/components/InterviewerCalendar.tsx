@@ -7,9 +7,14 @@ import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, formatISO, startOfWeek } from "date-fns";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
 import ConfirmationMessage from "./ConfirmationMessage";
+import LoadingIndicator from "./loadingIndicator/LoadingIndicator";
+import { isPropertySignature } from "typescript";
 
 interface Props {
   localizer: DateLocalizer;
+  isLoading: boolean;
+  onLoadingStart: ()=>void;
+  onLoadingEnd: ()=>void;
 }
 
 interface CalendarEvent {
@@ -27,7 +32,7 @@ interface EventAPI {
   bookedByEmail: string;
 }
 
-export default function InterviewerCalendar({ localizer }: Props) {
+export default function InterviewerCalendar(props: Props) {
   const [events, setEvents] = React.useState([] as CalendarEvent[]);
   const [eventsAPI, setEventsAPI] = React.useState([] as EventAPI[]);
   const [error, setError] = React.useState(false);
@@ -43,6 +48,12 @@ export default function InterviewerCalendar({ localizer }: Props) {
 
   const handleSelect = (event: CalendarEvent): any => {
     // option to delete when event timeslot is clicked / selected
+    if (props.isLoading) {
+      window.alert(
+        "you cannot make adjustment while your schedule is being saved"
+        );
+        return;
+    }
     if (!event.resource.isBooked) {
       const shouldDelete = window.confirm(
         "Would you like to remove this event?"
@@ -115,31 +126,18 @@ export default function InterviewerCalendar({ localizer }: Props) {
 
     console.log(submitCalendarEvents);
 
-    const response = await fetch(
-      "http://localhost:8080/v1/availabilities/",
-      submitCalendarEvents
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      // alert(errorText);
-      setShowConfirmation("error");
-      confirmationMessage.current = errorText;
-      return;
-    }
-
     try {
-      const data = await response.json();
-      console.log("data");
-      console.log(data);
-    } catch (err) {
-      console.log(err);
-      console.log("response causing error");
-      console.log(response);
-    }
-
-    // alert(JSON.stringify(eventsAPI));
-    confirmationMessage.current =
+      props.onLoadingStart();
+      const response = await fetch(
+        "http://localhost:8080/v1/availabilities/",
+        submitCalendarEvents
+      );
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+      // alert("schedule changes successfully saved!");
+      // console.log(await response.text());
+      confirmationMessage.current =
       "Successfully saved availabilities between the following dates: " +
       formatISO(eventsToSave[0].start, { representation: "date" }) +
       " to " +
@@ -148,8 +146,16 @@ export default function InterviewerCalendar({ localizer }: Props) {
       });
     setShowConfirmation("success");
 
-    console.log(confirmationMessage.current);
-    console.log(showConfirmation);
+    // console.log(confirmationMessage.current);
+    // console.log(showConfirmation);
+    } catch(err){
+      setShowConfirmation("error");
+      confirmationMessage.current = String(err);
+      console.log(err);
+      // alert("an error occured while saving your schedule");
+    } finally {
+      props.onLoadingEnd();
+    }
   };
 
   // converts eventsAPI received from GET request to renderable CalendarEvents
@@ -214,8 +220,8 @@ export default function InterviewerCalendar({ localizer }: Props) {
           )}
           <div className="lead-calendar">
             <Calendar
-              selectable
-              localizer={localizer}
+              selectable={!props.isLoading}
+              localizer={props.localizer}
               events={events}
               defaultView="week"
               defaultDate={moment().toDate()}
@@ -230,15 +236,20 @@ export default function InterviewerCalendar({ localizer }: Props) {
             />
           </div>
           <div>
-            <button
+            {props.isLoading ? 
+              <LoadingIndicator/> : 
+              <button
+              disabled={props.isLoading}
               className="cta-button"
               onClick={(e) => handleClick(e, events)}
             >
-              Save Changes
-            </button>
+              Save changes
+            </button>}
           </div>
         </>
       )}
     </>
   );
 }
+
+

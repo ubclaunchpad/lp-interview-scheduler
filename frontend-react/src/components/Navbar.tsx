@@ -5,7 +5,11 @@ import LaunchpadLogo from "../images/logo.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { NavLink } from "react-router-dom";
 
-export default function Navbar() {
+interface Props {
+  isLoading: boolean;
+}
+
+export default function Navbar(props: Props) {
   const { logout, user } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [hamburgerOpen, setHamburgerOpen] = React.useState(false);
@@ -19,7 +23,7 @@ export default function Navbar() {
     setHamburgerOpen(!hamburgerOpen);
   };
 
-  return (
+  return props.isLoading ? (<></>) : (
     <div className={styles.topNavbar}>
       <div className="logo">
         <NavLink to="/" exact>
@@ -43,7 +47,7 @@ export default function Navbar() {
                 !isActive ? styles.navbarLinks : styles.navbarLinksActive
               }
             >
-              Schedule
+              Schedule 
             </NavLink>
           </div>
 
