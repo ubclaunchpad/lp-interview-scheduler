@@ -4,8 +4,13 @@ import { momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import InterviewerCalendar from "./InterviewerCalendar";
 import { useAuth } from "../contexts/AuthContext";
-
-export default function AuthenticatedApp() {
+import { PropertyName } from "typescript";
+interface Props {
+  isLoading: boolean,
+  onLoadingStart: ()=>void;
+  onLoadingEnd: ()=>void;
+}
+export default function AuthenticatedApp({isLoading, onLoadingStart, onLoadingEnd}: Props) {
   const { user } = useAuth();
 
   return (
@@ -16,7 +21,11 @@ export default function AuthenticatedApp() {
         )}
         <h2 className={styles.headingText}>My Availabilities</h2>
       </div>
-      <InterviewerCalendar localizer={momentLocalizer(moment)} />
+      <InterviewerCalendar 
+        localizer={momentLocalizer(moment)} 
+        isLoading={isLoading} 
+        onLoadingStart={onLoadingStart}
+        onLoadingEnd={onLoadingEnd}/>
     </div>
   );
 }

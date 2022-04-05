@@ -184,7 +184,8 @@ export default function CreateLinkPage() {
     if (endDate) {
       setEventData({ ...eventData, expires: formatISO(endDate) });
     }
-  }, [endDate, eventData]);
+    // }, [endDate, eventData]); this one potentially fires reads endlessly if you choose an expiry date first
+  }, [endDate]);
 
   return (
     <div className="body">

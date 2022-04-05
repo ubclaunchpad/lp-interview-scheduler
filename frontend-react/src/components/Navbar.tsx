@@ -1,11 +1,15 @@
 import React from "react";
 import "../App.css";
 import styles from "./styles/Navbar.module.css";
-import LaunchpadLogo from "../logo.svg";
+import LaunchpadLogo from "../images/logo.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { NavLink } from "react-router-dom";
 
-export default function Navbar() {
+interface Props {
+  isLoading: boolean;
+}
+
+export default function Navbar(props: Props) {
   const { logout, user } = useAuth();
   const [open, setOpen] = React.useState(false);
   const [hamburgerOpen, setHamburgerOpen] = React.useState(false);
@@ -19,15 +23,15 @@ export default function Navbar() {
     setHamburgerOpen(!hamburgerOpen);
   };
 
-  return (
+  return props.isLoading ? (<></>) : (
     <div className={styles.topNavbar}>
       <div className="logo">
         <NavLink to="/" exact>
           <img src={LaunchpadLogo} alt="Launchpad Logo" />
         </NavLink>
       </div>
-      <nav className={styles.navbarItems}>
-        {user && (
+      {user && (
+        <nav className={styles.navbarItems}>
           <div className={styles.navbarTabs}>
             <NavLink
               to="/app/authorized"
@@ -43,26 +47,27 @@ export default function Navbar() {
                 !isActive ? styles.navbarLinks : styles.navbarLinksActive
               }
             >
-              Schedule
+              Schedule 
             </NavLink>
           </div>
-        )}
-        <div>
-          <button
-            className={styles.accountButton}
-            onClick={() => setOpen(!open)}
-          >
-            Account
-          </button>
-          {open && (
-            <ul className={styles.dropdownContent}>
-              <li className={styles.dropdownItem} onClick={onLogoutClick}>
-                Logout
-              </li>
-            </ul>
-          )}
-        </div>
-      </nav>
+
+          <div>
+            <button
+              className={styles.accountButton}
+              onClick={() => setOpen(!open)}
+            >
+              Account
+            </button>
+            {open && (
+              <ul className={styles.dropdownContent}>
+                <li className={styles.dropdownItem} onClick={onLogoutClick}>
+                  Logout
+                </li>
+              </ul>
+            )}
+          </div>
+        </nav>
+      )}
       <div className={styles.hamburger} onClick={toggleHamburger}>
         <div className={styles.burger} />
         <div className={styles.burger} />
