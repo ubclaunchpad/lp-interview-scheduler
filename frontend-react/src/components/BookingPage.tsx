@@ -158,16 +158,11 @@ export default function PageThree() {
           if (gcalresponse.status == 200) {
             setConfirmedTime(slots[0].toString());
             window.alert(
-              "A confirmation has been sent for the interview for " + slots[0].format("LLLL")
+              "A confirmation has been sent for your interview at " + slots[0].format("LLLL")
             );
           } else {
             window.alert("Error sending interview confirmation:" + gcalresponse.status);
           }
-  
-          window.alert(
-            "You have successfully booked an interview for " +
-              slots[0].format("LLLL")
-          );
         })
       } else {
         window.alert("Error booking interview: " + res.status);
