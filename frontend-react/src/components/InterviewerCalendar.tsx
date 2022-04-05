@@ -8,7 +8,6 @@ import { areIntervalsOverlapping, endOfWeek, formatISO, startOfWeek } from "date
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
 import ConfirmationMessage from "./ConfirmationMessage";
 import LoadingIndicator from "./loadingIndicator/LoadingIndicator";
-import { isPropertySignature } from "typescript";
 
 interface Props {
   localizer: DateLocalizer;
@@ -91,7 +90,7 @@ export default function InterviewerCalendar(props: Props) {
       end: new Date(end),
       resource: { isBooked: false, bookedByEmail: "" },
     };
-    
+    // check if there is an overlapping calendar event already
     if (
       events.find((event) => {
         return areIntervalsOverlapping(
@@ -147,8 +146,6 @@ export default function InterviewerCalendar(props: Props) {
       if (!response.ok) {
         throw new Error(await response.text());
       }
-      // alert("schedule changes successfully saved!");
-      // console.log(await response.text());
       confirmationMessage.current =
       "Successfully saved availabilities between the following dates: " +
       formatISO(eventsToSave[0].start, { representation: "date" }) +
@@ -158,13 +155,10 @@ export default function InterviewerCalendar(props: Props) {
       });
     setShowConfirmation("success");
 
-    // console.log(confirmationMessage.current);
-    // console.log(showConfirmation);
     } catch(err){
       setShowConfirmation("error");
       confirmationMessage.current = String(err);
       console.log(err);
-      // alert("an error occured while saving your schedule");
     } finally {
       props.onLoadingEnd();
     }

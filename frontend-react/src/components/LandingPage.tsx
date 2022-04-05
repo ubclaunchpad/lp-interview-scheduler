@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import "../App.css";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
 import styles from "./styles/LandingPage.module.css";
-import Navbar from "./Navbar";
 import FacebookIcon from "../images/facebook.svg";
 import YoutubeIcon from "../images/instagram.svg";
 import InstagramIcon from "../images/youtube.svg";
@@ -41,7 +40,6 @@ export default function LandingPage() {
 
   return (
     <>
-      {/* <Nav/bar /> */}
       <div className="body">
         <div className={styles.landingBody}>
           <section className={styles.hero}>
