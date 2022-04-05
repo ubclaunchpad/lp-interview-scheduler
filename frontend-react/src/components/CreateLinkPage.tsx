@@ -26,6 +26,12 @@ interface AddEventBody {
   expires: string;
 }
 
+interface AddEmailBody {
+  recipientEmail: string;
+  message: string;
+  subject: string;
+}
+
 interface APICalendarEvent {
   interviewerUID: string | undefined;
   start: string;
@@ -78,16 +84,31 @@ export default function CreateLinkPage() {
         const path: string = `localhost:3000/test?eventUID=${eventResponse.eventUID}&organization=${eventData.organization}`;
         setBookingLink(path);
       } catch (err) {
-        console.log({ err });
+        console.log(JSON.stringify(err));
       }
     };
     event.preventDefault();
     submitEvent();
   };
 
-  const handleModalSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    alert("SUBMITTED");
+  const handleModalSubmit = (childModalData: {
+    subject: string;
+    message: string;
+  }) => {
+    const submitEmail = async () => {
+      try {
+        // submit modal form data
+        const emailResponse = await sendEmail(
+          eventData.intervieweeEmail,
+          childModalData.message,
+          childModalData.subject
+        );
+        console.log(emailResponse);
+      } catch (err) {
+        console.log(JSON.stringify(err));
+      }
+    };
+    submitEmail();
   };
 
   const handleChange = (
@@ -462,7 +483,37 @@ async function addEvent(
     return Promise.reject(err);
   }
 }
-//
+
+async function sendEmail(
+  recipientEmail: string,
+  message: string,
+  subject: string
+): Promise<any> {
+  const addEmailBody: AddEmailBody = {
+    recipientEmail: recipientEmail,
+    message: message,
+    subject: subject,
+  };
+  try {
+    const eventRes: Response = await fetch("http://localhost:8080/v1/email/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(addEmailBody),
+    });
+    if (!eventRes.ok) {
+      console.log(eventRes);
+      throw new Error(
+        `error adding event ${JSON.stringify(addEmailBody, null, "\t")}`
+      );
+    }
+    return Promise.resolve(await eventRes);
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
+
 function mergedAPIString(organization: string, leads: string[]): string {
   // return `http://localhost:8080/v1/availabilities/mergedTimes?organization=${organization}&interviewerUID1=${leadUID1}&interviewerUID2=${leadUID2}&inCalendarAvailability=true`;
   let queryString =
@@ -473,6 +524,7 @@ function mergedAPIString(organization: string, leads: string[]): string {
   queryString += "&inCalendarAvailability=true";
   return queryString;
 }
+
 async function getMergedAvailabilities(
   organization: string,
   leadUID1: string,
