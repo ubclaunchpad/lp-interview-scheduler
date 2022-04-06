@@ -26,7 +26,7 @@ interface AddEventBody {
   expires: string;
 }
 
-interface AddEmailBody {
+export interface AddEmailBody {
   recipientEmail: string;
   message: string;
   subject: string;
@@ -499,7 +499,7 @@ async function sendEmail(
     if (!eventRes.ok) {
       console.log(eventRes);
       throw new Error(
-        `error adding event ${JSON.stringify(addEmailBody, null, "\t")}`
+        `error sending email ${JSON.stringify(addEmailBody, null, "\t")}`
       );
     }
     return Promise.resolve(await eventRes);
