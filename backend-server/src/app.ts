@@ -14,6 +14,7 @@ const limiter = rateLimit({
     );
   },
 });
+
 dotenv.config();
 export const app = express();
 app.use(express.json());

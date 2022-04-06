@@ -1,4 +1,3 @@
-import { sl } from "date-fns/locale";
 import express from "express";
 import {
   addAvailability,

@@ -3,7 +3,7 @@ import {
   CalendarAvailability,
   OrganizationFields,
 } from "../data/models";
-import { dataAccess } from "../data/dataAccess";
+import * as Database from "../data/database";
 
 // find overlapping availabilities of interviewer pair
 export function findOverlapping(
@@ -32,7 +32,7 @@ export async function findAllOverlapping(
   const output: Availability[] = [];
   if (availabilities.length == 1) {
     return availabilities[0].filter((availability) => !availability.isBooked);
-  } 
+  }
 
   const hoursBuffer: number = await getHoursBuffer(organization);
 
@@ -131,10 +131,5 @@ function findOverlappingGeneric(
   return output;
 }
 async function getHoursBuffer(organization: string): Promise<number> {
-  const OrganazationFields: OrganizationFields =
-    (await dataAccess.getOrganizationFields(
-      organization
-    )) as OrganizationFields;
-
-  return Promise.resolve(OrganazationFields.hoursBuffer);
+  return (await Database.getOrganizationFields(organization)).hoursBuffer;
 }

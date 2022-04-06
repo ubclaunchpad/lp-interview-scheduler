@@ -5,7 +5,13 @@
   "main": "src/app.ts",
   "scripts": {
     "serve": "nodemon src/app.ts",
-    "pretty": "prettier --config ./.prettierrc --write ."
+    "pretty": "prettier --config ./.prettierrc --write .",
+    "build-db": "docker build . -t lp-interview-db-image",
+    "run-db": "docker run -d --name lp-interview-db-container -p 5432:5432 lp-interview-db-image",
+    "start-db": "docker start lp-interview-db-container",
+    "stop-db": "docker stop lp-interview-db-container",
+    "rm-db-image": "docker rmi lp-interview-db-image",
+    "rm-db-container": "docker rm lp-interview-db-container"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +31,8 @@
     "firebase": "^9.1.3",
     "firebase-admin": "^10.0.0",
     "js-sha3": "^0.8.0",
+    "knex": "^1.0.4",
+    "pg": "^8.7.3",
     "prettier": "^2.4.1"
   }
 }
