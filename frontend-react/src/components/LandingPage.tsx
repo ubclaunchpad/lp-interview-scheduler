@@ -6,6 +6,7 @@ import styles from "./styles/LandingPage.module.css";
 import FacebookIcon from "../images/facebook.svg";
 import YoutubeIcon from "../images/youtube.svg";
 import InstagramIcon from "../images/instagram.svg";
+import { AddEmailBody } from "./CreateLinkPage";
 
 export default function LandingPage() {
   const [contactInfo, setContactInfo] = React.useState({
@@ -28,15 +29,21 @@ export default function LandingPage() {
   };
 
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(contactInfo);
     event.preventDefault();
+    const submitEmail = async () => {
+      try {
+        const emailResponse = await sendEmail(
+          contactInfo.name,
+          contactInfo.email,
+          contactInfo.message
+        );
+        console.log(emailResponse);
+      } catch (err) {
+        console.log(JSON.stringify(err));
+      }
+    };
+    submitEmail();
   };
-
-  // const renderTeamInfo = () => {
-  //   const value = event.target.value;
-  //   let contactInfoData = { ...contactInfo, [event.target.name]: value };
-  //   setContactInfo(contactInfoData);
-  // };
 
   return (
     <>
@@ -196,4 +203,40 @@ export default function LandingPage() {
       </div>
     </>
   );
+
+  // different body format from sendEmail in CreateLinkPage, userName is included in subject, recipientEmail default to LP's email
+  async function sendEmail(
+    userName: string,
+    userEmail: string,
+    message: string
+  ): Promise<any> {
+    const addEmailBody: AddEmailBody = {
+      recipientEmail: "strategy@ubclaunchpad.com",
+      message: message + "\n" + "contact email: " + userEmail,
+      subject: "Launchpad Scheduler Questions -- from " + userName,
+    };
+    try {
+      console.log(addEmailBody);
+      const eventRes: Response = await fetch(
+        "http://localhost:8080/v1/email/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(addEmailBody),
+        }
+      );
+      if (!eventRes.ok) {
+        console.log(eventRes);
+        throw new Error(
+          `error sending email ${JSON.stringify(addEmailBody, null, "\t")}`
+        );
+      }
+      alert("Your message has been sent to the Launchpad Team!");
+      return Promise.resolve(await eventRes);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
 }

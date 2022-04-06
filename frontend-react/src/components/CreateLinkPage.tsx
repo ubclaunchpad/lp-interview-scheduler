@@ -6,6 +6,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { useAuth } from "../contexts/AuthContext";
 import { endOfWeek, format, formatISO, startOfWeek } from "date-fns";
 import { useSetBackgroundImage } from "../hooks/useSetBackground";
+import ModalContainer from "./modal/ModalContainer";
 
 const localizer = momentLocalizer(moment);
 
@@ -23,6 +24,12 @@ interface AddEventBody {
   intervieweeEmail: string;
   length: number;
   expires: string;
+}
+
+export interface AddEmailBody {
+  recipientEmail: string;
+  message: string;
+  subject: string;
 }
 
 interface APICalendarEvent {
@@ -76,11 +83,31 @@ export default function CreateLinkPage() {
         const path: string = `localhost:3000/test?eventUID=${eventResponse.eventUID}&organization=${eventData.organization}`;
         setBookingLink(path);
       } catch (err) {
-        console.log({ err });
+        console.log(JSON.stringify(err));
       }
     };
     event.preventDefault();
     submitEvent();
+  };
+
+  const handleModalSubmit = (childModalData: {
+    subject: string;
+    message: string;
+  }) => {
+    const submitEmail = async () => {
+      try {
+        // submit modal form data
+        const emailResponse = await sendEmail(
+          eventData.intervieweeEmail,
+          childModalData.message,
+          childModalData.subject
+        );
+        console.log(emailResponse);
+      } catch (err) {
+        console.log(JSON.stringify(err));
+      }
+    };
+    submitEmail();
   };
 
   const handleChange = (
@@ -316,6 +343,10 @@ export default function CreateLinkPage() {
                 >
                   copy link!
                 </button>
+                <ModalContainer
+                  triggerText={"Send to Interviewee"}
+                  onSubmit={handleModalSubmit}
+                />
               </div>
             </div>
           </div>
@@ -442,6 +473,36 @@ async function addEvent(
       );
     }
     return Promise.resolve(await eventRes.json());
+  } catch (err) {
+    return Promise.reject(err);
+  }
+}
+
+async function sendEmail(
+  recipientEmail: string,
+  message: string,
+  subject: string
+): Promise<any> {
+  const addEmailBody: AddEmailBody = {
+    recipientEmail: recipientEmail,
+    message: message,
+    subject: subject,
+  };
+  try {
+    const eventRes: Response = await fetch("http://localhost:8080/v1/email/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(addEmailBody),
+    });
+    if (!eventRes.ok) {
+      console.log(eventRes);
+      throw new Error(
+        `error sending email ${JSON.stringify(addEmailBody, null, "\t")}`
+      );
+    }
+    return Promise.resolve(await eventRes);
   } catch (err) {
     return Promise.reject(err);
   }
