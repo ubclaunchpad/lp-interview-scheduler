@@ -482,12 +482,15 @@ async function getMergedAvailabilities(
 
 async function getSingleAvailability(
   organization: string,
-  leadUID: string | undefined
+  leadUID: string
 ): Promise<CalendarEvent[]> {
   try {
     const singleRes: Response = await fetch(
-      `http://localhost:8080/v1/availabilities/calendarAvailabilities?organization=${organization}&interviewerUID=${leadUID}`
+      mergedAPIString(organization, [leadUID])
     );
+    // const singleRes: Response = await fetch(
+    //   `http://localhost:8080/v1/availabilities/calendarAvailabilities?organization=${organization}&interviewerUID=${leadUID}`
+    // );
     if (!singleRes.ok)
       throw new Error(
         `error calling api availabilities with organization=${organization}&interviewerUID=${leadUID}`

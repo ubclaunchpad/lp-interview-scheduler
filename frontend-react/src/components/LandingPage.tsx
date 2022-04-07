@@ -190,7 +190,7 @@ export default function LandingPage() {
                 <img src={YoutubeIcon} alt="Youtube" />
               </a>
             </div>
-            <p>Copyright © 2020 UBC Launch Pad</p>
+            <p>Copyright © 2022 UBC Launch Pad</p>
           </section>
         </div>
       </div>

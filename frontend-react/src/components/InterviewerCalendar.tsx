@@ -49,13 +49,13 @@ export default function InterviewerCalendar(props: Props) {
     // option to delete when event timeslot is clicked / selected
     if (props.isLoading) {
       window.alert(
-        "you cannot make adjustment while your schedule is being saved"
+        "You cannot make adjustment while your schedule is being saved."
         );
         return;
     }
     if (!event.resource.isBooked) {
       const shouldDelete = window.confirm(
-        "Would you like to remove this event?"
+        "Would you like to remove this availability?"
       );
       if (shouldDelete === true) {
         setEvents(
@@ -69,7 +69,7 @@ export default function InterviewerCalendar(props: Props) {
       }
     } else {
       window.alert(
-        `Can not delete a currently booked slot\nThis slot is currently booked by: ${event.resource.bookedByEmail}`
+        `Cannot delete a currently booked slot.\nThis slot is currently booked by: ${event.resource.bookedByEmail}`
       );
     }
   };

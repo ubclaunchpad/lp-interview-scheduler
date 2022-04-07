@@ -25,6 +25,7 @@ export default function PageThree() {
   const [confirmedTime, setConfirmedTime] = useState("");
   const [blockLength, setBlockLength] = useState(0);
   const [eventDuration, setEventDuration] = useState(0 as number);
+  const [intervieweeEmail, setIntervieweeEmail] = useState("");
 
   const { search } = useLocation();
   const params = React.useMemo(() => new URLSearchParams(search), [search]);
@@ -118,7 +119,10 @@ export default function PageThree() {
 
   React.useEffect(() => {
     if (params.has("eventUID") && params.has("organization")) {
-      handleGetEvent().then((data) => handleMergeAvailabilities(data));
+      handleGetEvent().then((data) => {
+        handleMergeAvailabilities(data);
+        setIntervieweeEmail(data.intervieweeEmail)
+      });
     }
   }, [handleGetEvent, handleMergeAvailabilities, params]);
 
@@ -133,14 +137,43 @@ export default function PageThree() {
         times: slots.map((slot) => slot.format("YYYY-MM-DDTHH:mm:ssZ")),
       }),
     }).then((res) => {
+
       if (res.status == 200) {
         setConfirmedTime(slots[0].toString());
-        window.alert(
-          "You have successfully booked an interview for " +
-            slots[0].format("LLLL")
-        );
+        const startTime = moment(slots[0]).startOf("minutes").toISOString();
+        const endTime = moment(slots[0]).startOf('minutes').add(eventDuration,'minutes').toISOString();
+        console.log("start and end times:\n");
+        console.log({startTime: startTime, endTime: endTime});
+        fetch(linkPrefix + "googleCalendar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            organization: organization,
+            startTime: startTime,
+            endTime: endTime,
+            intervieweeEmail: intervieweeEmail,
+            interviewerUUIDs: leadUIDs,
+          }),
+        }).then((gcalresponse) => {
+          if (gcalresponse.status == 200) {
+            setConfirmedTime(slots[0].toString());
+            window.alert(
+              "A confirmation has been sent for your interview at " + slots[0].format("LLLL")
+            );
+          } else {
+            window.alert("Error sending interview confirmation:" + gcalresponse.status);
+          }
+  
+          window.alert(
+            "You have successfully booked an interview for " +
+              slots[0].format("LLLL")
+          );
+
+          console.log(slots[0]);
+          console.log(slots[0])
+        })
       } else {
-        window.alert("Error booking interview.");
+        window.alert("Error booking interview: " + res.status);
       }
     });
   };
